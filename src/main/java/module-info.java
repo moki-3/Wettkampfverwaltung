@@ -10,6 +10,7 @@ module org.example.wettkampfverwaltung {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens org.example.wettkampfverwaltung to javafx.fxml;
     exports org.example.wettkampfverwaltung;
