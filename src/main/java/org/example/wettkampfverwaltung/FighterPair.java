@@ -14,6 +14,10 @@ public class FighterPair {
     private String altersKlasse;
     private String gewichtsKlasse;
 
+    private String winner = "nicht gesetzt";
+    private String winnerVerein = "nicht gesetzt";
+    private int points = 0; // punkte die das gewinnerverein bekommt, zum nachrechnen. Ist ja redundant weil ic das ganze schon in der verein klasse berechne
+
     public String getName01() {
         return name01;
     }
@@ -45,5 +49,13 @@ public class FighterPair {
         this.verein02 = verein02;
         this.altersKlasse = altersKlasse;
         this.gewichtsKlasse = gewichtsKlasse;
+    }
+
+    @Override
+    public String toString(){
+        return "\nFighter01 = " + getName01() + "\nVerein01 = " + getVerein01() +
+                "\nFighter02 = " + getName02() + "\nVerein02 = " + getVerein02() +
+                "\nAltersklasse = " + getAltersKlasse() +
+                "\nGewichtsklasse = " + getGewichtsKlasse();
     }
 }

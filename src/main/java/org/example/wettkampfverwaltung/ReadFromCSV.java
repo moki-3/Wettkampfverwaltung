@@ -7,16 +7,32 @@ in ein Array gespeichert
 
  */
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ReadFromCSV {
 
-    public ArrayList<FighterPair> read(){
+    public ArrayList<FighterPair> read(File csvFile){
         ArrayList<FighterPair> fighterPairs = new ArrayList<>();
+        try{
+            String gesamtInhalt = java.nio.file.Files.readString(csvFile.toPath());
+            String[] zeilen = gesamtInhalt.split("\n");
+            for(int i = 0; i < zeilen.length; i++){
+                String[] row = zeilen[i].split(",");
+                if(row.length == 6){
+                    FighterPair fp = new FighterPair(row[0], row[1], row[2], row[3],row[4],row[5]);
+                    fighterPairs.add(fp);
+                }else{
+                    throw new Exception("Zu viele Spalten");
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        return fighterPairs; // nur damit es keinen error wirft, ich muss noch was anderes davor machen
-
+        return fighterPairs;
     }
 
 }

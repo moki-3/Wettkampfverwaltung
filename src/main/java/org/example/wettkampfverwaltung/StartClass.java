@@ -9,17 +9,20 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StartClass extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Label greeting = new Label("Hallo! Bitte wählen sie eine Datei aus");
         Button select = new Button("Datei auswählen");
-
+        Button continueButton = new Button("Select a file to continue");
+        continueButton.setDisable(true);
+        AtomicReference<ArrayList<FighterPair>> fighterPairs = new AtomicReference<>(new ArrayList<>());
         select.setOnAction(actionEvent -> {
+            continueButton.setText("Überprüfen...");
             FileChooser fc = new FileChooser();
             fc.getExtensionFilters().add(
                     new FileChooser.ExtensionFilter("CSV-Dateien", "*.csv")
@@ -30,13 +33,26 @@ public class StartClass extends Application {
 
             if (csv != null) {
                 System.out.println("File selected: " + csv.getAbsolutePath());
-                // csv datei hier verarbeite
+                ReadFromCSV rfc = new ReadFromCSV();
+                fighterPairs.set(rfc.read(csv));
+                for (FighterPair pair : fighterPairs.get()) {
+                    System.out.println("\n-------------------------------\n");
+                    System.out.println(pair);
+                }
+
+                continueButton.setText("Weiter");
+                continueButton.setDisable(false);
             } else {
                 System.err.println("No File selected");
             }
         });
 
-        VBox vbox = new VBox(10, greeting, select);
+
+        continueButton.setOnAction(actionEvent -> {
+            //weiterImCode
+        });
+
+        VBox vbox = new VBox(10, greeting, select, continueButton);
 
         BorderPane bp = new BorderPane();
         bp.setCenter(vbox);
