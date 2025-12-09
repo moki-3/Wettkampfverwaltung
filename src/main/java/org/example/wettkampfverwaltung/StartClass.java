@@ -49,6 +49,7 @@ public class StartClass extends Application {
 
 
         continueButton.setOnAction(actionEvent -> {
+
             //weiterImCode
         });
 
