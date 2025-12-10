@@ -5,7 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -79,13 +81,79 @@ public class StartClass extends Application {
 
 
     private void listFights(){
-        Scene scn = new Scene(wf.createList());
+
+
+        VBox vbox = new VBox(10, wf.createList());
+        Scene scn = new Scene(vbox);
         controlStage.setTitle("Liste aller Kämpfe");
+
         controlStage.setScene(scn);
     }
 
+    private Scene updateControlView(){
+
+        //Button, mit dem man die viewStage auf fullscreen machen kann
+        Button viewStageFullscreen = new Button("On");
+
+
+        viewStageFullscreen.setOnAction(actionEvent -> {
+            if(viewStage.isFullScreen()){
+                viewStage.setFullScreen(false);
+            }else{
+                viewStage.setFullScreen(true);
+            }
+            viewStageFullscreen.setText(viewStage.isFullScreen() ? "Off" : "On");
+        });
+
+        //Button, mit der man die zweite Stage anzeigen kann
+        Button showViewStage = new Button("viewStage öffnen");
+
+
+        showViewStage.setOnAction(actionEvent -> {
+            openViewStage();
+
+        });
+
+
+
+
+        //HBox, in der der button zum Fullscreen und ein text dafür ist
+        HBox fullscreenbox = new HBox(20, new Label("viewStage Vollbildmodus"), viewStageFullscreen);
+
+
+        //VBox, die die fullscreenbox, den button zum öffnen der viewStage und die liste der kämpfe anzeigt
+        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, wf.createList());
+
+        BorderPane bp = new BorderPane();
+
+        bp.setLeft(leftControls);
+
+        return new Scene(bp);
+
+    }
+
+    public void openViewStage(){
+        if(viewStage == null){
+            //wenn die stage noch nicht exestiert
+            viewStage = new Stage();
+            viewStage.setScene(new Scene(new Label("nichts zum anzeien")));
+
+            viewStage.show();
+        }else if(!viewStage.isShowing()){
+            viewStage.setScene(new Scene(new Label("nichts zum anzeien")));
+            viewStage.show();
+        }
+    }
+
     public void play(){
-        listFights();
+        controlStage.setOnCloseRequest(windowEvent -> {
+            if(viewStage != null && viewStage.isShowing()){
+                viewStage.close();
+                System.exit(0);
+            }
+        });
+        controlStage.setScene(updateControlView());
+
 
 
     }

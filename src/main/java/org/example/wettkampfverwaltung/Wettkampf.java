@@ -23,6 +23,10 @@ public class Wettkampf {
         this.fighterPairs = list;
     }
 
+    /*
+        TO DO
+        * CSS Klassen hinzufügen
+     */
     public ScrollPane createList() {
         VBox vbox = new VBox();
         for (FighterPair fp : fighterPairs) {
@@ -67,7 +71,8 @@ public class Wettkampf {
             //css klassen
 
             tmp.setOnMouseClicked(mouseEvent -> {
-                System.out.println("vbox geklickt");
+                int index = fighterPairs.indexOf(fp);
+                System.out.println("\nvbox geklickt\t index = " + index);
             });
 
             vbox.getChildren().add(tmp);
@@ -80,4 +85,7 @@ public class Wettkampf {
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); //bei bedarf horizonal scrollen
         return sp;
     }
+
+
+
 }
