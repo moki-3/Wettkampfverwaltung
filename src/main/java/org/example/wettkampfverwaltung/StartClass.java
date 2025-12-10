@@ -137,7 +137,7 @@ public class StartClass extends Application {
             //wenn die stage noch nicht exestiert
             viewStage = new Stage();
             viewStage.setScene(new Scene(new Label("nichts zum anzeien")));
-
+            viewStage.setFullScreenExitHint("");
             viewStage.show();
         }else if(!viewStage.isShowing()){
             viewStage.setScene(new Scene(new Label("nichts zum anzeien")));
@@ -147,11 +147,12 @@ public class StartClass extends Application {
 
     public void play(){
         controlStage.setOnCloseRequest(windowEvent -> {
-            if(viewStage != null && viewStage.isShowing()){
-                viewStage.close();
-                System.exit(0);
-            }
-        });
+                    if (viewStage != null && viewStage.isShowing()) {
+                        viewStage.close();
+                        System.exit(0);
+                    }
+                });
+
         controlStage.setScene(updateControlView());
 
 
