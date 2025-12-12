@@ -28,6 +28,8 @@ public class StartClass extends Application {
     public void setVereine(ArrayList<Verein> vereine) {
         this.vereine = vereine;
     }
+    private int kampfCounter = 0;
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -89,19 +91,6 @@ public class StartClass extends Application {
     }
 
 
-
-
-
-//    private void listFights(){
-//
-//
-//        VBox vbox = new VBox(10, wf.createList());
-//        Scene scn = new Scene(vbox);
-//        controlStage.setTitle("Liste aller Kämpfe");
-//
-//        controlStage.setScene(scn);
-//    }
-
     private Scene updateControlView(){
 
         //Button, mit dem man die viewStage auf fullscreen machen kann
@@ -129,6 +118,7 @@ public class StartClass extends Application {
 
 
 
+
         //HBox, in der der button zum Fullscreen und ein text dafür ist
         HBox fullscreenbox = new HBox(20, new Label("viewStage Vollbildmodus"), viewStageFullscreen);
 
@@ -138,12 +128,12 @@ public class StartClass extends Application {
 
         BorderPane bp = new BorderPane();
 
-        bp.setLeft(leftControls);
+
+       bp.setLeft(leftControls);
 
         return new Scene(bp);
 
     }
-
 
     /*
     Macht ein VBox, besthend aus hboxen. In diesen sind der Name und die
@@ -225,6 +215,55 @@ public class StartClass extends Application {
 //        for(Verein v : vereine){
 //            System.out.println(v.getName());
 //        }
+    }
+
+
+    /*
+
+    Ich kann hier dann auch machen, das nur dann das sieht, wenn man es braucht.
+    Deshalb muss alles außerhalb der Methode definiert werden. Ich brauch auch eine
+    Aufräummehtode, die alles nach dem kampf wieder resetet
+
+     */
+    private Label name01;
+    private Label verein01;
+    private int ippon01 = 0;
+    private int wazari01 = 0;
+    private int yuko01 = 0;
+    private int shido01 = 0;
+
+    private Label name02;
+    private Label verein02;
+    private int ippon02 = 0;
+    private int wazari02 = 0;
+    private int yuko02 = 0;
+    private int shido02 = 0;
+
+    private HBox fight(FighterPair f){
+         name01= new Label(f.getName01());
+         verein01= new Label(f.getVerein01());
+
+         name02 = new Label(f.getName02());
+         verein02 = new Label(f.getVerein02());
+
+         return new HBox(new Label("Nicht fertig"));
+
+    };
+
+    private void resetFight(){
+        this.name01 = null;
+        this.verein01 = null;
+        this.ippon01 = 0;
+        this.wazari01 = 0;
+        this.yuko01 = 0;
+        this.shido01 = 0;
+
+        this.name02 = null;
+        this.verein02 = null;
+        this.ippon02 = 0;
+        this.wazari02 = 0;
+        this.yuko02 = 0;
+        this.shido02 = 0;
     }
 
 }
