@@ -11,8 +11,15 @@ import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import java.util.ArrayList;
 
-public class Wettkampf {
 
+
+    /*
+
+    Diese Klasse erstellt die Liste aller Kämpfe, die dann links am Rand ist
+
+     */
+
+public class Wettkampf {
     private ArrayList<FighterPair> fighterPairs = new ArrayList<>();
 
     public ArrayList<FighterPair> getFighterPairs() {
@@ -86,6 +93,82 @@ public class Wettkampf {
         return sp;
     }
 
+    private void controlFight(){
+
+    }
+
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+    +----+         +----+     +--------+    +---+  +---+   +---+      +----------+  +---+  +---+  +---+  +---+
+    |     \       /     |    /  +----+  \   |   | /   /    |   |      |         /   |    \ |   |  |   | /   /
+    |   +  \     /  +   |   |  /      \  |  |   |/   /     |   |      +---+    /    |     \|   |  |   |/   /
+    |   | \ \   / / |   |   | |        | |  |       |      |   |         /    /     |          |  |       |
+    |   |  \ +-+ /  |   |   |  \      /  |  |   |\   \     |   |        /    +---+  |   |\     |  |   |\   \
+    |   |   +---+   |   |    \  +----+  /   |   | \   \    |   |  /\   /         |  |   | \    |  |   | \   \
+    +---+           +---+     +--------+    +---+  +---+   +---+  \/  +----------+  +---+  +---+  +---+  +---+
+
+ */

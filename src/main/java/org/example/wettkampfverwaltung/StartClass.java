@@ -20,13 +20,23 @@ public class StartClass extends Application {
     Wettkampf wf;
     Stage controlStage;
     Stage viewStage;
+    ArrayList<Verein> vereine = new ArrayList<>();
+    ArrayList<FighterPair> allFighterPairs = new ArrayList<>();
+    public ArrayList<Verein> getVereine() {
+        return vereine;
+    }
+    public void setVereine(ArrayList<Verein> vereine) {
+        this.vereine = vereine;
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
+
         Label greeting = new Label("Hallo! Bitte wählen sie eine Datei aus");
         Button select = new Button("Datei auswählen");
         Button continueButton = new Button("Select a file to continue");
         continueButton.setDisable(true);
+
 
             AtomicReference<ArrayList<FighterPair>> fighterPairs = new AtomicReference<>(new ArrayList<>());
 
@@ -60,6 +70,8 @@ public class StartClass extends Application {
 
         continueButton.setOnAction(actionEvent -> {
             wf = new Wettkampf(fighterPairs.get());
+            allFighterPairs = wf.getFighterPairs();
+            addVereine();
             play();
         });
 
@@ -80,15 +92,15 @@ public class StartClass extends Application {
 
 
 
-    private void listFights(){
-
-
-        VBox vbox = new VBox(10, wf.createList());
-        Scene scn = new Scene(vbox);
-        controlStage.setTitle("Liste aller Kämpfe");
-
-        controlStage.setScene(scn);
-    }
+//    private void listFights(){
+//
+//
+//        VBox vbox = new VBox(10, wf.createList());
+//        Scene scn = new Scene(vbox);
+//        controlStage.setTitle("Liste aller Kämpfe");
+//
+//        controlStage.setScene(scn);
+//    }
 
     private Scene updateControlView(){
 
@@ -122,7 +134,7 @@ public class StartClass extends Application {
 
 
         //VBox, die die fullscreenbox, den button zum öffnen der viewStage und die liste der kämpfe anzeigt
-        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, wf.createList());
+        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, createVereinList(),wf.createList());
 
         BorderPane bp = new BorderPane();
 
@@ -132,6 +144,29 @@ public class StartClass extends Application {
 
     }
 
+
+    /*
+    Macht ein VBox, besthend aus hboxen. In diesen sind der Name und die
+    Punkte der vereine
+
+    TODO: CSS KLASSEN!!!
+
+     */
+    private VBox createVereinList(){
+        VBox vbox = new VBox();
+        vbox.setSpacing(20);
+        for(Verein v : vereine){
+            Label l1 = new Label(v.getName()+ ":");
+            Label l2 = new Label(v.getPoints() + "");
+            HBox hbox = new HBox(10, l1, l2);
+            vbox.getChildren().add(hbox);
+        }
+        return vbox;
+    }
+
+    /*
+    öffnet die viewStage wenn sie geschlossen ist oder noch gar nicht exestiert
+     */
     public void openViewStage(){
         if(viewStage == null){
             //wenn die stage noch nicht exestiert
@@ -159,4 +194,109 @@ public class StartClass extends Application {
 
     }
 
+    /*
+        Erklärung
+            Alle fighterPairs werden durchgelaufen, und jeder neue Name wird in
+            die Vereine ArrayList gespeichert.
+     */
+    private void addVereine(){
+
+        for(FighterPair f : allFighterPairs){
+            //System.out.println("\n########################\n" + f.toString());
+            boolean add01 = true;
+            boolean add02 = true;
+            for(Verein v : vereine){
+                if(v.getName().equals(f.getVerein01())){
+                    add01 = false;
+                }
+                if(v.getName().equals(f.getVerein02())){
+                    add02 = false;
+                }
+                if(!add01 && !add02) break;
+            }
+            if (add01) vereine.add(new Verein(f.getVerein01()));
+            if (add02) vereine.add(new Verein(f.getVerein02()));
+        }
+
+
+        //Testing purposes
+//        System.out.println("\n\n##########################\n\nEs wurden " + vereine.size() +
+//                " Vereine gefunden:");
+//        for(Verein v : vereine){
+//            System.out.println(v.getName());
+//        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+    +----+         +----+     +--------+    +---+  +---+   +---+      +----------+  +---+  +---+  +---+  +---+
+    |     \       /     |    /  +----+  \   |   | /   /    |   |      |         /   |    \ |   |  |   | /   /
+    |   +  \     /  +   |   |  /      \  |  |   |/   /     |   |      +---+    /    |     \|   |  |   |/   /
+    |   | \ \   / / |   |   | |        | |  |       |      |   |         /    /     |          |  |       |
+    |   |  \ +-+ /  |   |   |  \      /  |  |   |\   \     |   |        /    +---+  |   |\     |  |   |\   \
+    |   |   +---+   |   |    \  +----+  /   |   | \   \    |   |  /\   /         |  |   | \    |  |   | \   \
+    +---+           +---+     +--------+    +---+  +---+   +---+  \/  +----------+  +---+  +---+  +---+  +---+
+
+ */

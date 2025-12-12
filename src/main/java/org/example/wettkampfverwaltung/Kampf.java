@@ -1,30 +1,34 @@
 package org.example.wettkampfverwaltung;
 
-/*
+public class Kampf {
+    private FighterPair fighters;
 
-Hier werden Vereine Verwaltet, sie haben einen Namen und Punkte, die bei 0 beginnen
+    private static final int ZEIT = 2;
+    private static final int GOLDENSCORE = 1; // fragen
+    private boolean isGoldenScore = false;
+    //fragen wie die punkte sind
 
- */
+    private int ipponFirst = 0;
+    private int wazariFirst = 0;
+    private int yukoFirst = 0;
+    private int shidosLeft = 0;
 
+    private int ipponRight = 0;
+    private int wazariRight = 0;
+    private int yukoRight = 0;
+    private int shidosRight = 0;
 
-public class Verein {
-    private String name;
-    private int points = 0;
-
-    public String getName() {
-        return name;
+    public Kampf(FighterPair fighters) {
+        this.fighters = fighters;
     }
 
-    public int getPoints() {
-        return points;
-    }
+    public void setWinner(String name){
+        fighters.setDone(true);
+        if(name.equals(fighters.getName01())){
+            fighters.setWinner(fighters.getName01());
+            fighters.setWinnerVerein(fighters.getVerein01());
 
-    public void increasePoints(int amount){
-        points += amount;
-    }
-
-    public Verein(String name) {
-        this.name = name;
+        }
     }
 }
 
