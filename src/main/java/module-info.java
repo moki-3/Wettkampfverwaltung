@@ -11,6 +11,7 @@ module org.example.wettkampfverwaltung {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    requires com.fasterxml.jackson.databind;
 
     opens org.example.wettkampfverwaltung to javafx.fxml;
     exports org.example.wettkampfverwaltung;

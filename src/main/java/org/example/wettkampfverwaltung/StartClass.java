@@ -1,5 +1,6 @@
 package org.example.wettkampfverwaltung;
 
+import com.fasterxml.jackson.databind.node.ValueNode;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,6 +30,7 @@ public class StartClass extends Application {
         this.vereine = vereine;
     }
     private int kampfCounter = 0;
+    private boolean isFight = false;
 
 
     @Override
@@ -92,6 +94,8 @@ public class StartClass extends Application {
 
 
     private Scene updateControlView(){
+
+
 
         //Button, mit dem man die viewStage auf fullscreen machen kann
         Button viewStageFullscreen = new Button("On");
@@ -239,12 +243,236 @@ public class StartClass extends Application {
     private int yuko02 = 0;
     private int shido02 = 0;
 
-    private HBox fight(FighterPair f){
-         name01= new Label(f.getName01());
+    private HBox updateFightControlView(FighterPair f){
+
+        if(!isFight){
+            return new HBox(new Label("please select a fight"));
+        }
+
+
+        /*
+
+         Ich mache jeden button einzeln, weil ich dann auf die mit Tastenkombination
+         effiezient zugreifen kann
+         Das ganze kann auch effiezienter gemacht werden, aber ich will jetzt einmal
+         ein laufendes programm schaffen.
+
+          */
+
+        //################################################################################################
+
+        // LEFT SIDE START
+
+        name01= new Label(f.getName01());
          verein01= new Label(f.getVerein01());
+
+
+
+        // BUTTONS LEFT START
+
+         Button incIppon01 = new Button("+");
+         incIppon01.setOnAction(actionEvent -> {
+             // MEHTODE AUFRUFEN DIE WARNUNG MACHT
+             /*
+             if(ippon01+1 >= 2)
+              */
+             this.ippon01++;
+             //methode aufrufen, die die szenen updated
+         });
+         Button decIppon01 = new Button("-");
+         decIppon01.setOnAction(actionEvent -> {
+             if(this.ippon01-- == 0) this.ippon01--; // verringert ippon01 nur wenn es dann gleich 0 ist, sonst würde da -1 stehen
+             //methode aufrufen, die die szenen updated
+         });
+
+        //----------------------------------------------------------------
+
+        Button incWazari01 = new Button("+");
+         incWazari01.setOnAction(actionEvent -> {
+             // MEHTODE AUFRUFEN DIE WARNUNG MACHT
+             /*
+             if(wazari01+1 > 1) // warnung weil es dann sonst einen Ippon geben würde
+              */
+             this.wazari01++;
+             //methode aufrufen, die die szenen updated
+         });
+         Button decWazari01 = new Button("-");
+         decWazari01.setOnAction(actionEvent -> {
+             if(this.wazari01-- >= 0) this.wazari01--; // gleiches prinzip wie ippon01
+         });
+
+        //----------------------------------------------------------------
+
+        Button incYuko01 = new Button("+");
+        incYuko01.setOnAction(actionEvent -> {
+            /*
+                Fragen, wie viele Yukos es gibt
+             */
+            this.yuko01++;
+        });
+        Button decYuko01 = new Button("-");
+        decYuko01.setOnAction(actionEvent -> {
+            if(this.yuko01-- >= 0) this.yuko01--;
+        });
+
+        //----------------------------------------------------------------
+
+        Button incShido01 = new Button("+");
+        incShido01.setOnAction(actionEvent -> {
+            if(this.shido01++ < 3){
+                this.shido01++;
+            }else{
+                //mehtode aufrufen, die shido vergibt und davor fragt, ob das passt
+            }
+        });
+        Button decShido01 = new Button("-");
+        decShido01.setOnAction(actionEvent -> {
+            if(this.shido01-- >= 0) this.shido01--;
+        });
+
+        // BUTTONS LEFT END
+
+        //------------------------------------------------------------------------------------------------
+
+        // HBOXEs LEFT START
+
+        HBox leftIppon = new HBox(10, new Label("Ippon"), decIppon01, new Label(ippon01 + ""),
+                incIppon01);
+        HBox leftWazari = new HBox(10, new Label("Wazari"), decWazari01, new Label(wazari01 + ""),
+                incWazari01);
+        HBox leftYuko = new HBox(10, new Label("Yuko"), decYuko01, new Label(yuko01 + ""),
+                incYuko01);
+        HBox leftShido = new HBox(10, new Label("Shido"), decShido01, new Label(shido01 + ""),
+                incShido01);
+
+        // HBOXEs LEFT END
+
+        //------------------------------------------------------------------------------------------------
+
+        // LEFT HBOX START
+
+         VBox leftFighter = new VBox(10, name01, verein01, leftIppon, leftWazari, leftYuko, leftShido);
+
+        // LEFT HBOX END
+
+        // LEFT SIDE END
+
+        //################################################################################################
+
+        // RIGHT SIDE START
 
          name02 = new Label(f.getName02());
          verein02 = new Label(f.getVerein02());
+
+        // BUTTONS LEFT START
+
+        Button incIppon02 = new Button("+");
+        incIppon02.setOnAction(actionEvent -> {
+            // MEHTODE AUFRUFEN DIE WARNUNG MACHT
+             /*
+             if(ippon02+1 >= 2)
+              */
+            this.ippon02++;
+            //methode aufrufen, die die szenen updated
+        });
+        Button decIppon02 = new Button("-");
+        decIppon02.setOnAction(actionEvent -> {
+            if(this.ippon02-- == 0) this.ippon02--; // verringert ippon02 nur wenn es dann gleich 0 ist, sonst würde da -1 stehen
+            //methode aufrufen, die die szenen updated
+        });
+
+        //----------------------------------------------------------------
+
+        Button incWazari02 = new Button("+");
+        incWazari02.setOnAction(actionEvent -> {
+            // MEHTODE AUFRUFEN DIE WARNUNG MACHT
+             /*
+             if(wazari02+1 > 1) // warnung weil es dann sonst einen Ippon geben würde
+              */
+            this.wazari02++;
+            //methode aufrufen, die die szenen updated
+        });
+        Button decWazari02 = new Button("-");
+        decWazari02.setOnAction(actionEvent -> {
+            if(this.wazari02-- >= 0) this.wazari02--; // gleiches prinzip wie ippon02
+        });
+
+        //----------------------------------------------------------------
+
+        Button incYuko02 = new Button("+");
+        incYuko02.setOnAction(actionEvent -> {
+            /*
+                Fragen, wie viele Yukos es gibt
+             */
+            this.yuko02++;
+        });
+        Button decYuko02 = new Button("-");
+        decYuko02.setOnAction(actionEvent -> {
+            if(this.yuko02-- >= 0) this.yuko02--;
+        });
+
+        //----------------------------------------------------------------
+
+        Button incShido02 = new Button("+");
+        incShido02.setOnAction(actionEvent -> {
+            if(this.shido02++ < 3){
+                this.shido02++;
+            }else{
+                //mehtode aufrufen, die shido vergibt und davor fragt, ob das passt
+            }
+        });
+        Button decShido02 = new Button("-");
+        decShido02.setOnAction(actionEvent -> {
+            if(this.shido02-- >= 0) this.shido02--;
+        });
+
+        // BUTTONS LEFT END
+
+        //------------------------------------------------------------------------------------------------
+
+        // HBOXEs LEFT START
+
+        HBox rightIppon = new HBox(10, new Label("Ippon"), decIppon02, new Label(ippon02 + ""),
+                incIppon02);
+        HBox rightWazari = new HBox(10, new Label("Wazari"), decWazari02, new Label(wazari02 + ""),
+                incWazari02);
+        HBox rightYuko = new HBox(10, new Label("Yuko"), decYuko02, new Label(yuko02 + ""),
+                incYuko02);
+        HBox rightShido = new HBox(10, new Label("Shido"), decShido02, new Label(shido02 + ""),
+                incShido02);
+
+        // HBOXEs LEFT END
+
+        //------------------------------------------------------------------------------------------------
+
+        // LEFT HBOX START
+
+        /*
+        Diese VBox muss ich auch rechtsbündig machen, vllt geht das mit css
+         */
+
+        VBox rightFighter = new VBox(10, name02, verein02, rightIppon, rightWazari, rightYuko, rightShido);
+
+        // LEFT HBOX END
+
+        // LEFT SIDE END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
          return new HBox(new Label("Nicht fertig"));
 
@@ -264,6 +492,35 @@ public class StartClass extends Application {
         this.wazari02 = 0;
         this.yuko02 = 0;
         this.shido02 = 0;
+    }
+
+
+    // Datentyp der Methode anpassen
+    public void updateViewStage(){
+
+        if(!isFight){
+            VBox aktuellerStand = new VBox(new Label("Aktueller PunkteStand"));
+            aktuellerStand.setSpacing(10);
+            for(Verein v : vereine){
+                Label tmp = new Label(v.getName() + ": " + v.getPoints());
+                aktuellerStand.getChildren().add(tmp);
+            }
+            return; // hier muss ich die VBox zurückgeben oder es in was anderes umwandel, wenn ich was andere brauche
+        }
+
+
+        VBox leftData = new VBox( name01, verein01);
+        if(ippon01 > 0) leftData.getChildren().add(new Label("Ippon: " + ippon01));
+        if(wazari01 > 0) leftData.getChildren().add(new Label("Wazari: " + wazari01));
+        if(yuko01 > 0) leftData.getChildren().add(new Label("Yuko: " + yuko01));
+        if(shido01 > 0) leftData.getChildren().add(new Label("Shido: " + shido01));
+
+        VBox rightData = new VBox(name02, verein02);
+        if(ippon02 > 0) rightData.getChildren().add(new Label("Ippon: " + ippon02));
+        if(wazari02 > 0) rightData.getChildren().add(new Label("Wazari: " + wazari02));
+        if(yuko02 > 0) rightData.getChildren().add(new Label("Yuko: " + yuko02));
+        if(shido02 > 0) rightData.getChildren().add(new Label("Shido: " + shido02));
+
     }
 
 }
