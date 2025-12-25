@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.lang.reflect.GenericDeclaration;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -135,6 +136,9 @@ public class StartClass extends Application {
 
        bp.setLeft(leftControls);
 
+       //test
+       bp.setCenter(updateFightControlView(allFighterPairs.get(0)));
+
         return new Scene(bp);
 
     }
@@ -229,299 +233,171 @@ public class StartClass extends Application {
     Aufräummehtode, die alles nach dem kampf wieder resetet
 
      */
-    private Label name01;
-    private Label verein01;
-    private int ippon01 = 0;
-    private int wazari01 = 0;
-    private int yuko01 = 0;
-    private int shido01 = 0;
 
-    private Label name02;
-    private Label verein02;
-    private int ippon02 = 0;
-    private int wazari02 = 0;
-    private int yuko02 = 0;
-    private int shido02 = 0;
+    boolean auseikomi01 = false;
+    boolean auseikomi02 = false;
 
-    private HBox updateFightControlView(FighterPair f){
 
-        if(!isFight){
-            return new HBox(new Label("please select a fight"));
+
+    public VBox updateFightControlView(FighterPair f){
+        VBox root = new VBox();
+
+        //################################################################################################
+        // TOP HBOX START
+
+        Button endFight = new Button("Kampf beenden");
+        endFight.setOnAction(actionEvent -> {
+            //Kampf beenden
+        });
+
+        HBox topBox = new HBox(endFight);
+
+        // TOP HBOX END
+        //################################################################################################
+        // UPPER FIGHTER START
+
+        HBox upperFighter = new HBox();
+
+        Label name01 = new Label(f.getName01());
+        Label verein01 = new Label(f.getVerein01());
+
+        VBox daten01 = new VBox(10, name01, verein01);
+
+        String points01 = "0";
+        if(f.getIppon01() > 0) points01 = "100";
+        else {
+            int tmp = 50 * f.getWazari01() + f.getYuko01();
+            points01 = tmp + "";
         }
 
+        Label points01l = new Label(points01);
 
-        /*
+        Button editIppon01 = new Button("Ippon [strg + arrow Up + 1] : " + f.getIppon01());
+        editIppon01.setOnAction(actionEvent -> {
+            //update Ippon 01 mit smallStage deren owner controlStage ist
+            System.out.println("editIppon01 clicked");
+        });
+        // strg + arrow up + 1
 
-         Ich mache jeden button einzeln, weil ich dann auf die mit Tastenkombination
-         effiezient zugreifen kann
-         Das ganze kann auch effiezienter gemacht werden, aber ich will jetzt einmal
-         ein laufendes programm schaffen.
+        Button editWazari01 = new Button("Wazari [strg + arrow Up + 2] : " + f.getWazari01());
+        editWazari01.setOnAction(actionEvent -> {
+            //update wazari01 like ippon
+            System.out.println("editWazari01 clicked");
+        });
+        // strg + arrow up + 2
 
-          */
+        Button editYuko01 = new Button("Yuko [strg + arrow uup + 3] : " + f.getYuko01());
+        editYuko01.setOnAction(actionEvent -> {
+            //update yuko01 like wazari
+            System.out.println("editYuko01 clicked");
+        });
+        // strg + arrow up + 3
 
+        Button editShido01 = new Button("Shido [strg + arrow up + 4] : " + f.getShido01());
+        editShido01.setOnAction(actionEvent -> {
+            //update shido like wazari and maybe make the screen red to show that somebody is disqualified
+            System.out.println("editShido01 clicked");
+        });
+        // strg + arrow up + 4
+
+        VBox controls01 = new VBox(10, editIppon01, editWazari01, editYuko01, editShido01);
+
+        Button auseikomib01 = new Button(auseikomi01 ? "Auseikomi" : "Toketa" + "\n[strg + arrow up + 5]");
+        auseikomib01.setOnAction(actionEvent -> {
+            // action und auch css klassen ändern mit if(auseikomib01.getName().equals...)
+            System.out.println("auseikomib01 clicked");
+        });
+        //
+
+        upperFighter.getChildren().addAll(daten01, points01l, controls01, auseikomib01);
+
+        // UPPER FIGHTER END
         //################################################################################################
+        // LOWER FITHER START
+        HBox lowerFighter = new HBox();
 
-        // LEFT SIDE START
+        Label name02 = new Label(f.getName02());
+        Label verein02 = new Label(f.getVerein02());
 
-        name01= new Label(f.getName01());
-         verein01= new Label(f.getVerein01());
+        VBox daten02 = new VBox(10, name02, verein02);
 
+        String points02 = "0";
+        if(f.getIppon02() > 0) points02 = "100";
+        else {
+            int tmp = 50 * f.getWazari02() + f.getYuko02();
+            points02 = tmp + "";
+        }
 
+        Label points02l = new Label(points02);
 
-        // BUTTONS LEFT START
-
-         Button incIppon01 = new Button("+");
-         incIppon01.setOnAction(actionEvent -> {
-             // MEHTODE AUFRUFEN DIE WARNUNG MACHT
-             /*
-             if(ippon01+1 >= 2)
-              */
-             this.ippon01++;
-             //methode aufrufen, die die szenen updated
-         });
-         Button decIppon01 = new Button("-");
-         decIppon01.setOnAction(actionEvent -> {
-             if(this.ippon01-- == 0) this.ippon01--; // verringert ippon01 nur wenn es dann gleich 0 ist, sonst würde da -1 stehen
-             //methode aufrufen, die die szenen updated
-         });
-
-        //----------------------------------------------------------------
-
-        Button incWazari01 = new Button("+");
-         incWazari01.setOnAction(actionEvent -> {
-             // MEHTODE AUFRUFEN DIE WARNUNG MACHT
-             /*
-             if(wazari01+1 > 1) // warnung weil es dann sonst einen Ippon geben würde
-              */
-             this.wazari01++;
-             //methode aufrufen, die die szenen updated
-         });
-         Button decWazari01 = new Button("-");
-         decWazari01.setOnAction(actionEvent -> {
-             if(this.wazari01-- >= 0) this.wazari01--; // gleiches prinzip wie ippon01
-         });
-
-        //----------------------------------------------------------------
-
-        Button incYuko01 = new Button("+");
-        incYuko01.setOnAction(actionEvent -> {
-            /*
-                Fragen, wie viele Yukos es gibt
-             */
-            this.yuko01++;
+        Button editIppon02 = new Button("Ippon [strg + arrow Up + 1] : " + f.getIppon02());
+        editIppon02.setOnAction(actionEvent -> {
+            //update Ippon 02 mit smallStage deren owner controlStage ist
+            System.out.println("editIppon02 clicked");
         });
-        Button decYuko01 = new Button("-");
-        decYuko01.setOnAction(actionEvent -> {
-            if(this.yuko01-- >= 0) this.yuko01--;
+        // strg + arrow up + 1
+
+        Button editWazari02 = new Button("Wazari [strg + arrow Up + 2] : " + f.getWazari02());
+        editWazari02.setOnAction(actionEvent -> {
+            //update wazari02 like ippon
+            System.out.println("editWazari02 clicked");
         });
+        // strg + arrow up + 2
 
-        //----------------------------------------------------------------
-
-        Button incShido01 = new Button("+");
-        incShido01.setOnAction(actionEvent -> {
-            if(this.shido01++ < 3){
-                this.shido01++;
-            }else{
-                //mehtode aufrufen, die shido vergibt und davor fragt, ob das passt
-            }
+        Button editYuko02 = new Button("Yuko [strg + arrow uup + 3] : " + f.getYuko02());
+        editYuko02.setOnAction(actionEvent -> {
+            //update yuko02 like wazari
+            System.out.println("editYuko02 clicked");
         });
-        Button decShido01 = new Button("-");
-        decShido01.setOnAction(actionEvent -> {
-            if(this.shido01-- >= 0) this.shido01--;
+        // strg + arrow up + 3
+
+        Button editShido02 = new Button("Shido [strg + arrow up + 4] : " + f.getShido02());
+        editShido02.setOnAction(actionEvent -> {
+            //update shido like wazari and maybe make the screen red to show that somebody is disqualified
+            System.out.println("editShido02 clicked");
         });
+        // strg + arrow up + 4
 
-        // BUTTONS LEFT END
+        VBox controls02 = new VBox(10, editIppon02, editWazari02, editYuko02, editShido02);
 
-        //------------------------------------------------------------------------------------------------
+        Button auseikomib02 = new Button(auseikomi02 ? "Auseikomi" : "Toketa" + "\n[strg + arrow up + 5]");
+        auseikomib02.setOnAction(actionEvent -> {
+            // action und auch css klassen ändern mit if(auseikomib02.getName().equals...)
+            System.out.println("auseikomib02 clicked");
+        });
+        //
 
-        // HBOXEs LEFT START
+        lowerFighter.getChildren().addAll(daten02, points02l, controls02, auseikomib02);
 
-        HBox leftIppon = new HBox(10, new Label("Ippon"), decIppon01, new Label(ippon01 + ""),
-                incIppon01);
-        HBox leftWazari = new HBox(10, new Label("Wazari"), decWazari01, new Label(wazari01 + ""),
-                incWazari01);
-        HBox leftYuko = new HBox(10, new Label("Yuko"), decYuko01, new Label(yuko01 + ""),
-                incYuko01);
-        HBox leftShido = new HBox(10, new Label("Shido"), decShido01, new Label(shido01 + ""),
-                incShido01);
-
-        // HBOXEs LEFT END
-
-        //------------------------------------------------------------------------------------------------
-
-        // LEFT HBOX START
-
-         VBox leftFighter = new VBox(10, name01, verein01, leftIppon, leftWazari, leftYuko, leftShido);
-
-        // LEFT HBOX END
-
-        // LEFT SIDE END
-
+        // LOWER FITHER END
         //################################################################################################
+        // TIMERS START
+        HBox timers = new HBox();
 
-        // RIGHT SIDE START
+        // TIMERS END
+        //################################################################################################
+        root.getChildren().addAll(topBox, upperFighter, lowerFighter, timers);
 
-         name02 = new Label(f.getName02());
-         verein02 = new Label(f.getVerein02());
-
-        // BUTTONS LEFT START
-
-        Button incIppon02 = new Button("+");
-        incIppon02.setOnAction(actionEvent -> {
-            // MEHTODE AUFRUFEN DIE WARNUNG MACHT
-             /*
-             if(ippon02+1 >= 2)
-              */
-            this.ippon02++;
-            //methode aufrufen, die die szenen updated
-        });
-        Button decIppon02 = new Button("-");
-        decIppon02.setOnAction(actionEvent -> {
-            if(this.ippon02-- == 0) this.ippon02--; // verringert ippon02 nur wenn es dann gleich 0 ist, sonst würde da -1 stehen
-            //methode aufrufen, die die szenen updated
-        });
-
-        //----------------------------------------------------------------
-
-        Button incWazari02 = new Button("+");
-        incWazari02.setOnAction(actionEvent -> {
-            // MEHTODE AUFRUFEN DIE WARNUNG MACHT
-             /*
-             if(wazari02+1 > 1) // warnung weil es dann sonst einen Ippon geben würde
-              */
-            this.wazari02++;
-            //methode aufrufen, die die szenen updated
-        });
-        Button decWazari02 = new Button("-");
-        decWazari02.setOnAction(actionEvent -> {
-            if(this.wazari02-- >= 0) this.wazari02--; // gleiches prinzip wie ippon02
-        });
-
-        //----------------------------------------------------------------
-
-        Button incYuko02 = new Button("+");
-        incYuko02.setOnAction(actionEvent -> {
-            /*
-                Fragen, wie viele Yukos es gibt
-             */
-            this.yuko02++;
-        });
-        Button decYuko02 = new Button("-");
-        decYuko02.setOnAction(actionEvent -> {
-            if(this.yuko02-- >= 0) this.yuko02--;
-        });
-
-        //----------------------------------------------------------------
-
-        Button incShido02 = new Button("+");
-        incShido02.setOnAction(actionEvent -> {
-            if(this.shido02++ < 3){
-                this.shido02++;
-            }else{
-                //mehtode aufrufen, die shido vergibt und davor fragt, ob das passt
-            }
-        });
-        Button decShido02 = new Button("-");
-        decShido02.setOnAction(actionEvent -> {
-            if(this.shido02-- >= 0) this.shido02--;
-        });
-
-        // BUTTONS LEFT END
-
-        //------------------------------------------------------------------------------------------------
-
-        // HBOXEs LEFT START
-
-        HBox rightIppon = new HBox(10, new Label("Ippon"), decIppon02, new Label(ippon02 + ""),
-                incIppon02);
-        HBox rightWazari = new HBox(10, new Label("Wazari"), decWazari02, new Label(wazari02 + ""),
-                incWazari02);
-        HBox rightYuko = new HBox(10, new Label("Yuko"), decYuko02, new Label(yuko02 + ""),
-                incYuko02);
-        HBox rightShido = new HBox(10, new Label("Shido"), decShido02, new Label(shido02 + ""),
-                incShido02);
-
-        // HBOXEs LEFT END
-
-        //------------------------------------------------------------------------------------------------
-
-        // LEFT HBOX START
-
-        /*
-        Diese VBox muss ich auch rechtsbündig machen, vllt geht das mit css
-         */
-
-        VBox rightFighter = new VBox(10, name02, verein02, rightIppon, rightWazari, rightYuko, rightShido);
-
-        // LEFT HBOX END
-
-        // LEFT SIDE END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-         return new HBox(new Label("Nicht fertig"));
-
-    };
-
-    private void resetFight(){
-        this.name01 = null;
-        this.verein01 = null;
-        this.ippon01 = 0;
-        this.wazari01 = 0;
-        this.yuko01 = 0;
-        this.shido01 = 0;
-
-        this.name02 = null;
-        this.verein02 = null;
-        this.ippon02 = 0;
-        this.wazari02 = 0;
-        this.yuko02 = 0;
-        this.shido02 = 0;
+        return root;
     }
+
+
+
+
+
+
 
 
     // Datentyp der Methode anpassen
     public void updateViewStage(){
 
-        if(!isFight){
-            VBox aktuellerStand = new VBox(new Label("Aktueller PunkteStand"));
-            aktuellerStand.setSpacing(10);
-            for(Verein v : vereine){
-                Label tmp = new Label(v.getName() + ": " + v.getPoints());
-                aktuellerStand.getChildren().add(tmp);
-            }
-            return; // hier muss ich die VBox zurückgeben oder es in was anderes umwandel, wenn ich was andere brauche
-        }
-
-
-        VBox leftData = new VBox( name01, verein01);
-        if(ippon01 > 0) leftData.getChildren().add(new Label("Ippon: " + ippon01));
-        if(wazari01 > 0) leftData.getChildren().add(new Label("Wazari: " + wazari01));
-        if(yuko01 > 0) leftData.getChildren().add(new Label("Yuko: " + yuko01));
-        if(shido01 > 0) leftData.getChildren().add(new Label("Shido: " + shido01));
-
-        VBox rightData = new VBox(name02, verein02);
-        if(ippon02 > 0) rightData.getChildren().add(new Label("Ippon: " + ippon02));
-        if(wazari02 > 0) rightData.getChildren().add(new Label("Wazari: " + wazari02));
-        if(yuko02 > 0) rightData.getChildren().add(new Label("Yuko: " + yuko02));
-        if(shido02 > 0) rightData.getChildren().add(new Label("Shido: " + shido02));
 
     }
+
+
+
+
+
 
 }
 
