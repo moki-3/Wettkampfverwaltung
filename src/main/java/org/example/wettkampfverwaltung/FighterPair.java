@@ -20,10 +20,10 @@ public class FighterPair {
     private boolean done = false; // boolean, um dann styleklassen gut zuzuteilen. Wichtig immer index der liste der fighterPairs speichern und über den index drauf zugreifen
 
     private int ippon01 = 0;
-    private int wazari01 = 0;
+    private int waza_ari01 = 0;
     private int yuko01 = 0;
     private int shido01 = 0;
-    private boolean hansokumake01 = false;
+    private boolean hansoku_make01 = false;
 
     public void incIppon01() {
         if(ippon01 + 1 == 1) ippon01++;
@@ -31,27 +31,27 @@ public class FighterPair {
     public void decIppon01() {
         if(ippon01 - 1 == 0) ippon01--;
     }
-    public void incWazari01(){
-        if(wazari01 + 1 <= 2) wazari01++;
+    public void incWaza_ari01(){
+        if(waza_ari01 + 1 <= 2) waza_ari01++;
     }
-    public void decWazari01(){
-        if(wazari01 - 1 >= 0) wazari01--;
+    public void decWaza_ari01(){
+        if(waza_ari01 - 1 >= 0) waza_ari01--;
     }
     public void incYuko01(){
-        wazari01++;
+        yuko01++;
     }
     public void decYuko01(){
-        if(wazari01 - 1 >= 0){
-            wazari01--;
+        if(waza_ari01 - 1 >= 0){
+            waza_ari01--;
         }
     }
     public void incShido01(){
         shido01++;
         if(shido01 >= 3){
             shido01 = 3;
-            hansokumake01 = true;
+            hansoku_make01 = true;
         }else{
-            hansokumake01 = false;
+            hansoku_make01 = false;
         }
     }
     public void decShido01(){
@@ -62,10 +62,10 @@ public class FighterPair {
 
 
     private int ippon02 = 0;
-    private int wazari02 = 0;
+    private int waza_ari02 = 0;
     private int yuko02 = 0;
     private int shido02 = 0;
-    private boolean hansokumake02 = false;
+    private boolean hansoku_make02 = false;
 
     public void incIppon02() {
         if(ippon02 + 1 == 1) ippon02++;
@@ -73,27 +73,27 @@ public class FighterPair {
     public void decIppon02() {
         if(ippon02 - 1 == 0) ippon02--;
     }
-    public void incWazari02(){
-        if(wazari02 + 1 <= 2) wazari02++;
+    public void incWaza_ari02(){
+        if(waza_ari02 + 1 <= 2) waza_ari02++;
     }
-    public void decWazari02(){
-        if(wazari02 - 1 >= 0) wazari02--;
+    public void decWaza_ari02(){
+        if(waza_ari02 - 1 >= 0) waza_ari02--;
     }
     public void incYuko02(){
-        wazari02++;
+        yuko02++;
     }
     public void decYuko02(){
-        if(wazari02 - 1 >= 0){
-            wazari02--;
+        if(yuko02 - 1 >= 0){
+            yuko02--;
         }
     }
     public void incShido02(){
         shido02++;
         if(shido02 >= 3){
             shido02 = 3;
-            hansokumake02 = true;
+            hansoku_make02 = true;
         }else{
-            hansokumake02 = false;
+            hansoku_make02 = false;
         }
     }
     public void decShido02(){
@@ -183,8 +183,8 @@ public class FighterPair {
         return ippon01;
     }
 
-    public int getWazari01() {
-        return wazari01;
+    public int getWaza_ari01() {
+        return waza_ari01;
     }
 
     public int getYuko01() {
@@ -199,8 +199,8 @@ public class FighterPair {
         return ippon02;
     }
 
-    public int getWazari02() {
-        return wazari02;
+    public int getWaza_ari02() {
+        return waza_ari02;
     }
 
     public int getYuko02() {
@@ -211,12 +211,12 @@ public class FighterPair {
         return shido02;
     }
 
-    public boolean isHansokumake01() {
-        return hansokumake01;
+    public boolean isHansoku_make01() {
+        return hansoku_make01;
     }
 
-    public boolean isHansokumake02() {
-        return hansokumake02;
+    public boolean isHansoku_make02() {
+        return hansoku_make02;
     }
 }
 

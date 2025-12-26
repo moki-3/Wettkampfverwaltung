@@ -1,12 +1,9 @@
 package org.example.wettkampfverwaltung;
 
-import com.fasterxml.jackson.databind.node.ValueNode;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,7 +11,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.lang.reflect.GenericDeclaration;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -234,8 +230,8 @@ public class StartClass extends Application {
 
      */
 
-    boolean auseikomi01 = false;
-    boolean auseikomi02 = false;
+    boolean isFesthalter01 = false;
+    boolean isFesthalter02 = false;
 
 
 
@@ -249,6 +245,18 @@ public class StartClass extends Application {
         endFight.setOnAction(actionEvent -> {
             //Kampf beenden
         });
+
+
+        Button start_stop = new Button(isFight ? "Matte" : "Hajime");
+        start_stop.setOnAction(actionEvent -> {
+            if(isFight){
+                isFight = false;
+            }else{
+                isFight = true;
+            }
+            System.out.println("isFight changed to " + isFight);
+        });
+
 
         HBox topBox = new HBox(endFight);
 
@@ -266,7 +274,7 @@ public class StartClass extends Application {
         String points01 = "0";
         if(f.getIppon01() > 0) points01 = "100";
         else {
-            int tmp = 50 * f.getWazari01() + f.getYuko01();
+            int tmp = 50 * f.getWaza_ari01() + f.getYuko01();
             points01 = tmp + "";
         }
 
@@ -279,37 +287,37 @@ public class StartClass extends Application {
         });
         // strg + arrow up + 1
 
-        Button editWazari01 = new Button("Wazari [strg + arrow Up + 2] : " + f.getWazari01());
-        editWazari01.setOnAction(actionEvent -> {
-            //update wazari01 like ippon
-            System.out.println("editWazari01 clicked");
+        Button editWaza_ari01 = new Button("Waza-ari [strg + arrow Up + 2] : " + f.getWaza_ari01());
+        editWaza_ari01.setOnAction(actionEvent -> {
+            //update Waza_ari01 like ippon
+            System.out.println("editWaza_ari01 clicked");
         });
         // strg + arrow up + 2
 
         Button editYuko01 = new Button("Yuko [strg + arrow uup + 3] : " + f.getYuko01());
         editYuko01.setOnAction(actionEvent -> {
-            //update yuko01 like wazari
+            //update yuko01 like Waza_ari
             System.out.println("editYuko01 clicked");
         });
         // strg + arrow up + 3
 
         Button editShido01 = new Button("Shido [strg + arrow up + 4] : " + f.getShido01());
         editShido01.setOnAction(actionEvent -> {
-            //update shido like wazari and maybe make the screen red to show that somebody is disqualified
+            //update shido like Waza_ari and maybe make the screen red to show that somebody is disqualified
             System.out.println("editShido01 clicked");
         });
         // strg + arrow up + 4
 
-        VBox controls01 = new VBox(10, editIppon01, editWazari01, editYuko01, editShido01);
+        VBox controls01 = new VBox(10, editIppon01, editWaza_ari01, editYuko01, editShido01);
 
-        Button auseikomib01 = new Button(auseikomi01 ? "Auseikomi" : "Toketa" + "\n[strg + arrow up + 5]");
-        auseikomib01.setOnAction(actionEvent -> {
-            // action und auch css klassen ändern mit if(auseikomib01.getName().equals...)
-            System.out.println("auseikomib01 clicked");
+        Button osae_komi01 = new Button(isFesthalter01 ? "Toketa" : "Osae-komi" + "\n[strg + arrow up + 5]");
+        osae_komi01.setOnAction(actionEvent -> {
+            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...)
+            System.out.println("osae_komi01 clicked");
         });
         //
 
-        upperFighter.getChildren().addAll(daten01, points01l, controls01, auseikomib01);
+        upperFighter.getChildren().addAll(daten01, points01l, controls01, osae_komi01);
 
         // UPPER FIGHTER END
         //################################################################################################
@@ -324,7 +332,7 @@ public class StartClass extends Application {
         String points02 = "0";
         if(f.getIppon02() > 0) points02 = "100";
         else {
-            int tmp = 50 * f.getWazari02() + f.getYuko02();
+            int tmp = 50 * f.getWaza_ari02() + f.getYuko02();
             points02 = tmp + "";
         }
 
@@ -337,37 +345,37 @@ public class StartClass extends Application {
         });
         // strg + arrow up + 1
 
-        Button editWazari02 = new Button("Wazari [strg + arrow Up + 2] : " + f.getWazari02());
-        editWazari02.setOnAction(actionEvent -> {
-            //update wazari02 like ippon
-            System.out.println("editWazari02 clicked");
+        Button editWaza_ari02 = new Button("Waza-ari [strg + arrow Up + 2] : " + f.getWaza_ari02());
+        editWaza_ari02.setOnAction(actionEvent -> {
+            //update Waza_ari02 like ippon
+            System.out.println("editWaza-ari02 clicked");
         });
         // strg + arrow up + 2
 
         Button editYuko02 = new Button("Yuko [strg + arrow uup + 3] : " + f.getYuko02());
         editYuko02.setOnAction(actionEvent -> {
-            //update yuko02 like wazari
+            //update yuko02 like Waza_ari
             System.out.println("editYuko02 clicked");
         });
         // strg + arrow up + 3
 
         Button editShido02 = new Button("Shido [strg + arrow up + 4] : " + f.getShido02());
         editShido02.setOnAction(actionEvent -> {
-            //update shido like wazari and maybe make the screen red to show that somebody is disqualified
+            //update shido like Waza_ari and maybe make the screen red to show that somebody is disqualified
             System.out.println("editShido02 clicked");
         });
         // strg + arrow up + 4
 
-        VBox controls02 = new VBox(10, editIppon02, editWazari02, editYuko02, editShido02);
+        VBox controls02 = new VBox(10, editIppon02, editWaza_ari02, editYuko02, editShido02);
 
-        Button auseikomib02 = new Button(auseikomi02 ? "Auseikomi" : "Toketa" + "\n[strg + arrow up + 5]");
-        auseikomib02.setOnAction(actionEvent -> {
-            // action und auch css klassen ändern mit if(auseikomib02.getName().equals...)
-            System.out.println("auseikomib02 clicked");
+        Button osae_komi02 = new Button(isFesthalter02 ? "Toketa" : "Oase-komi" + "\n[strg + arrow up + 5]");
+        osae_komi02.setOnAction(actionEvent -> {
+            // action und auch css klassen ändern mit if(osae_komi02.getName().equals...)
+            System.out.println("osae_komi02 clicked");
         });
         //
 
-        lowerFighter.getChildren().addAll(daten02, points02l, controls02, auseikomib02);
+        lowerFighter.getChildren().addAll(daten02, points02l, controls02, osae_komi02);
 
         // LOWER FITHER END
         //################################################################################################
