@@ -8,11 +8,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.prefs.Preferences;
 
 public class StartClass extends Application {
     Wettkampf wf;
@@ -26,10 +28,23 @@ public class StartClass extends Application {
     public void setVereine(ArrayList<Verein> vereine) {
         this.vereine = vereine;
     }
-    private int kampfCounter = 0;
+    private int kampfIndex = 0; //akluteller kampf
     private boolean isFight = false;
+    ManageView mv;
+
+    Preferences prefs = Preferences.userNodeForPackage(getClass());
 
 
+
+
+
+
+    /*
+        Diese Methode macht das erste Fenster, bei dem man die .csv File auswählt. Dann wird die
+        List aller Fighters erstellt und danach wird die play() methode aufgerufen.
+        Dazu wird Wettkampf.java benutzt.
+        Hier wird auch mv gesetzt, mit der Länge der allFighterPairs.size() methode.
+     */
     @Override
     public void start(Stage stage) throws Exception {
 
@@ -73,6 +88,8 @@ public class StartClass extends Application {
             wf = new Wettkampf(fighterPairs.get());
             allFighterPairs = wf.getFighterPairs();
             addVereine();
+             mv = new ManageView(allFighterPairs.size());
+            //System.out.println("allFighters.size() = " + mv.getFightsCount()); passt, es wird richtig übergeben
             play();
         });
 
@@ -91,9 +108,6 @@ public class StartClass extends Application {
 
 
     private Scene updateControlView(){
-
-
-
         //Button, mit dem man die viewStage auf fullscreen machen kann
         Button viewStageFullscreen = new Button("On");
 
@@ -139,6 +153,8 @@ public class StartClass extends Application {
 
     }
 
+
+
     /*
     Macht ein VBox, besthend aus hboxen. In diesen sind der Name und die
     Punkte der vereine
@@ -165,13 +181,46 @@ public class StartClass extends Application {
         if(viewStage == null){
             //wenn die stage noch nicht exestiert
             viewStage = new Stage();
-            viewStage.setScene(new Scene(new Label("nichts zum anzeien")));
             viewStage.setFullScreenExitHint("");
             viewStage.show();
-        }else if(!viewStage.isShowing()){
-            viewStage.setScene(new Scene(new Label("nichts zum anzeien")));
-            viewStage.show();
         }
+        viewStage.show();
+        updateViewStage();
+    }
+
+
+    /*
+        Diese Methode updatet die ViewStage mit dem Aktuellen Kampf oder mit einem zwischenScreen, der den
+        aktuellen Punktestand anzeigt. Hier muss noch angepasst werden, welches FighterPair angezeigt werden
+        muss
+     */
+    public void updateViewStage(){
+        if (viewStage != null && viewStage.isShowing()) {
+            if(isFight){
+                viewStage.setScene(mv.updateView(allFighterPairs.get(0))); // ANPASSEN!!!!!
+            }else{
+                kampfIndex = 28;
+                if(kampfIndex + 1 < allFighterPairs.size()){
+                    viewStage.setScene(mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1)));
+                }else{
+                    viewStage.setScene(mv.timeFiller(vereine, null));
+                }
+
+
+            }
+        }
+    }
+
+    private void updateControlStage(){
+        controlStage.setScene(updateControlView());
+
+    }
+
+    private void updatePreferences(){
+        prefs.putDouble("window.width", controlStage.getWidth());
+        prefs.putDouble("window.height", controlStage.getHeight());
+        prefs.putDouble("window.x", controlStage.getX());
+        prefs.putDouble("window.y", controlStage.getY());
     }
 
     public void play(){
@@ -182,16 +231,23 @@ public class StartClass extends Application {
                     }
                 });
 
-        controlStage.setScene(updateControlView());
+        updateControlStage();
+        controlStage.setWidth(800);
+        controlStage.setHeight(450);
+        controlStage.setX(0);
+        controlStage.setY(0);
+        updatePreferences();
+        updateControlStage();
 
 
 
     }
 
+
+
     /*
-        Erklärung
-            Alle fighterPairs werden durchgelaufen, und jeder neue Name wird in
-            die Vereine ArrayList gespeichert.
+        Alle fighterPairs werden durchgelaufen, und jeder neue Name wird in
+        die Vereine ArrayList gespeichert.
      */
     private void addVereine(){
 
@@ -234,9 +290,10 @@ public class StartClass extends Application {
     boolean isFesthalter02 = false;
 
 
-
     public VBox updateFightControlView(FighterPair f){
         VBox root = new VBox();
+
+        System.out.println("Ippon01: " + f.getIppon01());
 
         //################################################################################################
         // TOP HBOX START
@@ -282,6 +339,55 @@ public class StartClass extends Application {
 
         Button editIppon01 = new Button("Ippon [strg + arrow Up + 1] : " + f.getIppon01());
         editIppon01.setOnAction(actionEvent -> {
+            Stage warningStage = new Stage();
+            warningStage.initOwner(controlStage);
+            warningStage.initModality(Modality.WINDOW_MODAL);
+            warningStage.setTitle("Ippon von " + f.getName01() + " ändern");
+            Label info = new Label("");
+            Button inc = new Button("+");
+            Button dec = new Button("-");
+            inc.setOnAction(actionEvent1 -> {
+                f.incIppon01();
+                info.setText(f.getName01() + " hat einen Ippon. " + f.getName01() + "Hat jetzt theoretisch gewonnen.");
+            });
+            dec.setOnAction(actionEvent1 -> {
+                f.decIppon01();
+                info.setText(f.getName01() + " hat jetzt einen Ippon weniger.");
+            });
+
+            HBox buttons = new HBox(dec, inc);
+
+            Button close = new Button("exit");
+
+            close.setOnAction(actionEvent1 -> {
+                warningStage.close();
+                //updateFightControlView(f);
+                updatePreferences();
+                System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
+                updateControlStage();
+                System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
+            });
+
+            VBox ippon01vBox = new VBox(buttons, info, close);
+
+
+            Scene ippon01scene = new Scene(ippon01vBox);
+
+            warningStage.setOnCloseRequest(windowEvent -> {
+                //updateFightControlView(f);
+                updatePreferences();
+                System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
+                updateControlStage();
+                System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
+            });
+
+            warningStage.setScene(ippon01scene);
+
+            warningStage.requestFocus();
+
+            warningStage.show();
+
+
             //update Ippon 01 mit smallStage deren owner controlStage ist
             System.out.println("editIppon01 clicked");
         });
@@ -396,11 +502,7 @@ public class StartClass extends Application {
 
 
 
-    // Datentyp der Methode anpassen
-    public void updateViewStage(){
 
-
-    }
 
 
 

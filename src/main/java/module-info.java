@@ -12,6 +12,7 @@ module org.example.wettkampfverwaltung {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires com.fasterxml.jackson.databind;
+    requires java.prefs;
 
     opens org.example.wettkampfverwaltung to javafx.fxml;
     exports org.example.wettkampfverwaltung;

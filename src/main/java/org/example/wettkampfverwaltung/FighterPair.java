@@ -27,6 +27,7 @@ public class FighterPair {
 
     public void incIppon01() {
         if(ippon01 + 1 == 1) ippon01++;
+        else System.out.println("Ippon01 konnte nicht erhöht werden");
     }
     public void decIppon01() {
         if(ippon01 - 1 == 0) ippon01--;
