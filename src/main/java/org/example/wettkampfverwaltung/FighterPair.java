@@ -42,8 +42,8 @@ public class FighterPair {
         yuko01++;
     }
     public void decYuko01(){
-        if(waza_ari01 - 1 >= 0){
-            waza_ari01--;
+        if(yuko01 - 1 >= 0){
+            yuko01--;
         }
     }
     public void incShido01(){
@@ -58,6 +58,9 @@ public class FighterPair {
     public void decShido01(){
         if(shido01 - 1 >= 0){
             shido01--;
+        }
+        if(shido01 < 3){
+            hansoku_make01 = false;
         }
     }
 
@@ -100,6 +103,9 @@ public class FighterPair {
     public void decShido02(){
         if(shido02 - 1 >= 0){
             shido02--;
+        }
+        if(shido02 < 3){
+            hansoku_make02 = false;
         }
     }
 
