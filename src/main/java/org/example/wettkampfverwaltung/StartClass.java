@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.prefs.Preferences;
+
 
 public class StartClass extends Application {
     Wettkampf wf;
@@ -32,7 +32,13 @@ public class StartClass extends Application {
     private boolean isFight = false;
     ManageView mv;
 
-    Preferences prefs = Preferences.userNodeForPackage(getClass());
+    private BorderPane controlRoot;
+    private Scene controlScene;
+
+    private BorderPane viewRoot;
+    private Scene viewScene;
+
+
 
 
 
@@ -95,11 +101,16 @@ public class StartClass extends Application {
 
         VBox vbox = new VBox(10, greeting, select, continueButton);
 
-        BorderPane bp = new BorderPane();
-        bp.setCenter(vbox);
+        controlRoot = new BorderPane();
+        controlRoot.setCenter(vbox);
 
-        Scene scne = new Scene(bp);
-        stage.setScene(scne);
+        controlScene = new Scene(controlRoot);
+        stage.setScene(controlScene);
+
+
+
+
+
 
         stage.setTitle("Neuer Wettkampf");
         controlStage = stage;
@@ -107,49 +118,37 @@ public class StartClass extends Application {
     }
 
 
-    private Scene updateControlView(){
-        //Button, mit dem man die viewStage auf fullscreen machen kann
-        Button viewStageFullscreen = new Button("On");
-
+    private void buildLeftControlPane(){
+        //Button für viewstage fullscreen
+        Button viewStageFullscreen = new Button("");
+        //css klassen und name
+        if(viewStage != null && viewStage.isShowing()){
+            if(viewStage.isFullScreen()){
+                viewStageFullscreen.setText("Off");
+            }else{
+                viewStageFullscreen.setText("On");
+            }
+        }else {
+            viewStageFullscreen.setText("ViewStage ist nicht sichtbar");
+        }
 
         viewStageFullscreen.setOnAction(actionEvent -> {
-            if(viewStage.isFullScreen()){
-                viewStage.setFullScreen(false);
-            }else{
-                viewStage.setFullScreen(true);
+            if(viewStage != null){
+                viewStage.setFullScreen(!viewStage.isFullScreen());
+                viewStageFullscreen.setText(viewStage.isFullScreen() ? "Off" : "On");
             }
+        });
+
+        Button showViewStage = new Button("ViewStage öffnen");
+        showViewStage.setOnAction(actionEvent -> {
+            openViewStage();
             viewStageFullscreen.setText(viewStage.isFullScreen() ? "Off" : "On");
         });
 
-        //Button, mit der man die zweite Stage anzeigen kann
-        Button showViewStage = new Button("viewStage öffnen");
-
-
-        showViewStage.setOnAction(actionEvent -> {
-            openViewStage();
-
-        });
-
-
-
-
-
-        //HBox, in der der button zum Fullscreen und ein text dafür ist
         HBox fullscreenbox = new HBox(20, new Label("viewStage Vollbildmodus"), viewStageFullscreen);
-
-
-        //VBox, die die fullscreenbox, den button zum öffnen der viewStage und die liste der kämpfe anzeigt
         VBox leftControls = new VBox(20, fullscreenbox, showViewStage, createVereinList(),wf.createList());
+        controlRoot.setLeft(leftControls);
 
-        BorderPane bp = new BorderPane();
-
-
-       bp.setLeft(leftControls);
-
-       //test
-       bp.setCenter(updateFightControlView(allFighterPairs.get(0)));
-
-        return new Scene(bp);
 
     }
 
@@ -180,9 +179,16 @@ public class StartClass extends Application {
     public void openViewStage(){
         if(viewStage == null){
             //wenn die stage noch nicht exestiert
+
             viewStage = new Stage();
+
+            viewRoot = new BorderPane();
+            viewRoot.setCenter(new Label("Noch nichts zu sehen"));
+
+            viewScene = new Scene(viewRoot);
+            viewStage.setScene(viewScene);
             viewStage.setFullScreenExitHint("");
-            viewStage.show();
+
         }
         viewStage.show();
         updateViewStage();
@@ -195,15 +201,19 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
+
+        // ALLES MIT VIEWROOT.SETCENTER MACHEN !!!
+
         if (viewStage != null && viewStage.isShowing()) {
+
             if(isFight){
-                viewStage.setScene(mv.updateView(allFighterPairs.get(0))); // ANPASSEN!!!!!
+                viewRoot.setCenter(mv.updateView(allFighterPairs.get(0))); // ANPASSEN!!!!!
             }else{
                 kampfIndex = 28;
                 if(kampfIndex + 1 < allFighterPairs.size()){
-                    viewStage.setScene(mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1)));
+                    viewRoot.setCenter(mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1)));
                 }else{
-                    viewStage.setScene(mv.timeFiller(vereine, null));
+                    viewRoot.setCenter(mv.timeFiller(vereine, null));
                 }
 
 
@@ -212,16 +222,11 @@ public class StartClass extends Application {
     }
 
     private void updateControlStage(){
-        controlStage.setScene(updateControlView());
-
+        buildLeftControlPane();
+        controlRoot.setCenter(updateFightControlView(allFighterPairs.get(0))); //ändern
     }
 
-    private void updatePreferences(){
-        prefs.putDouble("window.width", controlStage.getWidth());
-        prefs.putDouble("window.height", controlStage.getHeight());
-        prefs.putDouble("window.x", controlStage.getX());
-        prefs.putDouble("window.y", controlStage.getY());
-    }
+
 
     public void play(){
         controlStage.setOnCloseRequest(windowEvent -> {
@@ -232,11 +237,10 @@ public class StartClass extends Application {
                 });
 
         updateControlStage();
-        controlStage.setWidth(800);
-        controlStage.setHeight(450);
-        controlStage.setX(0);
-        controlStage.setY(0);
-        updatePreferences();
+        controlStage.setMinWidth(800);
+        controlStage.setMinHeight(450);
+
+
         updateControlStage();
 
 
@@ -312,10 +316,12 @@ public class StartClass extends Application {
                 isFight = true;
             }
             System.out.println("isFight changed to " + isFight);
+            start_stop.setText(isFight ? "Matte" : "Hajime");
+            updateControlStage();
         });
 
 
-        HBox topBox = new HBox(endFight);
+        HBox topBox = new HBox(endFight, start_stop);
 
         // TOP HBOX END
         //################################################################################################
@@ -362,7 +368,7 @@ public class StartClass extends Application {
             close.setOnAction(actionEvent1 -> {
                 warningStage.close();
                 //updateFightControlView(f);
-                updatePreferences();
+
                 System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
                 updateControlStage();
                 System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
@@ -375,7 +381,7 @@ public class StartClass extends Application {
 
             warningStage.setOnCloseRequest(windowEvent -> {
                 //updateFightControlView(f);
-                updatePreferences();
+
                 System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());
                 updateControlStage();
                 System.out.println(controlStage.getWidth() + "\n"+ controlStage.getHeight() + "\n"+ controlStage.getX() + "\n"+ controlStage.getY());

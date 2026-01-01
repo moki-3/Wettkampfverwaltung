@@ -3,6 +3,7 @@ package org.example.wettkampfverwaltung;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -33,7 +34,7 @@ public class ManageView {
         this.actFight = 0;
     }
 
-    public Scene updateView(FighterPair f) {
+    public VBox updateView(FighterPair f) {
         VBox root = new VBox(); //Die VBox, die dann alles drinnen hat und der content der szene wird.
         HBox fightCountBox = new HBox(new Label("Kampf " + actFight + "/" + fightsCount));
         fightCountBox.setAlignment(Pos.CENTER);
@@ -68,12 +69,11 @@ public class ManageView {
 
         root.getChildren().addAll(fightCountBox, topBox, lowerBox, time);
 
-        Scene rootScene = new Scene(root);
-        return rootScene;
+        return root;
 
     }
 
-    public Scene timeFiller(ArrayList<Verein> v, FighterPair next){
+    public BorderPane timeFiller(ArrayList<Verein> v, FighterPair next){
         BorderPane bp = new BorderPane();
         VBox root = new VBox();
         for (Verein tmp : v){
@@ -95,8 +95,8 @@ public class ManageView {
         }
 
         bp.setCenter(root);
-        Scene scn = new Scene(bp);
-        return scn;
+
+        return bp;
     }
 
 
