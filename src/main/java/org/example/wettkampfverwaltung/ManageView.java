@@ -11,8 +11,9 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 
 public class ManageView {
-    private int fightsCount;
-    private int actFight;
+    private int fightsCount; // die Anzahl aller Kämpfe
+    private int actFight; // der Aktuelle Kampf
+
 
     public int getFightsCount() {
         return fightsCount;

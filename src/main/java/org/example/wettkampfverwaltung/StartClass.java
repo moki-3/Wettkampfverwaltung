@@ -208,7 +208,7 @@ public class StartClass extends Application {
         // ALLES MIT VIEWROOT.SETCENTER MACHEN !!!
 
         if (viewStage != null && viewStage.isShowing()) {
-
+            isFight = true; // TEST
             if(isFight){
                 viewRoot.setCenter(mv.updateView(allFighterPairs.get(0))); // ANPASSEN!!!!!
             }else{
@@ -227,6 +227,7 @@ public class StartClass extends Application {
     private void updateControlStage(){
         buildLeftControlPane();
         controlRoot.setCenter(updateFightControlView(allFighterPairs.get(0))); //ändern
+        updateViewStage();
     }
 
 
