@@ -13,6 +13,7 @@ module org.example.wettkampfverwaltung {
     requires java.desktop;
     requires com.fasterxml.jackson.databind;
     requires java.prefs;
+    requires java.sql;
 
     opens org.example.wettkampfverwaltung to javafx.fxml;
     exports org.example.wettkampfverwaltung;

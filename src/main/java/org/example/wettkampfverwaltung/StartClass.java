@@ -1,6 +1,10 @@
 package org.example.wettkampfverwaltung;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +44,13 @@ public class StartClass extends Application {
     private BorderPane viewRoot;
     private Scene viewScene;
 
+    private BorderPane fightPane;
+
+    private static final int U10_TIME = 120;
+    private static final int U12_TIME = 120;
+    private Timeline fighTime;
+    private Label timerLabel = new Label("no time yet");
+    private int remainingtime = -1;
 
 
 
@@ -208,9 +220,9 @@ public class StartClass extends Application {
         // ALLES MIT VIEWROOT.SETCENTER MACHEN !!!
 
         if (viewStage != null && viewStage.isShowing()) {
-            isFight = true; // TEST
+
             if(isFight){
-                viewRoot.setCenter(mv.updateView(allFighterPairs.get(0))); // ANPASSEN!!!!!
+                viewRoot.setCenter(mv.updateView(allFighterPairs.get(kampfIndex)));
             }else{
                 kampfIndex = 28;
                 if(kampfIndex + 1 < allFighterPairs.size()){
@@ -226,13 +238,18 @@ public class StartClass extends Application {
 
     private void updateControlStage(){
         buildLeftControlPane();
-        controlRoot.setCenter(updateFightControlView(allFighterPairs.get(0))); //ändern
+        updateFightControlView(allFighterPairs.get(kampfIndex));
+        controlRoot.setCenter(fightPane);
         updateViewStage();
+
     }
 
 
 
     public void play(){
+        isFight = true; // TEST
+        kampfIndex = 0; // test
+
         controlStage.setOnCloseRequest(windowEvent -> {
                     if (viewStage != null && viewStage.isShowing()) {
                         viewStage.close();
@@ -240,7 +257,11 @@ public class StartClass extends Application {
                     }
                 });
 
+
         updateControlStage();
+
+        resetTimer();
+        fightPane.setBottom(timerLabel);
         controlStage.setMinWidth(800);
         controlStage.setMinHeight(450);
 
@@ -251,6 +272,50 @@ public class StartClass extends Application {
 
     }
 
+
+
+    private String formatTime(int totalTimeInSeconds){
+        int minutes = totalTimeInSeconds / 60;
+        int seconds = totalTimeInSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+
+    private void startTimer(){
+        if(fighTime == null){
+            fighTime = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
+                remainingtime--;
+                timerLabel.setText(formatTime(remainingtime));
+                if(remainingtime <= 0){
+                    fighTime.stop();
+                }
+            }));
+            fighTime.setCycleCount(Timeline.INDEFINITE);
+        }
+        fighTime.play();
+    }
+
+    private void stopTimer(){
+        if (fighTime != null){
+            fighTime.stop();
+        }
+    }
+
+    private void resetTimer(){
+        if(fighTime != null){
+            fighTime.stop();
+        }
+
+        if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")){
+            remainingtime = U10_TIME;
+        }
+        else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")){
+            remainingtime = U12_TIME;
+        }
+
+        timerLabel.setText(formatTime(remainingtime));
+
+    }
 
 
     /*
@@ -298,8 +363,10 @@ public class StartClass extends Application {
     boolean isFesthalter02 = false;
 
 
-    public VBox updateFightControlView(FighterPair f){
-        VBox root = new VBox();
+    public void updateFightControlView(FighterPair f){
+        if(fightPane == null){
+            fightPane = new BorderPane();
+        }
 
 
 
@@ -787,7 +854,7 @@ public class StartClass extends Application {
 
             warningStage.setOnCloseRequest(windowEvent -> {
                 close.fire();
-                root.requestFocus();
+                fightPane.requestFocus();
             });
 
             VBox warningRoot = new VBox(buttons, info, close);
@@ -833,11 +900,11 @@ public class StartClass extends Application {
 
         // TIMERS END
         //################################################################################################
-        root.getChildren().addAll(topBox, upperFighter, lowerFighter, timers);
+        VBox contents = new VBox(topBox, upperFighter, lowerFighter, timers);
+        fightPane.setCenter(contents);
+        fightPane.setFocusTraversable(true);
 
-        root.setFocusTraversable(true);
-
-        root.setOnKeyPressed(keyEvent -> {
+        fightPane.setOnKeyPressed(keyEvent -> {
             if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT1) editIppon01.fire();
             if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT2) editWaza_ari01.fire();
             if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT3) editYuko01.fire();
@@ -850,13 +917,34 @@ public class StartClass extends Application {
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT4) editShido02.fire();
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT5) osae_komi02.fire();
 
+            if(keyEvent.getCode() == KeyCode.SPACE){
+
+                System.out.println("\nSpace Clicked");
+                if(fighTime == null ){
+                    startTimer();
+                    System.out.println("\nTimer started and it is running\n");
+                }
+                else if(fighTime.getStatus() == Animation.Status.STOPPED){
+                    startTimer();
+                    System.out.println("\nTimer is running\n");
+                }
+                else {
+                    stopTimer();
+                    System.out.println("Timer Stopped");
+                }
+            }
+
+
+
         });
 
-        root.setOnMouseClicked(event -> {
-            root.requestFocus();
+        fightPane.setOnMouseClicked(event -> {
+            fightPane.requestFocus();
         });
 
-        return root;
+
+
+
     }
 
 

@@ -1,5 +1,7 @@
 package org.example.wettkampfverwaltung;
 
+import javafx.animation.KeyFrame;
+import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -7,13 +9,26 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 public class ManageView {
     private int fightsCount; // die Anzahl aller Kämpfe
     private int actFight; // der Aktuelle Kampf
 
+    private static final int U10_time = 120;
+    private static final int U12_time = 120;
+    private Timeline timeline;
+    private Label timeLabel = new Label("");
+    private int remainingTime = -1;
+    private String currentAltersklasse; //U10 U12
+
+    public void setCurrentAltersklasse(String currentAltersklasse) {
+        this.currentAltersklasse = currentAltersklasse;
+    }
 
     public int getFightsCount() {
         return fightsCount;
@@ -28,6 +43,7 @@ public class ManageView {
     }
 
     public void incActFight(){ this.actFight++; }
+
 
 
     public ManageView(int fightsCount) {
@@ -100,16 +116,41 @@ public class ManageView {
         return bp;
     }
 
-
-    public void pauseTimer() {
-        ;
+    private String formatTime(int totalTimeInSeconds){
+        int minutes = totalTimeInSeconds / 60;
+        int seconds = totalTimeInSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
-    public void contTimer(){
-        ;
+    public void startTimer(){
+        if(timeline == null){
+            timeline = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
+                remainingTime--;
+                timeLabel.setText(formatTime(remainingTime));
+                if(remainingTime <= 0){
+                    timeline.stop();
+                }
+            }));
+            timeline.setCycleCount(Timeline.INDEFINITE);
+        }
+        timeline.play();
+    }
+
+    public void stopTimer(){
+        if(timeline != null){
+            timeline.stop();
+        }
     }
 
     public void resetTimer(){
-        ;
+        if(timeline != null){
+            timeline.stop();
+        }
+        if(currentAltersklasse.equals("U10")) remainingTime = U10_time;
+        else if(currentAltersklasse.equals("U12")) remainingTime = U12_time;
+
+        timeLabel.setText(formatTime(remainingTime));
+
     }
+
 }
