@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StartClass extends Application {
     Wettkampf wf;
     Stage controlStage;
-    Stage viewStage;
     ArrayList<Verein> vereine = new ArrayList<>();
     ArrayList<FighterPair> allFighterPairs = new ArrayList<>();
     public ArrayList<Verein> getVereine() {
@@ -41,8 +40,7 @@ public class StartClass extends Application {
     private BorderPane controlRoot;
     private Scene controlScene;
 
-    private BorderPane viewRoot;
-    private Scene viewScene;
+
 
     private BorderPane fightPane;
 
@@ -133,22 +131,16 @@ public class StartClass extends Application {
 
     private void buildLeftControlPane(){
         //Button für viewstage fullscreen
-        Button viewStageFullscreen = new Button("");
+        Button viewStageFullscreen = new Button(mv.isViewStageFullscreen() ? "On" : "Off");
         //css klassen und name
-        if(viewStage != null && viewStage.isShowing()){
-            if(viewStage.isFullScreen()){
-                viewStageFullscreen.setText("Off");
-            }else{
-                viewStageFullscreen.setText("On");
-            }
-        }else {
-            viewStageFullscreen.setText("ViewStage ist nicht sichtbar");
-        }
+
 
         viewStageFullscreen.setOnAction(actionEvent -> {
-            if(viewStage != null){
-                viewStage.setFullScreen(!viewStage.isFullScreen());
-                viewStageFullscreen.setText(viewStage.isFullScreen() ? "Off" : "On");
+            int fullScreenViewStage = mv.toggleViewStageFullscreen();
+            if(fullScreenViewStage == 1){
+                viewStageFullscreen.setText(mv.isViewStageFullscreen() ? "On" : "Off");
+            }else{
+                viewStageFullscreen.setText("ViewStage ist nicht sichtbar");
             }
         });
         viewStageFullscreen.setFocusTraversable(false);
@@ -157,13 +149,12 @@ public class StartClass extends Application {
         showViewStage.setFocusTraversable(false);
         showViewStage.setOnAction(actionEvent -> {
             openViewStage();
-            viewStageFullscreen.setText(viewStage.isFullScreen() ? "Off" : "On");
+            viewStageFullscreen.setText(mv.isViewStageFullscreen() ? "On" : "Off");
         });
 
         HBox fullscreenbox = new HBox(20, new Label("viewStage Vollbildmodus"), viewStageFullscreen);
         VBox leftControls = new VBox(20, fullscreenbox, showViewStage, createVereinList(),wf.createList());
         controlRoot.setLeft(leftControls);
-
 
     }
 
@@ -192,21 +183,8 @@ public class StartClass extends Application {
     öffnet die viewStage wenn sie geschlossen ist oder noch gar nicht exestiert
      */
     public void openViewStage(){
-        if(viewStage == null){
-            //wenn die stage noch nicht exestiert
-
-            viewStage = new Stage();
-
-            viewRoot = new BorderPane();
-            viewRoot.setCenter(new Label("Noch nichts zu sehen"));
-
-            viewScene = new Scene(viewRoot);
-            viewStage.setScene(viewScene);
-            viewStage.setFullScreenExitHint("");
-
-        }
-        viewStage.show();
-        updateViewStage();
+       mv.openViewStage();
+       updateViewStage();
     }
 
 
@@ -216,23 +194,10 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
-
-        // ALLES MIT VIEWROOT.SETCENTER MACHEN !!!
-
-        if (viewStage != null && viewStage.isShowing()) {
-
-            if(isFight){
-                viewRoot.setCenter(mv.updateView(allFighterPairs.get(kampfIndex)));
-            }else{
-                kampfIndex = 28;
-                if(kampfIndex + 1 < allFighterPairs.size()){
-                    viewRoot.setCenter(mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1)));
-                }else{
-                    viewRoot.setCenter(mv.timeFiller(vereine, null));
-                }
-
-
-            }
+        if(kampfIndex + 1 < allFighterPairs.size()){
+            mv.updateViewStage(allFighterPairs.get(kampfIndex), kampfIndex, vereine, allFighterPairs.get(kampfIndex+1));
+        }else{
+            mv.updateViewStage(allFighterPairs.get(kampfIndex), kampfIndex, vereine, null);
         }
     }
 
@@ -248,13 +213,11 @@ public class StartClass extends Application {
 
     public void play(){
         isFight = true; // TEST
+        mv.setFight(isFight);
         kampfIndex = 0; // test
 
         controlStage.setOnCloseRequest(windowEvent -> {
-                    if (viewStage != null && viewStage.isShowing()) {
-                        viewStage.close();
-                        System.exit(0);
-                    }
+                    mv.closeStage();
                 });
 
 
@@ -386,6 +349,7 @@ public class StartClass extends Application {
             }else{
                 isFight = true;
             }
+            mv.setFight(isFight);
             System.out.println("isFight changed to " + isFight);
             start_stop.setText(isFight ? "Matte" : "Hajime");
             updateControlStage();

@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.animation.Timeline;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.sql.Time;
@@ -25,6 +26,7 @@ public class ManageView {
     private Label timeLabel = new Label("");
     private int remainingTime = -1;
     private String currentAltersklasse; //U10 U12
+
 
     public void setCurrentAltersklasse(String currentAltersklasse) {
         this.currentAltersklasse = currentAltersklasse;
@@ -43,6 +45,20 @@ public class ManageView {
     }
 
     public void incActFight(){ this.actFight++; }
+
+    private boolean isFight;
+
+    public boolean isFight() {
+        return isFight;
+    }
+
+    public void setFight(boolean fight) {
+        isFight = fight;
+    }
+
+    private BorderPane viewRoot;
+    private Scene viewScene;
+    Stage viewStage;
 
 
 
@@ -151,6 +167,53 @@ public class ManageView {
 
         timeLabel.setText(formatTime(remainingTime));
 
+    }
+
+    public int toggleViewStageFullscreen(){
+        if(viewStage != null && viewStage.isShowing()){
+            viewStage.setFullScreen(!viewStage.isFullScreen());
+            return 1;
+        }
+        return -1;
+    }
+
+    public void openViewStage(){
+        if(viewStage == null){
+            viewStage = new Stage();
+            viewRoot = new BorderPane();
+            viewRoot.setCenter(new Label("Noch nichts zu sehen"));
+            viewScene = new Scene(viewRoot);
+            viewStage.setScene(viewScene);
+            viewStage.setFullScreenExitHint("");
+        }
+        viewStage.show();
+
+    }
+
+    public void updateViewStage(FighterPair f, int index, ArrayList<Verein> vereine, FighterPair next){
+        if(viewStage != null && viewStage.isShowing()){
+            if(isFight){
+                viewRoot.setCenter(updateView(f));
+            }else{
+                if(next != null){
+                    viewRoot.setCenter(timeFiller(vereine, next));
+                }else{
+                    viewRoot.setCenter(timeFiller(vereine, null));
+                }
+            }
+        }
+    }
+
+    public void closeStage(){
+        if(viewStage != null && viewStage.isShowing()){
+            viewStage.close();
+            System.exit(0);
+        }
+    }
+
+    public boolean isViewStageFullscreen(){
+        if(viewStage != null && viewStage.isShowing()) return viewStage.isFullScreen();
+        return false;
     }
 
 }
