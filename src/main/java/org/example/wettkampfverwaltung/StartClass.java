@@ -38,8 +38,6 @@ public class StartClass extends Application {
     ManageView mv;
 
     private BorderPane controlRoot;
-    private Scene controlScene;
-
 
 
     private BorderPane fightPane;
@@ -115,7 +113,7 @@ public class StartClass extends Application {
         controlRoot = new BorderPane();
         controlRoot.setCenter(vbox);
 
-        controlScene = new Scene(controlRoot);
+        Scene controlScene = new Scene(controlRoot);
         stage.setScene(controlScene);
 
 
@@ -182,8 +180,9 @@ public class StartClass extends Application {
     /*
     öffnet die viewStage wenn sie geschlossen ist oder noch gar nicht exestiert
      */
-    public void openViewStage(){
+    public void openViewStage() {
        mv.openViewStage();
+
        updateViewStage();
     }
 
@@ -194,12 +193,42 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
-        if(kampfIndex + 1 < allFighterPairs.size()){
-            mv.updateViewStage(allFighterPairs.get(kampfIndex), kampfIndex, vereine, allFighterPairs.get(kampfIndex+1));
-        }else{
-            mv.updateViewStage(allFighterPairs.get(kampfIndex), kampfIndex, vereine, null);
+        if(isFight){
+            //mv.updateFight(allFighterPairs.get(kampfIndex));
+            if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U20")) mv.updateTimeLabel(formatTime(U10_TIME));
+
+            mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
+        }else {
+            if(kampfIndex + 1 < allFighterPairs.size()){
+                mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1));
+            }else{
+                mv.timeFiller(vereine, null);
+            }
         }
+
+
     }
+
+
+    /*
+        Diese Methode wird verwendet, um den Nächsten kampf zu setzten und
+        sie managed auch alles in der ViewStage
+     */
+    public void continueToNextFight(int index){
+        //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
+        kampfIndex = index;
+
+
+        //neuen Kampf in mv anzeigen
+        mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
+
+        //RemainingTime in mv setzten
+        if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")) mv.setFightTime(U10_TIME);
+        else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.setFightTime(U12_TIME);
+
+        updateFightControlView(allFighterPairs.get(kampfIndex));
+    }
+
 
     private void updateControlStage(){
         buildLeftControlPane();
@@ -213,7 +242,6 @@ public class StartClass extends Application {
 
     public void play(){
         isFight = true; // TEST
-        mv.setFight(isFight);
         kampfIndex = 0; // test
 
         controlStage.setOnCloseRequest(windowEvent -> {
@@ -249,6 +277,7 @@ public class StartClass extends Application {
             fighTime = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
                 remainingtime--;
                 timerLabel.setText(formatTime(remainingtime));
+                mv.updateTimeLabel(formatTime(remainingtime));
                 if(remainingtime <= 0){
                     fighTime.stop();
                 }
@@ -256,11 +285,13 @@ public class StartClass extends Application {
             fighTime.setCycleCount(Timeline.INDEFINITE);
         }
         fighTime.play();
+
     }
 
     private void stopTimer(){
         if (fighTime != null){
             fighTime.stop();
+
         }
     }
 
@@ -349,7 +380,6 @@ public class StartClass extends Application {
             }else{
                 isFight = true;
             }
-            mv.setFight(isFight);
             System.out.println("isFight changed to " + isFight);
             start_stop.setText(isFight ? "Matte" : "Hajime");
             updateControlStage();
