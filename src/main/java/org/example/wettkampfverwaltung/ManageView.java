@@ -95,8 +95,8 @@ public class ManageView {
 
         Label data01 = new Label(f.getName01() + "\n" + f.getVerein01());
         int points01 = 0;
-        points01 = f.getWaza_ari01() * 50 + f.getYuko01();
-        if(f.getIppon01() >= 1) points01 = 100;
+        points01 = f.getWaza_ari01() * 10 + f.getYuko01();
+        if(f.getIppon01() >= 1 || f.getWaza_ari01() == 2) points01 = 100;
         Label displayPoints01 = new Label(points01 + "");
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido01 = new Label(f.getShido01() > 0 ? "Shido: " + f.getShido01() : "");
@@ -107,8 +107,8 @@ public class ManageView {
 
         Label data02 = new Label(f.getName02() + "\n" + f.getVerein02());
         int points02 = 0;
-        points02 = f.getWaza_ari02() * 50 + f.getYuko02();
-        if(f.getIppon02() >= 1) points02 = 100;
+        points02 = f.getWaza_ari02() * 10 + f.getYuko02();
+        if(f.getIppon02() >= 1 || f.getWaza_ari02() == 2) points02 = 100;
         Label displayPoints02 = new Label(points02 + "");
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido02 = new Label(f.getShido02() > 0 ? "Shido: " + f.getShido02() : "");

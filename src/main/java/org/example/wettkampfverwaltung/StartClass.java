@@ -400,9 +400,9 @@ public class StartClass extends Application {
         VBox daten01 = new VBox(10, name01, verein01);
 
         String points01 = "0";
-        if(f.getIppon01() > 0) points01 = "100";
+        if(f.getIppon01() > 0 || f.getWaza_ari01() == 2) points01 = "100";
         else {
-            int tmp = 50 * f.getWaza_ari01() + f.getYuko01();
+            int tmp = 10 * f.getWaza_ari01() + f.getYuko01();
             points01 = tmp + "";
         }
 
@@ -652,11 +652,12 @@ public class StartClass extends Application {
         VBox daten02 = new VBox(10, name02, verein02);
 
         String points02 = "0";
-        if(f.getIppon02() > 0) points02 = "100";
+        if(f.getIppon02() > 0 || f.getWaza_ari02() == 2) points02 = "100";
         else {
-            int tmp = 50 * f.getWaza_ari02() + f.getYuko02();
+            int tmp = 10 * f.getWaza_ari02() + f.getYuko02();
             points02 = tmp + "";
         }
+
 
         Label points02l = new Label(points02);
 

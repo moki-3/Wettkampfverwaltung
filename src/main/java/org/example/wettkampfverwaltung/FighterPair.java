@@ -78,7 +78,7 @@ public class FighterPair {
         if(ippon02 - 1 == 0) ippon02--;
     }
     public void incWaza_ari02(){
-        if(waza_ari02 + 1 <= 2) waza_ari02++;
+        if(waza_ari02 + 1 < 2) waza_ari02++;
     }
     public void decWaza_ari02(){
         if(waza_ari02 - 1 >= 0) waza_ari02--;
