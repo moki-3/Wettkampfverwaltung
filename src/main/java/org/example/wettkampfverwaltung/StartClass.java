@@ -367,21 +367,42 @@ public class StartClass extends Application {
         //################################################################################################
         // TOP HBOX START
 
-        Button endFight = new Button("Kampf beenden");
+
+        Button endFight = new Button("Kampf Beenden");
         endFight.setOnAction(actionEvent -> {
             //Kampf beenden
         });
 
 
-        Button start_stop = new Button(isFight ? "Matte" : "Hajime");
+
+        String text = "Kampf Starten";
+        if(fighTime != null) text = fighTime.getStatus() == Animation.Status.STOPPED ? "Hajime" : "Matte";
+        Button start_stop = new Button(text);
         start_stop.setOnAction(actionEvent -> {
+
+
+            //System.out.println("\nSpace Clicked");
+            if(fighTime == null ){
+                startTimer();
+                start_stop.setText("Matte");
+                //System.out.println("\nTimer started and it is running\n");
+            }
+            else if(fighTime.getStatus() == Animation.Status.STOPPED){
+                startTimer();
+                start_stop.setText("Matte");
+                //System.out.println("\nTimer is running\n");
+            }
+            else {
+                stopTimer();
+                start_stop.setText("Hajime");
+                //System.out.println("Timer Stopped");
+            }
             if(isFight){
                 isFight = false;
             }else{
                 isFight = true;
             }
-            System.out.println("isFight changed to " + isFight);
-            start_stop.setText(isFight ? "Matte" : "Hajime");
+            //start_stop.setText(isFight ? "Matte" : "Hajime");
             updateControlStage();
         });
 
@@ -914,19 +935,7 @@ public class StartClass extends Application {
 
             if(keyEvent.getCode() == KeyCode.SPACE){
 
-                System.out.println("\nSpace Clicked");
-                if(fighTime == null ){
-                    startTimer();
-                    System.out.println("\nTimer started and it is running\n");
-                }
-                else if(fighTime.getStatus() == Animation.Status.STOPPED){
-                    startTimer();
-                    System.out.println("\nTimer is running\n");
-                }
-                else {
-                    stopTimer();
-                    System.out.println("Timer Stopped");
-                }
+                start_stop.fire();
             }
 
 
