@@ -48,6 +48,17 @@ public class StartClass extends Application {
     private Label timerLabel = new Label("no time yet");
     private int remainingtime = -1;
 
+    private HBox bottomRoot;
+    private Label festhalertLabel01 = new Label("");
+    private Timeline festhalterzeit01;
+    private Label festhalertLabel02 = new Label("");
+    private Timeline festhalterzeit02;
+    private static final int OASEI_KOMI = 20;
+    private int remainingOaseKomi = -1;
+
+    private Button reset01, reset02, osae_komi01, osae_komi02;
+
+
 
 
 
@@ -62,6 +73,8 @@ public class StartClass extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
+        resetOaseiKomi01();
+        resetOaseiKomi01();
 
         Label greeting = new Label("Hallo! Bitte wählen sie eine Datei aus");
         Button select = new Button("Datei auswählen");
@@ -236,6 +249,7 @@ public class StartClass extends Application {
         controlRoot.setCenter(fightPane);
         updateViewStage();
 
+
     }
 
 
@@ -252,7 +266,8 @@ public class StartClass extends Application {
         updateControlStage();
 
         resetTimer();
-        fightPane.setBottom(timerLabel);
+        //fightPane.setBottom(timerLabel);
+        drawBottom();
         controlStage.setMinWidth(800);
         controlStage.setMinHeight(450);
 
@@ -403,6 +418,14 @@ public class StartClass extends Application {
                 isFight = true;
             }
             //start_stop.setText(isFight ? "Matte" : "Hajime");
+
+            stopOaseiKomi01();
+            stopOaseiKomi02();
+            resetOaseiKomi01();
+            resetOaseiKomi02();
+
+
+
             updateControlStage();
         });
 
@@ -652,15 +675,33 @@ public class StartClass extends Application {
 
         VBox controls01 = new VBox(10, editIppon01, editWaza_ari01, editYuko01, editShido01, hansoku_make01);
 
-        Button osae_komi01 = new Button(isFesthalter01 ? "Toketa" : "Osae-komi" + "\n[strg + 5]");
+        osae_komi01 = new Button(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
+
         osae_komi01.setOnAction(actionEvent -> {
-            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...)
-            System.out.println("osae_komi01 clicked");
+            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
+            //System.out.println("osae_komi01 clicked");
+            if(festhalterzeit02 != null) reset02.fire();
+            if(isFesthalter01){
+                //wenn festhaler gerade ist, dann wird gestopt
+                stopOaseiKomi01();
+            }else{
+                if(festhalertLabel01.getText().isEmpty()) festhalertLabel01.setText(formatTime(20));
+                startOaseiKomi01();
+            }
+            isFesthalter01 = !isFesthalter01;
+            osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
+        });
+
+        reset01 = new Button("Reset Oasei-Komi");
+        reset01.setOnAction(actionEvent -> {
+            resetOaseiKomi01();
+            isFesthalter01 = false;
+            osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
         });
 
 
 
-        upperFighter.getChildren().addAll(daten01, points01l, controls01, osae_komi01);
+        upperFighter.getChildren().addAll(daten01, points01l, controls01, osae_komi01, reset01);
 
         // UPPER FIGHTER END
         //################################################################################################
@@ -678,7 +719,6 @@ public class StartClass extends Application {
             int tmp = 10 * f.getWaza_ari02() + f.getYuko02();
             points02 = tmp + "";
         }
-
 
         Label points02l = new Label(points02);
 
@@ -900,14 +940,30 @@ public class StartClass extends Application {
 
         VBox controls02 = new VBox(10, editIppon02, editWaza_ari02, editYuko02, editShido02, hansoku_make02);
 
-        Button osae_komi02 = new Button(isFesthalter02 ? "Toketa" : "Oase-komi" + "\n[alt + 5]");
+        osae_komi02 = new Button(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
         osae_komi02.setOnAction(actionEvent -> {
-            // action und auch css klassen ändern mit if(osae_komi02.getName().equals...)
-            System.out.println("osae_komi02 clicked");
+            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
+            //System.out.println("osae_komi02 clicked");
+            if(festhalterzeit01 != null) reset01.fire();
+            if(isFesthalter02){
+                //wenn festhaler gerade ist, dann wird gestopt
+                stopOaseiKomi02();
+            }else{
+                if(festhalertLabel02.getText().isEmpty()) festhalertLabel02.setText(formatTime(20));
+                startOaseiKomi02();
+            }
+            isFesthalter02 = !isFesthalter02;
+            osae_komi02.setText(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
         });
-        //
 
-        lowerFighter.getChildren().addAll(daten02, points02l, controls02, osae_komi02);
+        reset02 = new Button("Reset Oasei-Komi");
+        reset02.setOnAction(actionEvent -> {
+            resetOaseiKomi02();
+            isFesthalter02 = false;
+            osae_komi02.setText(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
+        });
+
+        lowerFighter.getChildren().addAll(daten02, points02l, controls02, osae_komi02, reset02);
 
         // LOWER FITHER END
         //################################################################################################
@@ -949,6 +1005,82 @@ public class StartClass extends Application {
 
 
 
+    }
+
+    private void resetOaseiKomi01(){
+        if(festhalterzeit01 != null) festhalterzeit01.stop();
+        festhalterzeit01 = null;
+        festhalertLabel01.setText("");
+        remainingOaseKomi = OASEI_KOMI;
+        isFesthalter01 = false;
+    }
+
+    private void resetOaseiKomi02(){
+        if(festhalterzeit02 != null) festhalterzeit02.stop();
+        festhalterzeit02 = null;
+        festhalertLabel02.setText("");
+        remainingOaseKomi = OASEI_KOMI;
+        isFesthalter02 = false;
+    }
+
+
+    private void startOaseiKomi01(){
+
+        if(festhalterzeit01 == null){
+            festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
+                remainingOaseKomi--;
+                festhalertLabel01.setText(formatTime(remainingOaseKomi));
+                //mv updaten
+                if(remainingOaseKomi <= 0){
+                    festhalterzeit01.stop();
+                }
+            }));
+            festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
+        }
+        festhalterzeit01.play();
+    }
+
+    private void startOaseiKomi02(){
+
+        if(festhalterzeit02 == null){
+            festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
+                remainingOaseKomi--;
+                festhalertLabel02.setText(formatTime(remainingOaseKomi));
+                //mv updaten
+                if(remainingOaseKomi <= 0){
+                    festhalterzeit02.stop();
+                }
+            }));
+            festhalterzeit02.setCycleCount(Timeline.INDEFINITE);
+        }
+        festhalterzeit02.play();
+    }
+
+    private void stopOaseiKomi01(){
+        if(festhalterzeit01 != null){
+            festhalterzeit01.stop();
+        }
+    }
+
+    private void stopOaseiKomi02(){
+        if(festhalterzeit02 != null){
+            festhalterzeit02.stop();
+        }
+    }
+
+
+    public void drawBottom(){
+
+        if(bottomRoot == null){
+            bottomRoot = new HBox();
+            bottomRoot.setSpacing(10);
+        }
+
+
+        //fightPane.setBottom(timerLabel);
+
+        bottomRoot.getChildren().addAll(festhalertLabel01 ,timerLabel, festhalertLabel02);
+        fightPane.setBottom(bottomRoot);
     }
 
 

@@ -455,3 +455,70 @@ public class ManageView {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TIMER
+
+
+private void stopTimer(){
+        if (fighTime != null){
+            fighTime.stop();
+
+        }
+    }
+
+
+private void resetTimer(){
+        if(fighTime != null){
+            fighTime.stop();
+        }
+
+        if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")){
+            remainingtime = U10_TIME;
+        }
+        else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")){
+            remainingtime = U12_TIME;
+        }
+
+        timerLabel.setText(formatTime(remainingtime));
+
+    }
+
+
+ private void startTimer(){
+        if(fighTime == null){
+            fighTime = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
+                remainingtime--;
+                timerLabel.setText(formatTime(remainingtime));
+                mv.updateTimeLabel(formatTime(remainingtime));
+                if(remainingtime <= 0){
+                    fighTime.stop();
+                }
+            }));
+            fighTime.setCycleCount(Timeline.INDEFINITE);
+        }
+        fighTime.play();
+
+    }
+
+
+
+    private VBox bottomRoot;
+        private Label festhalertLabel01 = new Label("");
+        private Timeline festhalterzeit01;
+        private Label festhalertLabel02 = new Label("");
+        private Timeline festhalterzeit02;
+        private static final int OASEI_KOMI = 20;
+        private int remainingOaseKomi = -1;
