@@ -307,6 +307,7 @@ public class StartClass extends Application {
         if (fighTime != null){
             fighTime.stop();
 
+
         }
     }
 
@@ -1025,7 +1026,10 @@ public class StartClass extends Application {
 
 
     private void startOaseiKomi01(){
-
+        if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
+            resetOaseiKomi01();
+            return;
+        }
         if(festhalterzeit01 == null){
             festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
                 remainingOaseKomi--;
@@ -1041,7 +1045,10 @@ public class StartClass extends Application {
     }
 
     private void startOaseiKomi02(){
-
+        if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
+            resetOaseiKomi02();
+            return;
+        }
         if(festhalterzeit02 == null){
             festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
                 remainingOaseKomi--;
