@@ -208,7 +208,7 @@ public class StartClass extends Application {
     public void updateViewStage(){
         if(isFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
-            if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U20")) mv.updateTimeLabel(formatTime(U10_TIME));
+            if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
 
             mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
         }else {
@@ -324,6 +324,7 @@ public class StartClass extends Application {
         }
 
         timerLabel.setText(formatTime(remainingtime));
+        mv.updateTimeLabel(formatTime(remainingtime)); // nochmal checken ob das stimmt
 
     }
 
@@ -685,8 +686,11 @@ public class StartClass extends Application {
             if(isFesthalter01){
                 //wenn festhaler gerade ist, dann wird gestopt
                 stopOaseiKomi01();
+                if(festhalertLabel01.getText().isEmpty()) {
+                    festhalertLabel01.setText(formatTime(0));
+                    mv.updateOaseiKomi01(festhalertLabel01.getText());
+                }
             }else{
-                if(festhalertLabel01.getText().isEmpty()) festhalertLabel01.setText(formatTime(20));
                 startOaseiKomi01();
             }
             isFesthalter01 = !isFesthalter01;
@@ -950,7 +954,10 @@ public class StartClass extends Application {
                 //wenn festhaler gerade ist, dann wird gestopt
                 stopOaseiKomi02();
             }else{
-                if(festhalertLabel02.getText().isEmpty()) festhalertLabel02.setText(formatTime(20));
+                if(festhalertLabel02.getText().isEmpty()) {
+                    festhalertLabel02.setText(formatTime(0));
+                    mv.updateOaseiKomi02(festhalertLabel02.getText());
+                }
                 startOaseiKomi02();
             }
             isFesthalter02 = !isFesthalter02;
@@ -1012,16 +1019,18 @@ public class StartClass extends Application {
         if(festhalterzeit01 != null) festhalterzeit01.stop();
         festhalterzeit01 = null;
         festhalertLabel01.setText("");
-        remainingOaseKomi = OASEI_KOMI;
+        remainingOaseKomi = 0;
         isFesthalter01 = false;
+        if(this.mv != null) mv.updateOaseiKomi01("");
     }
 
     private void resetOaseiKomi02(){
         if(festhalterzeit02 != null) festhalterzeit02.stop();
         festhalterzeit02 = null;
         festhalertLabel02.setText("");
-        remainingOaseKomi = OASEI_KOMI;
+        remainingOaseKomi = 0;
         isFesthalter02 = false;
+        if(this.mv != null) mv.updateOaseiKomi02("");
     }
 
 
@@ -1032,10 +1041,11 @@ public class StartClass extends Application {
         }
         if(festhalterzeit01 == null){
             festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
-                remainingOaseKomi--;
+                remainingOaseKomi++;
                 festhalertLabel01.setText(formatTime(remainingOaseKomi));
                 //mv updaten
-                if(remainingOaseKomi <= 0){
+                mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
+                if(remainingOaseKomi == OASEI_KOMI){
                     festhalterzeit01.stop();
                 }
             }));
@@ -1051,10 +1061,11 @@ public class StartClass extends Application {
         }
         if(festhalterzeit02 == null){
             festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
-                remainingOaseKomi--;
+                remainingOaseKomi++;
                 festhalertLabel02.setText(formatTime(remainingOaseKomi));
                 //mv updaten
-                if(remainingOaseKomi <= 0){
+                mv.updateOaseiKomi02(formatTime(remainingOaseKomi));
+                if(remainingOaseKomi == OASEI_KOMI){
                     festhalterzeit02.stop();
                 }
             }));

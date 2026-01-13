@@ -28,6 +28,8 @@ public class ManageView {
 
 
     private Label timeLabel;
+    private Label oaseiKomi01;
+    private Label oaseiKomi02;
     private int fightTime;
 
     public ManageView(int fights){
@@ -78,7 +80,9 @@ public class ManageView {
 
 
         if(timeLabel == null) timeLabel = new Label();
-        HBox bottombox = new HBox(timeLabel);
+        if(oaseiKomi01 == null) oaseiKomi01 = new Label();
+        if(oaseiKomi02 == null) oaseiKomi02 = new Label();
+        HBox bottombox = new HBox(10, oaseiKomi01, timeLabel, oaseiKomi02);
         bottombox.setAlignment(Pos.CENTER);
         viewRoot.setBottom(bottombox);
     }
@@ -165,6 +169,16 @@ public class ManageView {
     public void updateTimeLabel(String time){
         if(timeLabel == null) timeLabel = new Label(time);
         else timeLabel.setText(time);
+    }
+
+    public void updateOaseiKomi01(String time){
+        if(oaseiKomi01 == null) oaseiKomi01 = new Label(time);
+        else oaseiKomi01.setText(time);
+    }
+
+    public void updateOaseiKomi02(String time){
+        if(oaseiKomi02 == null) oaseiKomi02 = new Label(time);
+        else oaseiKomi02.setText(time);
     }
 
 
