@@ -522,3 +522,47 @@ private void resetTimer(){
         private Timeline festhalterzeit02;
         private static final int OASEI_KOMI = 20;
         private int remainingOaseKomi = -1;
+
+
+
+#####################################################################################################
+
+
+
+
+    // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
+    osae_komi02.setOnAction(actionEvent -> {
+        //System.out.println("osae_komi02 clicked");
+        if(festhalterzeit01 != null) reset01.fire();
+        if(isFesthalter02){
+            //wenn festhaler gerade ist, dann wird gestopt
+            stopOaseiKomi02();
+        }else{
+            if(festhalertLabel02.getText().isEmpty()) {
+                festhalertLabel02.setText(formatTime(0));
+                mv.updateOaseiKomi02(festhalertLabel02.getText());
+            }
+            startOaseiKomi02();
+        }
+        isFesthalter02 = !isFesthalter02;
+        osae_komi02.setText(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
+    });
+
+
+osae_komi01.setOnAction(actionEvent -> {
+            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
+            //System.out.println("osae_komi01 clicked");
+            if(festhalterzeit02 != null) reset02.fire();
+            if(isFesthalter01){
+                //wenn festhaler gerade ist, dann wird gestopt
+                stopOaseiKomi01();
+                if(festhalertLabel01.getText().isEmpty()) {
+                    festhalertLabel01.setText(formatTime(0));
+                    mv.updateOaseiKomi01(festhalertLabel01.getText());
+                }
+            }else{
+                startOaseiKomi01();
+            }
+            isFesthalter01 = !isFesthalter01;
+            osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
+        });

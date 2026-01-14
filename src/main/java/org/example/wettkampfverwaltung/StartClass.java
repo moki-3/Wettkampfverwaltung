@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -54,7 +55,10 @@ public class StartClass extends Application {
     private Label festhalertLabel02 = new Label("");
     private Timeline festhalterzeit02;
     private static final int OASEI_KOMI = 20;
-    private int remainingOaseKomi = -1;
+    private int remainingOaseKomi = 0;
+
+    private ProgressBar progressBar01;
+    private ProgressBar progressBar02;
 
     private Button reset01, reset02, osae_komi01, osae_komi02;
 
@@ -257,11 +261,14 @@ public class StartClass extends Application {
     public void play(){
         isFight = true; // TEST
         kampfIndex = 0; // test
+        //Kommentare, weil wenn ich die ProgressBars von anfang an habe, sehe ich sie auch immer, und das will ich nicth
+        //progressBar01 = new ProgressBar(0);
+        //progressBar02 = new ProgressBar(0);
 
         controlStage.setOnCloseRequest(windowEvent -> {
                     mv.closeStage();
                 });
-
+        if(this.fightPane == null) this.fightPane = new BorderPane();
 
         updateControlStage();
 
@@ -686,11 +693,12 @@ public class StartClass extends Application {
             if(isFesthalter01){
                 //wenn festhaler gerade ist, dann wird gestopt
                 stopOaseiKomi01();
+            }else{
                 if(festhalertLabel01.getText().isEmpty()) {
                     festhalertLabel01.setText(formatTime(0));
                     mv.updateOaseiKomi01(festhalertLabel01.getText());
                 }
-            }else{
+
                 startOaseiKomi01();
             }
             isFesthalter01 = !isFesthalter01;
@@ -1022,6 +1030,9 @@ public class StartClass extends Application {
         remainingOaseKomi = 0;
         isFesthalter01 = false;
         if(this.mv != null) mv.updateOaseiKomi01("");
+        //if(this.progressBar01 != null) progressBar01.setProgress(0);
+        progressBar01 = null;
+        drawBottom();
     }
 
     private void resetOaseiKomi02(){
@@ -1031,6 +1042,9 @@ public class StartClass extends Application {
         remainingOaseKomi = 0;
         isFesthalter02 = false;
         if(this.mv != null) mv.updateOaseiKomi02("");
+        //if(this.progressBar02 != null) progressBar02.setProgress(0);
+        progressBar02 = null;
+        drawBottom();
     }
 
 
@@ -1040,16 +1054,22 @@ public class StartClass extends Application {
             return;
         }
         if(festhalterzeit01 == null){
+            if(progressBar01 == null) progressBar01 = new ProgressBar(0);
             festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
                 remainingOaseKomi++;
                 festhalertLabel01.setText(formatTime(remainingOaseKomi));
                 //mv updaten
                 mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
+                //progressbar
+                double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                progressBar01.setProgress(progress);
                 if(remainingOaseKomi == OASEI_KOMI){
                     festhalterzeit01.stop();
+                    progressBar01.setProgress(1.0);
                 }
             }));
             festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
+            drawBottom();
         }
         festhalterzeit01.play();
     }
@@ -1060,16 +1080,22 @@ public class StartClass extends Application {
             return;
         }
         if(festhalterzeit02 == null){
+            if(progressBar02 == null) progressBar02 = new ProgressBar(0);
             festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
                 remainingOaseKomi++;
                 festhalertLabel02.setText(formatTime(remainingOaseKomi));
                 //mv updaten
                 mv.updateOaseiKomi02(formatTime(remainingOaseKomi));
+                //progressbar
+                double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                progressBar02.setProgress(progress);
                 if(remainingOaseKomi == OASEI_KOMI){
                     festhalterzeit02.stop();
+                    progressBar02.setProgress(1.0);
                 }
             }));
             festhalterzeit02.setCycleCount(Timeline.INDEFINITE);
+            drawBottom();
         }
         festhalterzeit02.play();
     }
@@ -1097,8 +1123,17 @@ public class StartClass extends Application {
 
         //fightPane.setBottom(timerLabel);
 
-        bottomRoot.getChildren().addAll(festhalertLabel01 ,timerLabel, festhalertLabel02);
-        fightPane.setBottom(bottomRoot);
+
+
+
+        VBox box01 = new VBox(10, festhalertLabel01);
+        VBox box02 = new VBox(10, festhalertLabel02);
+        if(progressBar02 != null) box02.getChildren().add(progressBar02);
+        if(progressBar01 != null) box01.getChildren().add(progressBar01);
+
+        bottomRoot.getChildren().clear();
+        bottomRoot.getChildren().addAll(box01, timerLabel, box02);
+        if(fightPane != null)fightPane.setBottom(bottomRoot);
     }
 
 
