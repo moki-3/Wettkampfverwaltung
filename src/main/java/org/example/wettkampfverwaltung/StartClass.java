@@ -55,6 +55,7 @@ public class StartClass extends Application {
     private Label festhalertLabel02 = new Label("");
     private Timeline festhalterzeit02;
     private static final int OASEI_KOMI = 20;
+    private static final int OASEI_KOMI_SHORT = 15;
     private int remainingOaseKomi = 0;
 
     private ProgressBar progressBar01;
@@ -1032,6 +1033,7 @@ public class StartClass extends Application {
         if(this.mv != null) mv.updateOaseiKomi01("");
         //if(this.progressBar01 != null) progressBar01.setProgress(0);
         progressBar01 = null;
+        if(mv != null)mv.resetProgresbar01();
         drawBottom();
     }
 
@@ -1044,6 +1046,7 @@ public class StartClass extends Application {
         if(this.mv != null) mv.updateOaseiKomi02("");
         //if(this.progressBar02 != null) progressBar02.setProgress(0);
         progressBar02 = null;
+        if(mv != null)mv.resetProgressbar02();
         drawBottom();
     }
 
@@ -1054,7 +1057,10 @@ public class StartClass extends Application {
             return;
         }
         if(festhalterzeit01 == null){
-            if(progressBar01 == null) progressBar01 = new ProgressBar(0);
+            if(progressBar01 == null){
+                progressBar01 = new ProgressBar(0);
+                mv.initProgressbar01();
+            }
             festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
                 remainingOaseKomi++;
                 festhalertLabel01.setText(formatTime(remainingOaseKomi));
@@ -1062,15 +1068,26 @@ public class StartClass extends Application {
                 mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
                 //progressbar
                 double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
                 progressBar01.setProgress(progress);
-                if(remainingOaseKomi == OASEI_KOMI){
+                mv.updateProgressbar01(progress);
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
+                    System.out.println("im if");
                     festhalterzeit01.stop();
                     progressBar01.setProgress(1.0);
+                    mv.updateProgressbar01(1.0);
+                }
+                else if(remainingOaseKomi == OASEI_KOMI){
+                    festhalterzeit01.stop();
+                    progressBar01.setProgress(1.0);
+                    mv.updateProgressbar01(1.0);
                 }
             }));
             festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
             drawBottom();
+            mv.drawBottom();
         }
+
         festhalterzeit01.play();
     }
 
@@ -1080,7 +1097,10 @@ public class StartClass extends Application {
             return;
         }
         if(festhalterzeit02 == null){
-            if(progressBar02 == null) progressBar02 = new ProgressBar(0);
+            if(progressBar02 == null) {
+                progressBar02 = new ProgressBar(0);
+                mv.initProgressbar02();
+            }
             festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
                 remainingOaseKomi++;
                 festhalertLabel02.setText(formatTime(remainingOaseKomi));
@@ -1088,14 +1108,23 @@ public class StartClass extends Application {
                 mv.updateOaseiKomi02(formatTime(remainingOaseKomi));
                 //progressbar
                 double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
                 progressBar02.setProgress(progress);
-                if(remainingOaseKomi == OASEI_KOMI){
+                mv.updateProgressbar02(progress);
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
                     festhalterzeit02.stop();
                     progressBar02.setProgress(1.0);
+                    mv.updateProgressbar02(1.0);
+                }
+                else if(remainingOaseKomi == OASEI_KOMI){
+                    festhalterzeit02.stop();
+                    progressBar02.setProgress(1.0);
+                    mv.updateProgressbar02(1.0);
                 }
             }));
             festhalterzeit02.setCycleCount(Timeline.INDEFINITE);
             drawBottom();
+            mv.drawBottom();
         }
         festhalterzeit02.play();
     }

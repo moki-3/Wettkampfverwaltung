@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,6 +32,10 @@ public class ManageView {
     private Label oaseiKomi01;
     private Label oaseiKomi02;
     private int fightTime;
+
+    private ProgressBar progressbar01;
+    private ProgressBar progressbar02;
+
 
     public ManageView(int fights){
         this.fightsCount = fights;
@@ -69,7 +74,7 @@ public class ManageView {
        die Anzeige oben, der wievielte Kampf das ist und fügt die Zeit
        zum BorderPane
      */
-    public void newFight(FighterPair f, int index){
+    public void newFight(FighterPair f, int index) {
         Label count = new Label(index + "/" + fightsCount);
         HBox tmpTop = new HBox(count);
         tmpTop.setAlignment(Pos.CENTER);
@@ -79,15 +84,11 @@ public class ManageView {
 
 
 
-        if(timeLabel == null) timeLabel = new Label();
-        if(oaseiKomi01 == null) oaseiKomi01 = new Label();
-        if(oaseiKomi02 == null) oaseiKomi02 = new Label();
-        HBox bottombox = new HBox(10, oaseiKomi01, timeLabel, oaseiKomi02);
-        bottombox.setAlignment(Pos.CENTER);
-        viewRoot.setBottom(bottombox);
+        drawBottom();
     }
-
     /*
+
+
         Updatet den Kampf währende dem Kampf, nur den Kampf
      */
     public void updateFight(FighterPair f){
@@ -181,7 +182,42 @@ public class ManageView {
         else oaseiKomi02.setText(time);
     }
 
+    public void resetProgresbar01(){
+        progressbar01 = null;
+    }
 
+    public void resetProgressbar02(){
+        progressbar02 = null;
+    }
 
+    public void initProgressbar01(){
+        progressbar01 = new ProgressBar(0);
+    }
 
-}
+    public void initProgressbar02(){
+        progressbar02 = new ProgressBar(0);
+    }
+
+    public void updateProgressbar01(double v){
+        if(progressbar01 != null) progressbar01.setProgress(v);
+    }
+
+    public void updateProgressbar02(double v){
+        if(progressbar02 != null) progressbar02.setProgress(v);
+    }
+
+    public void drawBottom(){
+        if (timeLabel == null) timeLabel = new Label();
+        if (oaseiKomi01 == null) oaseiKomi01 = new Label();
+        if (oaseiKomi02 == null) oaseiKomi02 = new Label();
+        VBox box01 = new VBox(10, oaseiKomi01);
+        VBox box02 = new VBox(10, oaseiKomi02);
+        if (progressbar01 != null) box01.getChildren().add(progressbar01);
+        if (progressbar02 != null) box02.getChildren().add(progressbar02);
+
+        HBox bottombox = new HBox(10, box01, timeLabel, box02);
+            bottombox.setAlignment(Pos.CENTER);
+            viewRoot.setBottom(bottombox);
+        }
+
+    }
