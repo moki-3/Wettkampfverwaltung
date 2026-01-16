@@ -276,8 +276,8 @@ public class StartClass extends Application {
         resetTimer();
         //fightPane.setBottom(timerLabel);
         drawBottom();
-        controlStage.setMinWidth(800);
-        controlStage.setMinHeight(450);
+        controlStage.setMinWidth(900);
+        controlStage.setMinHeight(550);
 
 
         updateControlStage();
@@ -706,7 +706,7 @@ public class StartClass extends Application {
             osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
         });
 
-        reset01 = new Button("Reset Oasei-Komi");
+        reset01 = new Button("Reset Oasei-Komi [strg + 6]");
         reset01.setOnAction(actionEvent -> {
             resetOaseiKomi01();
             isFesthalter01 = false;
@@ -973,7 +973,7 @@ public class StartClass extends Application {
             osae_komi02.setText(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
         });
 
-        reset02 = new Button("Reset Oasei-Komi");
+        reset02 = new Button("Reset Oasei-Komi [alt + 6]");
         reset02.setOnAction(actionEvent -> {
             resetOaseiKomi02();
             isFesthalter02 = false;
@@ -999,12 +999,14 @@ public class StartClass extends Application {
             if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT3) editYuko01.fire();
             if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT4) editShido01.fire();
             if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT5) osae_komi01.fire();
+            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT6) reset01.fire();
 
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT1) editIppon02.fire();
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT2) editWaza_ari02.fire();
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT3) editYuko02.fire();
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT4) editShido02.fire();
             if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT5) osae_komi02.fire();
+            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT6) reset02.fire();
 
             if(keyEvent.getCode() == KeyCode.SPACE){
 
@@ -1025,6 +1027,19 @@ public class StartClass extends Application {
     }
 
     private void resetOaseiKomi01(){
+        //Punkte vergeben
+        if(remainingOaseKomi == OASEI_KOMI){
+            allFighterPairs.get(kampfIndex).incIppon01();
+
+            warnWinning01();
+        }else if(remainingOaseKomi >= OASEI_KOMI_SHORT){
+            allFighterPairs.get(kampfIndex).incWaza_ari01();
+            if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) warnWinning01();
+        }
+        if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
+        if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
+
+        //alles reseten
         if(festhalterzeit01 != null) festhalterzeit01.stop();
         festhalterzeit01 = null;
         festhalertLabel01.setText("");
@@ -1033,11 +1048,24 @@ public class StartClass extends Application {
         if(this.mv != null) mv.updateOaseiKomi01("");
         //if(this.progressBar01 != null) progressBar01.setProgress(0);
         progressBar01 = null;
-        if(mv != null)mv.resetProgresbar01();
+        if(mv != null){
+            mv.resetProgresbar01();
+            mv.drawBottom();
+        }
         drawBottom();
     }
 
     private void resetOaseiKomi02(){
+        //Punkte vergeben
+        if(remainingOaseKomi == OASEI_KOMI){
+            allFighterPairs.get(kampfIndex).incIppon02();
+            warnWinning02();
+        }else if(remainingOaseKomi >= OASEI_KOMI_SHORT){
+            allFighterPairs.get(kampfIndex).incWaza_ari02();
+            if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) warnWinning01();
+        }
+        if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
+        if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
         if(festhalterzeit02 != null) festhalterzeit02.stop();
         festhalterzeit02 = null;
         festhalertLabel02.setText("");
@@ -1046,7 +1074,10 @@ public class StartClass extends Application {
         if(this.mv != null) mv.updateOaseiKomi02("");
         //if(this.progressBar02 != null) progressBar02.setProgress(0);
         progressBar02 = null;
-        if(mv != null)mv.resetProgressbar02();
+        if(mv != null){
+            mv.resetProgressbar02();
+            mv.drawBottom();
+        }
         drawBottom();
     }
 
@@ -1081,6 +1112,10 @@ public class StartClass extends Application {
                     festhalterzeit01.stop();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
+
+                    allFighterPairs.get(kampfIndex).incIppon01();
+
+                    warnWinning01();
                 }
             }));
             festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
@@ -1120,6 +1155,9 @@ public class StartClass extends Application {
                     festhalterzeit02.stop();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
+                    allFighterPairs.get(kampfIndex).incIppon02();
+
+                    warnWinning02();
                 }
             }));
             festhalterzeit02.setCycleCount(Timeline.INDEFINITE);
@@ -1166,6 +1204,70 @@ public class StartClass extends Application {
     }
 
 
+
+
+
+
+    // ich muss noch die Gewinnerin setzten
+
+    private void warnWinning01(){
+        Stage warningStage = new Stage();
+        warningStage.initOwner(controlStage);
+        warningStage.initModality(Modality.WINDOW_MODAL);
+        BorderPane warningRoot = new BorderPane();
+        Label warning = new Label(allFighterPairs.get(kampfIndex).getName01() + " gewinnt!");
+        warningStage.setTitle(warning.getText());
+        Label ippons = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon01());
+        Label waza_aris = new Label("Waza-aris: " + allFighterPairs.get(kampfIndex).getWaza_ari01());
+        Label yukos = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko01());
+        Label shidos = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido01());
+
+        VBox labels = new VBox(10, warning, ippons, waza_aris, yukos, shidos);
+        warningRoot.setCenter(labels);
+
+        Button ok = new Button("Ok");
+        ok.setOnAction(actionEvent -> warningStage.close());
+        Button setWinner = new Button(allFighterPairs.get(kampfIndex).getName01() + " als Gewinner*in festlegen");
+        setWinner.setOnAction(actionEvent -> {
+            //set winner
+        });
+
+        VBox buttons = new VBox(20, ok, setWinner);
+        warningRoot.setBottom(buttons);
+        Scene scn = new Scene(warningRoot);
+        warningStage.setScene(scn);
+        warningStage.show();
+
+    }
+    private void warnWinning02(){
+        Stage warningStage = new Stage();
+        warningStage.initOwner(controlStage);
+        warningStage.initModality(Modality.WINDOW_MODAL);
+        BorderPane warningRoot = new BorderPane();
+        Label warning = new Label(allFighterPairs.get(kampfIndex).getName02() + " gewinnt!");
+        warningStage.setTitle(warning.getText());
+        Label ippons = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon02());
+        Label waza_aris = new Label("Waza-aris: " + allFighterPairs.get(kampfIndex).getWaza_ari02());
+        Label yukos = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko02());
+        Label shidos = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido02());
+
+        VBox labels = new VBox(10, warning, ippons, waza_aris, yukos, shidos);
+        warningRoot.setCenter(labels);
+
+        Button ok = new Button("Ok");
+        ok.setOnAction(actionEvent -> warningStage.close());
+        Button setWinner = new Button(allFighterPairs.get(kampfIndex).getName02() + " als Gewinner*in festlegen");
+        setWinner.setOnAction(actionEvent -> {
+            //set winner
+        });
+
+        VBox buttons = new VBox(20, ok, setWinner);
+        warningRoot.setBottom(buttons);
+        Scene scn = new Scene(warningRoot);
+        warningStage.setScene(scn);
+        warningStage.show();
+
+    }
 
 
 

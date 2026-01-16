@@ -56,7 +56,8 @@ public class ManageView {
 
     public void openViewStage(){
 
-
+        viewStage.setMinWidth(900);
+        viewStage.setMinHeight(550);
         viewStage.show();
     }
 
