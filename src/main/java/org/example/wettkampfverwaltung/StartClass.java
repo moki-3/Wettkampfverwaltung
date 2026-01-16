@@ -1230,11 +1230,17 @@ public class StartClass extends Application {
         Button setWinner = new Button(allFighterPairs.get(kampfIndex).getName01() + " als Gewinner*in festlegen");
         setWinner.setOnAction(actionEvent -> {
             //set winner
+            System.out.println("Nothing Changed Yet");
+            warningStage.close();
         });
 
         VBox buttons = new VBox(20, ok, setWinner);
         warningRoot.setBottom(buttons);
         Scene scn = new Scene(warningRoot);
+        scn.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
+            if(keyEvent.getCode() == KeyCode.ENTER) setWinner.fire();
+        });
         warningStage.setScene(scn);
         warningStage.show();
 
@@ -1259,11 +1265,17 @@ public class StartClass extends Application {
         Button setWinner = new Button(allFighterPairs.get(kampfIndex).getName02() + " als Gewinner*in festlegen");
         setWinner.setOnAction(actionEvent -> {
             //set winner
+            System.out.println("Nothing Changed Yet");
+            warningStage.close();
         });
 
         VBox buttons = new VBox(20, ok, setWinner);
         warningRoot.setBottom(buttons);
         Scene scn = new Scene(warningRoot);
+        scn.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
+            if(keyEvent.getCode() == KeyCode.ENTER) setWinner.fire();
+        });
         warningStage.setScene(scn);
         warningStage.show();
 
