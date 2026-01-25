@@ -9,7 +9,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -20,6 +22,8 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -40,6 +44,7 @@ public class StartClass extends Application {
 
     private BorderPane controlRoot;
 
+    private boolean isGoldenScore = false;
 
     private BorderPane fightPane;
 
@@ -61,7 +66,7 @@ public class StartClass extends Application {
     private ProgressBar progressBar01;
     private ProgressBar progressBar02;
 
-    private Button reset01, reset02, osae_komi01, osae_komi02;
+    private Button reset01, reset02, osae_komi01, osae_komi02, bStartGoldenScore;
 
 
 
@@ -231,6 +236,7 @@ public class StartClass extends Application {
     /*
         Diese Methode wird verwendet, um den Nächsten kampf zu setzten und
         sie managed auch alles in der ViewStage
+        es steht dann "Bitte nächsten kampf auswählen" und man kann links den nächsten kampf auswählen
      */
     public void continueToNextFight(int index){
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
@@ -265,6 +271,10 @@ public class StartClass extends Application {
         //Kommentare, weil wenn ich die ProgressBars von anfang an habe, sehe ich sie auch immer, und das will ich nicth
         //progressBar01 = new ProgressBar(0);
         //progressBar02 = new ProgressBar(0);
+
+        bStartGoldenScore = new Button("Golden Score starten");
+        bStartGoldenScore.setOnAction(actionEvent -> startGoldeScore());
+        bStartGoldenScore.setDisable(true);
 
         controlStage.setOnCloseRequest(windowEvent -> {
                     mv.closeStage();
@@ -303,6 +313,7 @@ public class StartClass extends Application {
                 mv.updateTimeLabel(formatTime(remainingtime));
                 if(remainingtime <= 0){
                     fighTime.stop();
+                    checkWinner();
                 }
             }));
             fighTime.setCycleCount(Timeline.INDEFINITE);
@@ -314,7 +325,6 @@ public class StartClass extends Application {
     private void stopTimer(){
         if (fighTime != null){
             fighTime.stop();
-
 
         }
     }
@@ -396,6 +406,8 @@ public class StartClass extends Application {
         Button endFight = new Button("Kampf Beenden");
         endFight.setOnAction(actionEvent -> {
             //Kampf beenden
+            if(fighTime != null && fighTime.getStatus() != Animation.Status.STOPPED) stopTimer();
+            checkWinner();
         });
 
 
@@ -440,7 +452,7 @@ public class StartClass extends Application {
         });
 
 
-        HBox topBox = new HBox(endFight, start_stop);
+        HBox topBox = new HBox(endFight, start_stop, bStartGoldenScore);
 
         // TOP HBOX END
         //################################################################################################
@@ -454,11 +466,15 @@ public class StartClass extends Application {
         VBox daten01 = new VBox(10, name01, verein01);
 
         String points01 = "0";
-        if(f.getIppon01() > 0 || f.getWaza_ari01() == 2) points01 = "100";
+        if(f.getIppon01() > 0 || f.getWaza_ari01() >= 2) {
+            points01 = "100";
+            checkWinner();
+        }
         else {
             int tmp = 10 * f.getWaza_ari01() + f.getYuko01();
             points01 = tmp + "";
         }
+
 
         Label points01l = new Label(points01);
 
@@ -474,6 +490,7 @@ public class StartClass extends Application {
             inc.setOnAction(actionEvent1 -> {
                 f.incIppon01();
                 info.setText(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
+                checkWinner();
             });
             dec.setOnAction(actionEvent1 -> {
                 f.decIppon01();
@@ -728,7 +745,10 @@ public class StartClass extends Application {
         VBox daten02 = new VBox(10, name02, verein02);
 
         String points02 = "0";
-        if(f.getIppon02() > 0 || f.getWaza_ari02() == 2) points02 = "100";
+        if(f.getIppon02() > 0 || f.getWaza_ari02() == 2){
+            points02 = "100";
+            checkWinner();
+        }
         else {
             int tmp = 10 * f.getWaza_ari02() + f.getYuko02();
             points02 = tmp + "";
@@ -748,6 +768,7 @@ public class StartClass extends Application {
             inc.setOnAction(actionEvent1 -> {
                 f.incIppon02();
                 info.setText(f.getName02() + " hat "+f.getIppon02()+" Ippon. " + (f.getIppon02() > 1 ? f.getName02() + "Hat jetzt theoretisch gewonnen." : ""));
+                checkWinner();
             });
             dec.setOnAction(actionEvent1 -> {
                 f.decIppon02();
@@ -1031,10 +1052,14 @@ public class StartClass extends Application {
         if(remainingOaseKomi == OASEI_KOMI){
             allFighterPairs.get(kampfIndex).incIppon01();
 
-            warnWinning01();
+            //warnWinning01();
+            checkWinner();
         }else if(remainingOaseKomi >= OASEI_KOMI_SHORT){
             allFighterPairs.get(kampfIndex).incWaza_ari01();
-            if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) warnWinning01();
+            if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) {
+                //warnWinning01();
+                checkWinner();
+            }
         }
         if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
         if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
@@ -1059,10 +1084,14 @@ public class StartClass extends Application {
         //Punkte vergeben
         if(remainingOaseKomi == OASEI_KOMI){
             allFighterPairs.get(kampfIndex).incIppon02();
-            warnWinning02();
+            //warnWinning02();
+            checkWinner();
         }else if(remainingOaseKomi >= OASEI_KOMI_SHORT){
             allFighterPairs.get(kampfIndex).incWaza_ari02();
-            if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) warnWinning01();
+            if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) {
+                //warnWinning01();
+                checkWinner();
+            }
         }
         if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
         if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
@@ -1103,10 +1132,13 @@ public class StartClass extends Application {
                 progressBar01.setProgress(progress);
                 mv.updateProgressbar01(progress);
                 if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
-                    System.out.println("im if");
+                    //System.out.println("im if");
                     festhalterzeit01.stop();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
+                    allFighterPairs.get(kampfIndex).incWaza_ari01();
+                    checkWinner();
+
                 }
                 else if(remainingOaseKomi == OASEI_KOMI){
                     festhalterzeit01.stop();
@@ -1115,7 +1147,8 @@ public class StartClass extends Application {
 
                     allFighterPairs.get(kampfIndex).incIppon01();
 
-                    warnWinning01();
+                    //warnWinning01();
+                    checkWinner();
                 }
             }));
             festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
@@ -1150,14 +1183,18 @@ public class StartClass extends Application {
                     festhalterzeit02.stop();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
-                }
-                else if(remainingOaseKomi == OASEI_KOMI){
+
+                    allFighterPairs.get(kampfIndex).incWaza_ari02();
+                    checkWinner();
+
+                }else if(remainingOaseKomi == OASEI_KOMI){
                     festhalterzeit02.stop();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
                     allFighterPairs.get(kampfIndex).incIppon02();
 
-                    warnWinning02();
+                    //warnWinning02();
+                    checkWinner();
                 }
             }));
             festhalterzeit02.setCycleCount(Timeline.INDEFINITE);
@@ -1170,12 +1207,14 @@ public class StartClass extends Application {
     private void stopOaseiKomi01(){
         if(festhalterzeit01 != null){
             festhalterzeit01.stop();
+
         }
     }
 
     private void stopOaseiKomi02(){
         if(festhalterzeit02 != null){
             festhalterzeit02.stop();
+
         }
     }
 
@@ -1208,86 +1247,215 @@ public class StartClass extends Application {
 
 
 
-    // ich muss noch die Gewinnerin setzten
 
-    private void warnWinning01(){
-        Stage warningStage = new Stage();
-        warningStage.initOwner(controlStage);
-        warningStage.initModality(Modality.WINDOW_MODAL);
-        BorderPane warningRoot = new BorderPane();
-        Label warning = new Label(allFighterPairs.get(kampfIndex).getName01() + " gewinnt!");
-        warningStage.setTitle(warning.getText());
-        Label ippons = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon01());
-        Label waza_aris = new Label("Waza-aris: " + allFighterPairs.get(kampfIndex).getWaza_ari01());
-        Label yukos = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko01());
-        Label shidos = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido01());
 
-        VBox labels = new VBox(10, warning, ippons, waza_aris, yukos, shidos);
-        warningRoot.setCenter(labels);
 
-        Button ok = new Button("Ok");
-        ok.setOnAction(actionEvent -> warningStage.close());
-        Button setWinner = new Button(allFighterPairs.get(kampfIndex).getName01() + " als Gewinner*in festlegen");
-        setWinner.setOnAction(actionEvent -> {
-            //set winner
-            System.out.println("Nothing Changed Yet");
-            warningStage.close();
+
+    public void startGoldeScore(){
+        Stage goldenScoreStage = new Stage();
+        goldenScoreStage.initOwner(controlStage);
+        goldenScoreStage.initModality(Modality.WINDOW_MODAL);
+        final boolean[] valid = {false};
+        Label start = new Label("Golden Score starten");
+        Label warnung = new Label("");
+        TextField timeField = new TextField("02:00");
+        AtomicInteger timeInSeconds = new AtomicInteger();
+        AtomicInteger minutes = new AtomicInteger();
+        AtomicInteger seconds = new AtomicInteger();
+
+        Button submit = new Button("Fertig");
+        Button exit = new Button("Cancel");
+        exit.setOnAction(actionEvent -> goldenScoreStage.close());
+        submit.setDisable(true);
+
+        timeField.setOnAction(actionEvent -> {
+
+            if(timeField.getText().length() != 5) warnung.setText("Ungültige Eingabe: die Eingabe muss 5 Zeichen lang sein. Aktuelle länge: " + timeField.getText().length());
+            else if(timeField.getText().toCharArray()[2] != ':') warnung.setText("Ungültige Eingabe: das 3. Zeichen muss ein ':' sein");
+            else {
+                String[] zeichen = timeField.getText().split(":");
+                try{
+                    minutes.set(Integer.parseInt(zeichen[0]));
+                    seconds.set(Integer.parseInt(zeichen[1]));
+                    valid[0] = true;
+                    submit.setDisable(false);
+                }catch (Exception e){
+                    submit.setDisable(true);
+                    System.out.println(e);
+                    warnung.setText("Ungültige Eingabe: Es sind keine Zahlen. Schreibe z.B.: '02:00' für 2 Minuten");
+                }
+            }
         });
 
-        VBox buttons = new VBox(20, ok, setWinner);
-        warningRoot.setBottom(buttons);
-        Scene scn = new Scene(warningRoot);
+        submit.setOnAction(actionEvent -> {
+            if(valid[0]){
+                timeInSeconds.set(minutes.get() * 60 + seconds.get());
+                goldenScoreStage.close();
+                setGoldenScoreTime(timeInSeconds.get());
+            }else{
+                warnung.setText("Ungültige Eingabe!");
+                submit.setDisable(true);
+            }
+        });
+
+        VBox buttons = new VBox(30, exit, submit);
+        BorderPane goldenRoot = new BorderPane();
+        HBox center = new HBox(20, start, warnung, timeField);
+        goldenRoot.setBottom(buttons);
+        goldenRoot.setCenter(center);
+        Scene scn = new Scene(goldenRoot);
+
         scn.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
-            if(keyEvent.getCode() == KeyCode.ENTER) setWinner.fire();
-        });
-        warningStage.setScene(scn);
-        warningStage.show();
-
-    }
-    private void warnWinning02(){
-        Stage warningStage = new Stage();
-        warningStage.initOwner(controlStage);
-        warningStage.initModality(Modality.WINDOW_MODAL);
-        BorderPane warningRoot = new BorderPane();
-        Label warning = new Label(allFighterPairs.get(kampfIndex).getName02() + " gewinnt!");
-        warningStage.setTitle(warning.getText());
-        Label ippons = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon02());
-        Label waza_aris = new Label("Waza-aris: " + allFighterPairs.get(kampfIndex).getWaza_ari02());
-        Label yukos = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko02());
-        Label shidos = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido02());
-
-        VBox labels = new VBox(10, warning, ippons, waza_aris, yukos, shidos);
-        warningRoot.setCenter(labels);
-
-        Button ok = new Button("Ok");
-        ok.setOnAction(actionEvent -> warningStage.close());
-        Button setWinner = new Button(allFighterPairs.get(kampfIndex).getName02() + " als Gewinner*in festlegen");
-        setWinner.setOnAction(actionEvent -> {
-            //set winner
-            System.out.println("Nothing Changed Yet");
-            warningStage.close();
+            if (keyEvent.getCode() == KeyCode.ESCAPE) exit.fire();
         });
 
-        VBox buttons = new VBox(20, ok, setWinner);
-        warningRoot.setBottom(buttons);
-        Scene scn = new Scene(warningRoot);
-        scn.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
-            if(keyEvent.getCode() == KeyCode.ENTER) setWinner.fire();
-        });
-        warningStage.setScene(scn);
-        warningStage.show();
+        goldenScoreStage.setScene(scn);
+        goldenScoreStage.show();
+
 
     }
 
 
+    public void setGoldenScoreTime(int time){
+        isGoldenScore = true;
+        System.out.println(formatTime(time));
+        System.out.println("isGoldenScore = " + true);
+    }
 
 
 
+    // checkt wer gewonnen hat, wenn gleichstand ist dann wird golden score button disabled(false)
+    private void checkWinner(){
+        int points01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
+        int points02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
+        if(points01 >= 100) points01 = 100;
+        if(points02 >= 100) points02 = 100;
+
+        String winner = "-1";
+
+        if(points01 == points02) {
+            bStartGoldenScore.setDisable(false); // wenn gleichstand kann goldenScore gemacht werden
+        }
+        else if(points01 > points02){
+            winner = allFighterPairs.get(kampfIndex).getName01();
+        }else{
+            winner = allFighterPairs.get(kampfIndex).getName02();
+        }
+
+        Stage smallStage = new Stage();
+        smallStage.initOwner(controlStage);
+        smallStage.initModality(Modality.WINDOW_MODAL);
+
+        BorderPane smallRoot = new BorderPane();
+
+        Label who01 = new Label(allFighterPairs.get(kampfIndex).getName01());
+        Label ippons01 = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon01());
+        Label waza_aris01 = new Label("Waza-aris: " + allFighterPairs.get(kampfIndex).getWaza_ari01());
+        Label yukos01 = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko01());
+        Label shidos01 = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido01());
+
+        VBox labels01 = new VBox(10, who01, ippons01, waza_aris01, yukos01, shidos01);
+
+        Label who02 = new Label(allFighterPairs.get(kampfIndex).getName02());
+        Label ippons02 = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon02());
+        Label waza_aris02 = new Label("Waza-aris: " + allFighterPairs.get(kampfIndex).getWaza_ari02());
+        Label yukos02 = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko02());
+        Label shidos02 = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido02());
+
+        VBox labels02 = new VBox(10, who02, ippons02, waza_aris02, yukos02, shidos02);
+
+        HBox allInfo = new HBox(20, labels01, labels02);
 
 
 
+        if(winner == "-1"){
+            //wenn untentschieden
+
+            Label info = new Label("Untenschieden!\nGoldenScore kann jetzt gestartet werden!");
+
+            VBox content = new VBox(50, info, allInfo);
+            smallRoot.setCenter(content);
+
+            bStartGoldenScore.setDisable(false);
+
+            Button ok = new Button("ok");
+
+            ok.setOnAction(actionEvent -> smallStage.close());
+
+            Button disable = new Button("Ich brauche noch kein Golden Score");
+            disable.setOnAction(actionEvent -> {
+                bStartGoldenScore.setDisable(true);
+                ok.fire();
+            });
+
+            HBox buttons = new HBox(20, ok, disable);
+
+            smallRoot.setBottom(buttons);
+
+            Scene scn = new Scene(smallRoot);
+
+            scn.setOnKeyPressed(keyEvent -> {
+                if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
+            });
+
+            smallStage.setScene(scn);
+        }else{
+
+            Button b01 = new Button(allFighterPairs.get(kampfIndex).getName01());
+            Button b02 = new Button(allFighterPairs.get(kampfIndex).getName02());
+
+            //hier if mit css machen, dass button, wo name gleich winner ist, primary button wird
+
+
+            Button cancel = new Button("Cancel");
+            cancel.setOnAction(actionEvent -> smallStage.close());
+
+
+            HBox buttons = new HBox(30, b01, b02, cancel);
+
+            Label info = new Label(Objects.equals(winner, allFighterPairs.get(kampfIndex).getName01()) ? allFighterPairs.get(kampfIndex).getName01() + " hat gewonnen!" : allFighterPairs.get(kampfIndex).getName02() + " hat gewonnen!");
+
+
+
+            smallRoot.setTop(info);
+
+
+            VBox content = new VBox(40, allInfo, buttons);
+
+            smallRoot.setCenter(content);
+
+            Scene scn = new Scene(smallRoot);
+
+            scn.setOnKeyPressed(keyEvent -> {
+                if (keyEvent.getCode() == KeyCode.ESCAPE) cancel.fire();
+            });
+
+
+            smallStage.setScene(scn);
+
+        }
+
+        smallStage.show();
+
+    }
+
+    /*
+
+    17.01.25 23:21
+    Ich bin jetzt zu müde um weiter zu machen. Was ich mache: checkWinner checkt wer gewonnen hat und hier kann ich auch dann
+    den / die Gewiner*in setzten. Somit kann ich das bei den Festhalterfunktionen wegmachen und einfach wenn die Zeit aufgebraucht
+    ist checkWinner() aufrufen. checkWinner() rufe ich auch auf, wenn die 2 Minuten Kampfzeit zuende sind. Auch wenn ein ich einen
+    Ippon mache. In der Methode, wo ich die Controls update, berechne ich ja auch die Punkte. Da kann ich auch machen, wenn die
+    Punkte 100 oder mehr sind, wird checkWinner aufgerufen. Und beim Button endfight.
+    In checkWinner wird dann vorgeschlagen wer gewonnen hat, aber es kann auch die andere Person ausgewählt werden. Und hier
+    werden dann die Points für den Verein vergeben und dann wird auch dieser TimeFiller in MV angezeigt
+    Ich brauche in der Methode auch diese kleinen Stages da.
+
+    GoldenScore muss ich auch noch machen. Ich benutze da einfach das normale timelabel aber mache eine andere Timeline, da ich
+    ja raufzählen muss. Und einen Boolean oder getStatus damit ich weiß ob GoldenScore ist, weil bei einem Golden Score ja alles
+    entscheidend ist.
+
+     */
 
 
 
