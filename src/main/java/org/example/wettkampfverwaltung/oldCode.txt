@@ -566,3 +566,149 @@ osae_komi01.setOnAction(actionEvent -> {
             isFesthalter01 = !isFesthalter01;
             osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
         });
+
+
+#############################################################################################
+
+
+Stage warningStage = new Stage();
+            warningStage.initOwner(controlStage);
+            warningStage.initModality(Modality.WINDOW_MODAL);
+            warningStage.setTitle("Ippon von " + f.getName01() + " ändern");
+            Label info = new Label(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
+            Button inc = new Button("+");
+            Button dec = new Button("-");
+            inc.setOnAction(actionEvent1 -> {
+                f.incIppon01();
+                info.setText(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
+                checkWinner();
+            });
+            dec.setOnAction(actionEvent1 -> {
+                f.decIppon01();
+                info.setText(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
+            });
+
+            HBox buttons = new HBox(dec, inc);
+
+            Button close = new Button("exit");
+
+            close.setOnAction(actionEvent1 -> {
+                warningStage.close();
+                updateControlStage();
+            });
+
+            VBox ippon01vBox = new VBox(buttons, info, close);
+
+
+            Scene ippon01scene = new Scene(ippon01vBox);
+
+            ippon01scene.setOnKeyPressed(keyEvent -> {
+                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
+                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
+                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
+            });
+
+            warningStage.setOnCloseRequest(windowEvent -> {
+                close.fire();
+            });
+
+            warningStage.setScene(ippon01scene);
+
+            warningStage.requestFocus();
+
+            warningStage.setMinWidth(300);
+            warningStage.setMinHeight(200);
+
+            warningStage.show();
+
+############################################################################
+
+if(r_flag){
+allFighterPairs.get(kampfIndex).decIppon01();
+}else{
+allFighterPairs.get(kampfIndex).incIppon01();
+checkWinner();
+}
+r_flag = false;
+updateControlStage();
+
+
+editIppon01.setOnAction(actionEvent -> {
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decIppon01();
+            }else{
+                allFighterPairs.get(kampfIndex).incIppon01();
+                checkWinner();
+            }
+            r_flag = false;
+            updateControlStage();
+        });
+
+osae_komi01.setOnAction <------
+// action und auch css klassen ändern mit if(osae_komi01.getName().equals...
+            //System.out.println("osae_komi01 clicked");
+            if(festhalterzeit02 != null) reset02.fire();
+            if(isFesthalter01){
+                //wenn festhaler gerade ist, dann wird gestopt
+                stopOaseiKomi01();
+            }else{
+                if(festhalertLabel01.getText().isEmpty()) {
+                    festhalertLabel01.setText(formatTime(0));
+                    mv.updateOaseiKomi01(festhalertLabel01.getText());
+                }
+
+                startOaseiKomi01();
+            }
+            isFesthalter01 = !isFesthalter01;
+            osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
+
+############################################################################
+
+
+private void startOaseiKomi01(){
+        if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
+            resetOaseiKomi01();
+            return;
+        }
+        if(festhalterzeit01 == null){
+            if(progressBar01 == null){
+                progressBar01 = new ProgressBar(0);
+                mv.initProgressbar01();
+            }
+            festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
+                remainingOaseKomi++;
+                festhalertLabel01.setText(formatTime(remainingOaseKomi));
+                //mv updaten
+                mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
+                //progressbar
+                double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
+                progressBar01.setProgress(progress);
+                mv.updateProgressbar01(progress);
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
+                    //System.out.println("im if");
+                    festhalterzeit01.stop();
+                    progressBar01.setProgress(1.0);
+                    mv.updateProgressbar01(1.0);
+                    allFighterPairs.get(kampfIndex).incWaza_ari01();
+                    checkWinner();
+
+                }
+                else if(remainingOaseKomi == OASEI_KOMI){
+                    festhalterzeit01.stop();
+                    progressBar01.setProgress(1.0);
+                    mv.updateProgressbar01(1.0);
+
+                    allFighterPairs.get(kampfIndex).incIppon01();
+
+                    //warnWinning01();
+                    checkWinner();
+                }
+            }));
+            festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
+            drawBottom();
+            mv.drawBottom();
+        }
+
+        festhalterzeit01.play();
+    }

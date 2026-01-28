@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,6 +43,7 @@ public class StartClass extends Application {
     ManageView mv;
 
     private BorderPane controlRoot;
+
 
     private boolean isGoldenScore = false;
 
@@ -67,6 +68,8 @@ public class StartClass extends Application {
     private ProgressBar progressBar02;
 
     private Button reset01, reset02, osae_komi01, osae_komi02, bStartGoldenScore;
+
+    private boolean r_flag;
 
 
 
@@ -216,6 +219,7 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
+        System.out.println(r_flag);
         if(isFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
             if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
@@ -454,6 +458,10 @@ public class StartClass extends Application {
 
         HBox topBox = new HBox(endFight, start_stop, bStartGoldenScore);
 
+        Label rMode = new Label(r_flag ? "R Modus ein" : "R Modus aus");
+
+        VBox top = new VBox(20, rMode, topBox);
+
         // TOP HBOX END
         //################################################################################################
         // UPPER FIGHTER START
@@ -468,7 +476,7 @@ public class StartClass extends Application {
         String points01 = "0";
         if(f.getIppon01() > 0 || f.getWaza_ari01() >= 2) {
             points01 = "100";
-            checkWinner();
+            if(!r_flag) checkWinner();
         }
         else {
             int tmp = 10 * f.getWaza_ari01() + f.getYuko01();
@@ -478,221 +486,55 @@ public class StartClass extends Application {
 
         Label points01l = new Label(points01);
 
-        Button editIppon01 = new Button("Ippon [strg + 1] : " + f.getIppon01());
+        Button editIppon01 = new Button("Ippon [A] : " + f.getIppon01());
         editIppon01.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Ippon von " + f.getName01() + " ändern");
-            Label info = new Label(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incIppon01();
-                info.setText(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decIppon01();
+            }else{
+                allFighterPairs.get(kampfIndex).incIppon01();
                 checkWinner();
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decIppon01();
-                info.setText(f.getName01() + " hat "+f.getIppon01()+" Ippon. " + (f.getIppon01() > 1 ? f.getName01() + "Hat jetzt theoretisch gewonnen." : ""));
-            });
-
-            HBox buttons = new HBox(dec, inc);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-            });
-
-            VBox ippon01vBox = new VBox(buttons, info, close);
-
-
-            Scene ippon01scene = new Scene(ippon01vBox);
-
-            ippon01scene.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            warningStage.setScene(ippon01scene);
-
-            warningStage.requestFocus();
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.show();
-
+            }
+            r_flag = false;
+            updateControlStage();
         });
         // strg + 1
 
-        Button editWaza_ari01 = new Button("Waza-ari [strg + 2] : " + f.getWaza_ari01());
+        Button editWaza_ari01 = new Button("Waza-ari [S] : " + f.getWaza_ari01());
         editWaza_ari01.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Waza-ari von " + f.getName01() + " ändern");
-
-            Label info = new Label(f.getName01() + " hat " + f.getWaza_ari01() + " Waza-ari. " + (f.getWaza_ari01() > 1 ? f.getName01() + " hätte gewonnen" : ""));
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incWaza_ari01();
-                info.setText(f.getName01() + " hat " + f.getWaza_ari01() + " Waza-ari. " + (f.getWaza_ari01() > 1 ? f.getName01() + " hätte gewonnen" : ""));
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decWaza_ari01();
-                info.setText(f.getName01() + " hat " + f.getWaza_ari01() + " Waza-ari. " + (f.getWaza_ari01() > 1 ? f.getName01() + " hätte gewonnen" : ""));
-            });
-
-            HBox buttons = new HBox(inc, dec);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            VBox warningRoot = new VBox(buttons, info, close);
-
-            Scene scn = new Scene(warningRoot);
-
-            scn.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.setScene(scn);
-            warningStage.requestFocus();
-            warningStage.show();
-
-
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decWaza_ari01();
+            }else{
+                allFighterPairs.get(kampfIndex).incWaza_ari01();
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) checkWinner();
+            }
+            r_flag = false;
+            updateControlStage();
         });
         // strg + 2
 
-        Button editYuko01 = new Button("Yuko [strg + arrow uup + 3] : " + f.getYuko01());
+        Button editYuko01 = new Button("Yuko [D] : " + f.getYuko01());
         editYuko01.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Yuko von " + f.getName01() + " ändern");
-
-
-            Label info = new Label(f.getName01() + " hat " + f.getYuko01() + " Yuko.");
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incYuko01();
-                info.setText(f.getName01() + " hat " + f.getYuko01() + " Yuko.");
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decYuko01();
-                info.setText(f.getName01() + " hat " + f.getYuko01() + " Yuko.");
-            });
-
-            HBox buttons = new HBox(inc, dec);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            VBox warningRoot = new VBox(buttons, info, close);
-
-            Scene scn = new Scene(warningRoot);
-
-            scn.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.setScene(scn);
-            warningStage.requestFocus();
-            warningStage.show();
-
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decYuko01();
+            }else{
+                allFighterPairs.get(kampfIndex).incYuko01();
+            }
+            r_flag = false;
+            updateControlStage();
         });
         // strg + 3
 
-        Button editShido01 = new Button("Shido [strg + 4] : " + f.getShido01());
+        Button editShido01 = new Button("Shido [G] : " + f.getShido01());
         editShido01.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Shido von " + f.getName01() + " ändern");
-
-            Label info = new Label(f.getName01() + " hat " + f.getShido01() + " Shido. " + (f.getShido01() >= 3 ? f.getName01() + " hätte ein Hansoku-make" : ""));
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incShido01();
-                info.setText(f.getName01() + " hat " + f.getShido01() + " Shido. " + (f.getShido01() >= 3 ? f.getName01() + " hätte ein Hansoku-make" : ""));
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decShido01();
-                info.setText(f.getName01() + " hat " + f.getShido01() + " Shido. " + (f.getShido01() >= 3 ? f.getName01() + " hätte ein Hansoku-make" : ""));
-            });
-
-            HBox buttons = new HBox(inc, dec);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            VBox warningRoot = new VBox(buttons, info, close);
-
-            Scene scn = new Scene(warningRoot);
-
-            scn.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.setScene(scn);
-            warningStage.requestFocus();
-            warningStage.show();
-
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decShido01();
+            }else{
+                allFighterPairs.get(kampfIndex).incShido01();
+            }
+            r_flag = false;
+            updateControlStage();
         });
-        // strg + 4
+
 
         Button hansoku_make01 = new Button("Hansoku-make");
         hansoku_make01.setDisable(!f.isHansoku_make01());
@@ -702,32 +544,21 @@ public class StartClass extends Application {
 
         VBox controls01 = new VBox(10, editIppon01, editWaza_ari01, editYuko01, editShido01, hansoku_make01);
 
-        osae_komi01 = new Button(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
+        osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi  [F]");
 
         osae_komi01.setOnAction(actionEvent -> {
-            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
-            //System.out.println("osae_komi01 clicked");
-            if(festhalterzeit02 != null) reset02.fire();
-            if(isFesthalter01){
-                //wenn festhaler gerade ist, dann wird gestopt
-                stopOaseiKomi01();
-            }else{
-                if(festhalertLabel01.getText().isEmpty()) {
-                    festhalertLabel01.setText(formatTime(0));
-                    mv.updateOaseiKomi01(festhalertLabel01.getText());
-                }
+            if(r_flag){
 
-                startOaseiKomi01();
+            }else{
+
             }
-            isFesthalter01 = !isFesthalter01;
-            osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
         });
 
-        reset01 = new Button("Reset Oasei-Komi [strg + 6]");
+        reset01 = new Button("Reset Oasei-Komi [(r-mode) f)]");
         reset01.setOnAction(actionEvent -> {
             resetOaseiKomi01();
             isFesthalter01 = false;
-            osae_komi01.setText(isFesthalter01 ? "Toketa\n[strg + 5]" : "Osae-komi" + "\n[strg + 5]");
+            osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
         });
 
 
@@ -747,7 +578,7 @@ public class StartClass extends Application {
         String points02 = "0";
         if(f.getIppon02() > 0 || f.getWaza_ari02() == 2){
             points02 = "100";
-            checkWinner();
+            if(!r_flag) checkWinner();
         }
         else {
             int tmp = 10 * f.getWaza_ari02() + f.getYuko02();
@@ -756,214 +587,52 @@ public class StartClass extends Application {
 
         Label points02l = new Label(points02);
 
-        Button editIppon02 = new Button("Ippon [alt + 1] : " + f.getIppon02());
+        Button editIppon02 = new Button("Ippon [Ö] : " + f.getIppon02());
         editIppon02.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Ippon von " + f.getName02() + " ändern");
-            Label info = new Label(f.getName02() + " hat "+f.getIppon02()+" Ippon. " + (f.getIppon02() > 1 ? f.getName02() + "Hat jetzt theoretisch gewonnen." : ""));
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incIppon02();
-                info.setText(f.getName02() + " hat "+f.getIppon02()+" Ippon. " + (f.getIppon02() > 1 ? f.getName02() + "Hat jetzt theoretisch gewonnen." : ""));
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decIppon02();
+            }else{
+                allFighterPairs.get(kampfIndex).incIppon02();
                 checkWinner();
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decIppon02();
-                info.setText(f.getName02() + " hat "+f.getIppon02()+" Ippon. " + (f.getIppon02() > 1 ? f.getName02() + "Hat jetzt theoretisch gewonnen." : ""));
-            });
-
-            HBox buttons = new HBox(dec, inc);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-            });
-
-            VBox ippon02vBox = new VBox(buttons, info, close);
-
-
-            Scene ippon02scene = new Scene(ippon02vBox);
-
-            ippon02scene.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            warningStage.setScene(ippon02scene);
-
-            warningStage.requestFocus();
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.show();
+            }
+            r_flag = false;
+            updateControlStage();
         });
 
 
-        Button editWaza_ari02 = new Button("Waza-ari [alt + 2] : " + f.getWaza_ari02());
+        Button editWaza_ari02 = new Button("Waza-ari [L] : " + f.getWaza_ari02());
         editWaza_ari02.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Waza-ari von " + f.getName02() + " ändern");
-
-            Label info = new Label(f.getName02() + " hat " + f.getWaza_ari02() + " Waza-ari. " + (f.getWaza_ari02() > 1 ? f.getName02() + " hätte gewonnen" : ""));
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incWaza_ari02();
-                info.setText(f.getName02() + " hat " + f.getWaza_ari02() + " Waza-ari. " + (f.getWaza_ari02() > 1 ? f.getName02() + " hätte gewonnen" : ""));
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decWaza_ari02();
-                info.setText(f.getName02() + " hat " + f.getWaza_ari02() + " Waza-ari. " + (f.getWaza_ari02() > 1 ? f.getName02() + " hätte gewonnen" : ""));
-            });
-
-            HBox buttons = new HBox(inc, dec);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            VBox warningRoot = new VBox(buttons, info, close);
-
-            Scene scn = new Scene(warningRoot);
-
-            scn.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.setScene(scn);
-            warningStage.requestFocus();
-            warningStage.show();
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decWaza_ari02();
+            }else{
+                allFighterPairs.get(kampfIndex).incWaza_ari02();
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) checkWinner();
+            }
+            r_flag = false;
+            updateControlStage();
         });
 
 
-        Button editYuko02 = new Button("Yuko [alt + 3] : " + f.getYuko02());
+        Button editYuko02 = new Button("Yuko [K] : " + f.getYuko02());
         editYuko02.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Yuko von " + f.getName02() + " ändern");
-
-
-            Label info = new Label(f.getName02() + " hat " + f.getYuko02() + " Yuko.");
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incYuko02();
-                info.setText(f.getName02() + " hat " + f.getYuko02() + " Yuko.");
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decYuko02();
-                info.setText(f.getName02() + " hat " + f.getYuko02() + " Yuko.");
-            });
-
-            HBox buttons = new HBox(inc, dec);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-            });
-
-            VBox warningRoot = new VBox(buttons, info, close);
-
-            Scene scn = new Scene(warningRoot);
-
-            scn.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.setScene(scn);
-            warningStage.requestFocus();
-            warningStage.show();
+            if (r_flag) {
+                allFighterPairs.get(kampfIndex).decYuko02();
+            }else{
+                allFighterPairs.get(kampfIndex).incYuko02();
+            }
+            r_flag = false;
+            updateControlStage();
         });
 
-        Button editShido02 = new Button("Shido [alt + 4] : " + f.getShido02());
+        Button editShido02 = new Button("Shido [H] : " + f.getShido02());
         editShido02.setOnAction(actionEvent -> {
-            Stage warningStage = new Stage();
-            warningStage.initOwner(controlStage);
-            warningStage.initModality(Modality.WINDOW_MODAL);
-            warningStage.setTitle("Shido von " + f.getName02() + " ändern");
-
-            Label info = new Label(f.getName02() + " hat " + f.getShido02() + " Shido. " + (f.getShido02() >= 3 ? f.getName02() + " hätte ein Hansoku-make" : ""));
-            Button inc = new Button("+");
-            Button dec = new Button("-");
-            inc.setOnAction(actionEvent1 -> {
-                f.incShido02();
-                info.setText(f.getName02() + " hat " + f.getShido02() + " Shido. " + (f.getShido02() >= 3 ? f.getName02() + " hätte ein Hansoku-make" : ""));
-            });
-            dec.setOnAction(actionEvent1 -> {
-                f.decShido02();
-                info.setText(f.getName02() + " hat " + f.getShido02() + " Shido. " + (f.getShido02() >= 3 ? f.getName02() + " hätte ein Hansoku-make" : ""));
-            });
-
-            HBox buttons = new HBox(inc, dec);
-
-            Button close = new Button("exit");
-
-            close.setOnAction(actionEvent1 -> {
-                warningStage.close();
-                updateControlStage();
-
-            });
-
-            warningStage.setOnCloseRequest(windowEvent -> {
-                close.fire();
-                fightPane.requestFocus();
-            });
-
-            VBox warningRoot = new VBox(buttons, info, close);
-
-            Scene scn = new Scene(warningRoot);
-
-            scn.setOnKeyPressed(keyEvent -> {
-                if(keyEvent.getCode().equals(KeyCode.PLUS)) inc.fire();
-                if(keyEvent.getCode().equals(KeyCode.MINUS)) dec.fire();
-                if(keyEvent.getCode().equals(KeyCode.ESCAPE) || keyEvent.getCode().equals(KeyCode.ENTER)) close.fire();
-            });
-
-            warningStage.setMinWidth(300);
-            warningStage.setMinHeight(200);
-
-            warningStage.setScene(scn);
-            warningStage.requestFocus();
-            warningStage.show();
+            if(r_flag){
+                allFighterPairs.get(kampfIndex).decShido02();
+            }else{
+                allFighterPairs.get(kampfIndex).incShido02();
+            }
+            r_flag = false;
+            updateControlStage();
         });
 
 
@@ -975,7 +644,7 @@ public class StartClass extends Application {
 
         VBox controls02 = new VBox(10, editIppon02, editWaza_ari02, editYuko02, editShido02, hansoku_make02);
 
-        osae_komi02 = new Button(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
+        osae_komi02 = new Button(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         osae_komi02.setOnAction(actionEvent -> {
             // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
             //System.out.println("osae_komi02 clicked");
@@ -991,14 +660,14 @@ public class StartClass extends Application {
                 startOaseiKomi02();
             }
             isFesthalter02 = !isFesthalter02;
-            osae_komi02.setText(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
+            osae_komi02.setText(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         });
 
-        reset02 = new Button("Reset Oasei-Komi [alt + 6]");
+        reset02 = new Button("Reset Oasei-Komi [(r-mode) + J)]");
         reset02.setOnAction(actionEvent -> {
             resetOaseiKomi02();
             isFesthalter02 = false;
-            osae_komi02.setText(isFesthalter02 ? "Toketa\n[alt + 5]" : "Osae-komi" + "\n[alt + 5]");
+            osae_komi02.setText(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         });
 
         lowerFighter.getChildren().addAll(daten02, points02l, controls02, osae_komi02, reset02);
@@ -1010,31 +679,33 @@ public class StartClass extends Application {
 
         // TIMERS END
         //################################################################################################
-        VBox contents = new VBox(topBox, upperFighter, lowerFighter, timers);
+        VBox contents = new VBox(top, upperFighter, lowerFighter, timers);
         fightPane.setCenter(contents);
         fightPane.setFocusTraversable(true);
 
-        fightPane.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT1) editIppon01.fire();
-            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT2) editWaza_ari01.fire();
-            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT3) editYuko01.fire();
-            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT4) editShido01.fire();
-            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT5) osae_komi01.fire();
-            if(keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.DIGIT6) reset01.fire();
+        fightPane.setOnKeyTyped(keyEvent -> {
+            switch (keyEvent.getCharacter().toLowerCase()){
+                case "a" -> editIppon01.fire();
+                case "ö" -> editIppon02.fire();
+                case "s" -> editWaza_ari01.fire();
+                case "l" -> editWaza_ari02.fire();
+                case "d" -> editYuko01.fire();
+                case "k" -> editYuko02.fire();
+                case "f" -> osae_komi01.fire();
+                case "j" -> osae_komi02.fire();
+                case "g" -> editShido01.fire();
+                case "h" -> editShido02.fire();
+                case " " -> start_stop.fire();
+                case "r" -> {
+                    r_flag = !r_flag;
+                    updateControlStage();
+                }
 
-            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT1) editIppon02.fire();
-            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT2) editWaza_ari02.fire();
-            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT3) editYuko02.fire();
-            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT4) editShido02.fire();
-            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT5) osae_komi02.fire();
-            if(keyEvent.isAltDown() && keyEvent.getCode() == KeyCode.DIGIT6) reset02.fire();
-
-            if(keyEvent.getCode() == KeyCode.SPACE){
-
-                start_stop.fire();
             }
 
 
+            //updateControlStage();
+            //schauen wie und wo ich mv updaten muss
 
         });
 
@@ -1116,12 +787,28 @@ public class StartClass extends Application {
             resetOaseiKomi01();
             return;
         }
+
+        /*
+        Wenn davor der andere Festhalter war, wird diese pausiert und
+        die Zeit gespeichert. Mit dem boolean before wird abgespeichert,
+        ob es eine Zeit davor gab. Das brauche ich später
+         */
+        boolean before = false;
+        Duration timeFromBefore = null;
+        if(festhalterzeit02 != null && festhalterzeit01 == null){
+            stopOaseiKomi02();
+            timeFromBefore= festhalterzeit02.getCurrentTime();
+            before = true;
+            resetOaseiKomi02();
+        }
+
         if(festhalterzeit01 == null){
             if(progressBar01 == null){
                 progressBar01 = new ProgressBar(0);
                 mv.initProgressbar01();
             }
-            festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
+
+            festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
                 remainingOaseKomi++;
                 festhalertLabel01.setText(formatTime(remainingOaseKomi));
                 //mv updaten
@@ -1129,33 +816,29 @@ public class StartClass extends Application {
                 //progressbar
                 double progress = (double) remainingOaseKomi / OASEI_KOMI;
                 if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
+                //diese Progressbar
                 progressBar01.setProgress(progress);
+                //mv Progressbar
                 mv.updateProgressbar01(progress);
                 if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
-                    //System.out.println("im if");
-                    festhalterzeit01.stop();
+                    stopOaseiKomi01();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
                     allFighterPairs.get(kampfIndex).incWaza_ari01();
                     checkWinner();
-
-                }
-                else if(remainingOaseKomi == OASEI_KOMI){
-                    festhalterzeit01.stop();
+                }else if(remainingOaseKomi == OASEI_KOMI){
+                    stopOaseiKomi01();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
-
                     allFighterPairs.get(kampfIndex).incIppon01();
-
-                    //warnWinning01();
                     checkWinner();
                 }
             }));
             festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
+            if(timeFromBefore != null)festhalterzeit01.jumpTo(timeFromBefore);
             drawBottom();
             mv.drawBottom();
         }
-
         festhalterzeit01.play();
     }
 
