@@ -558,6 +558,7 @@ public class StartClass extends Application {
             }
             r_flag = false;
             osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
+            osae_komi02.setText(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         });
 
         reset01 = new Button("Reset Oasei-Komi");
@@ -661,6 +662,7 @@ public class StartClass extends Application {
             }
             r_flag = false;
             osae_komi02.setText(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
+            osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
         });
 
         reset02 = new Button("Reset Oasei-Komi");
