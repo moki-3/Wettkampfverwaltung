@@ -712,3 +712,92 @@ private void startOaseiKomi01(){
 
         festhalterzeit01.play();
     }
+
+
+
+
+    ############################################################################
+
+
+
+    private void startOaseiKomi01(){
+            /*
+            wenn die Timeline fighTime nicht exestiert oder gestoppt ist, wird der
+            resetOaseiKomi01 aufgerufen.
+            Das ganze wird aufgerufen, wenn der Kampf noch nicht gestartet hat
+             */
+            if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
+                resetOaseiKomi01();
+                return;
+            }
+
+            /*
+            Wenn davor der andere Festhalter war, wird diese pausiert und
+            die Zeit gespeichert. Mit dem boolean before wird abgespeichert,
+            ob es eine Zeit davor gab. Das brauche ich später
+             */
+            boolean before = false;
+            int seconds = 0;
+            if(festhalterzeit02 != null && festhalterzeit01 == null){
+                stopOaseiKomi02();
+
+                String[] parts = festhalertLabel02.getText().split(":");
+                seconds = Integer.parseInt(parts[1]);
+                before = true;
+                resetOaseiKomi02();
+                System.out.println("seconds: " + seconds);
+
+            }
+
+
+
+
+
+            if(festhalterzeit01 == null){
+                if(progressBar01 == null){
+                    progressBar01 = new ProgressBar(0);
+                    mv.initProgressbar01();
+                }
+
+                festhalterzeit01 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
+                    remainingOaseKomi++;
+                    festhalertLabel01.setText(formatTime(remainingOaseKomi));
+                    //mv updaten
+                    mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
+                    //progressbar
+                    double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                    if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
+                    //diese Progressbar
+                    progressBar01.setProgress(progress);
+                    //mv Progressbar
+                    mv.updateProgressbar01(progress);
+                    if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
+                        stopOaseiKomi01();
+                        progressBar01.setProgress(1.0);
+                        mv.updateProgressbar01(1.0);
+                        allFighterPairs.get(kampfIndex).incWaza_ari01();
+                        checkWinner();
+                    }else if(remainingOaseKomi == OASEI_KOMI){
+                        stopOaseiKomi01();
+                        progressBar01.setProgress(1.0);
+                        mv.updateProgressbar01(1.0);
+                        allFighterPairs.get(kampfIndex).incIppon01();
+                        checkWinner();
+                    }
+                }));
+                festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
+                if(before){
+                    remainingOaseKomi = seconds;
+                    festhalertLabel01.setText(formatTime(remainingOaseKomi));
+                    mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
+                    double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                    if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
+                    progressBar01.setProgress(progress);
+                    mv.updateProgressbar01(progress);
+
+                }
+                drawBottom();
+                mv.drawBottom();
+            }
+            festhalterzeit01.play();
+        }

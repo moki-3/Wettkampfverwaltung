@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.sql.SQLOutput;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -71,6 +72,7 @@ public class StartClass extends Application {
 
     private boolean r_flag;
 
+    Stage chechWinnerStage;
 
 
 
@@ -219,7 +221,7 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
-        System.out.println(r_flag);
+        System.out.println("r_flag: " + r_flag);
         if(isFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
             if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
@@ -547,14 +549,18 @@ public class StartClass extends Application {
         osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi  [F]");
 
         osae_komi01.setOnAction(actionEvent -> {
-            if(r_flag){
-
+            if(r_flag || osae_komi01.getText().equals("Toketa [F]")){
+                stopOaseiKomi01();
+                isFesthalter01 = false;
             }else{
-
+                startOaseiKomi01();
+                isFesthalter01 = true;
             }
+            r_flag = false;
+            osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
         });
 
-        reset01 = new Button("Reset Oasei-Komi [(r-mode) f)]");
+        reset01 = new Button("Reset Oasei-Komi");
         reset01.setOnAction(actionEvent -> {
             resetOaseiKomi01();
             isFesthalter01 = false;
@@ -646,24 +652,18 @@ public class StartClass extends Application {
 
         osae_komi02 = new Button(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         osae_komi02.setOnAction(actionEvent -> {
-            // action und auch css klassen ändern mit if(osae_komi01.getName().equals...
-            //System.out.println("osae_komi02 clicked");
-            if(festhalterzeit01 != null) reset01.fire();
-            if(isFesthalter02){
-                //wenn festhaler gerade ist, dann wird gestopt
+            if(r_flag || osae_komi02.getText().equals("Toketa [J]")){
                 stopOaseiKomi02();
+                isFesthalter02 = false;
             }else{
-                if(festhalertLabel02.getText().isEmpty()) {
-                    festhalertLabel02.setText(formatTime(0));
-                    mv.updateOaseiKomi02(festhalertLabel02.getText());
-                }
                 startOaseiKomi02();
+                isFesthalter02 = true;
             }
-            isFesthalter02 = !isFesthalter02;
+            r_flag = false;
             osae_komi02.setText(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         });
 
-        reset02 = new Button("Reset Oasei-Komi [(r-mode) + J)]");
+        reset02 = new Button("Reset Oasei-Komi");
         reset02.setOnAction(actionEvent -> {
             resetOaseiKomi02();
             isFesthalter02 = false;
@@ -783,6 +783,11 @@ public class StartClass extends Application {
 
 
     private void startOaseiKomi01(){
+        /*
+        wenn die Timeline fighTime nicht exestiert oder gestoppt ist, wird der
+        resetOaseiKomi01 aufgerufen.
+        Das ganze wird aufgerufen, wenn der Kampf noch nicht gestartet hat
+         */
         if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
             resetOaseiKomi01();
             return;
@@ -794,13 +799,21 @@ public class StartClass extends Application {
         ob es eine Zeit davor gab. Das brauche ich später
          */
         boolean before = false;
-        Duration timeFromBefore = null;
+        int seconds = 0;
         if(festhalterzeit02 != null && festhalterzeit01 == null){
             stopOaseiKomi02();
-            timeFromBefore= festhalterzeit02.getCurrentTime();
+
+            String[] parts = festhalertLabel02.getText().split(":");
+            seconds = Integer.parseInt(parts[1]);
             before = true;
             resetOaseiKomi02();
+            System.out.println("seconds: " + seconds);
+
         }
+
+
+
+
 
         if(festhalterzeit01 == null){
             if(progressBar01 == null){
@@ -835,7 +848,16 @@ public class StartClass extends Application {
                 }
             }));
             festhalterzeit01.setCycleCount(Timeline.INDEFINITE);
-            if(timeFromBefore != null)festhalterzeit01.jumpTo(timeFromBefore);
+            if(before){
+                remainingOaseKomi = seconds;
+                festhalertLabel01.setText(formatTime(remainingOaseKomi));
+                mv.updateOaseiKomi01(formatTime(remainingOaseKomi));
+                double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
+                progressBar01.setProgress(progress);
+                mv.updateProgressbar01(progress);
+
+            }
             drawBottom();
             mv.drawBottom();
         }
@@ -843,44 +865,61 @@ public class StartClass extends Application {
     }
 
     private void startOaseiKomi02(){
-        if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
+        if(fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED){
             resetOaseiKomi02();
             return;
         }
+
+        boolean before = false;
+        int seconds = 0;
+        if(festhalterzeit01 != null && festhalterzeit02 == null){
+            stopOaseiKomi01();
+            String[] parts = festhalertLabel01.getText().split(":");
+            seconds = Integer.parseInt(parts[1]);
+            before = true;
+            resetOaseiKomi01();
+            System.out.println("Seconds: " + seconds);
+        }
+
         if(festhalterzeit02 == null){
-            if(progressBar02 == null) {
+            if(progressBar02 == null){
                 progressBar02 = new ProgressBar(0);
                 mv.initProgressbar02();
             }
-            festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) ->{
+
+            festhalterzeit02 = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
                 remainingOaseKomi++;
                 festhalertLabel02.setText(formatTime(remainingOaseKomi));
-                //mv updaten
                 mv.updateOaseiKomi02(formatTime(remainingOaseKomi));
-                //progressbar
+
                 double progress = (double) remainingOaseKomi / OASEI_KOMI;
                 if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
                 progressBar02.setProgress(progress);
                 mv.updateProgressbar02(progress);
                 if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
-                    festhalterzeit02.stop();
-                    progressBar02.setProgress(1.0);
-                    mv.updateProgressbar02(1.0);
-
-                    allFighterPairs.get(kampfIndex).incWaza_ari02();
-                    checkWinner();
-
-                }else if(remainingOaseKomi == OASEI_KOMI){
-                    festhalterzeit02.stop();
+                    stopOaseiKomi02();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
                     allFighterPairs.get(kampfIndex).incIppon02();
-
-                    //warnWinning02();
+                    checkWinner();
+                }else if(remainingOaseKomi == OASEI_KOMI){
+                    stopOaseiKomi02();
+                    progressBar02.setProgress(1.0);
+                    mv.updateProgressbar02(1.0);
+                    allFighterPairs.get(kampfIndex).incIppon02();
                     checkWinner();
                 }
             }));
             festhalterzeit02.setCycleCount(Timeline.INDEFINITE);
+            if(before){
+                remainingOaseKomi = seconds;
+                festhalertLabel02.setText(formatTime(remainingOaseKomi));
+                mv.updateOaseiKomi02(formatTime(remainingOaseKomi));
+                double progress = (double) remainingOaseKomi / OASEI_KOMI;
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
+                progressBar02.setProgress(progress);
+                mv.updateProgressbar02(progress);
+            }
             drawBottom();
             mv.drawBottom();
         }
@@ -1025,9 +1064,14 @@ public class StartClass extends Application {
             winner = allFighterPairs.get(kampfIndex).getName02();
         }
 
-        Stage smallStage = new Stage();
-        smallStage.initOwner(controlStage);
-        smallStage.initModality(Modality.WINDOW_MODAL);
+        if(chechWinnerStage != null && chechWinnerStage.isShowing()){
+            chechWinnerStage.close();
+            chechWinnerStage = null;
+        }
+
+        chechWinnerStage = new Stage();
+        chechWinnerStage.initOwner(controlStage);
+        chechWinnerStage.initModality(Modality.WINDOW_MODAL);
 
         BorderPane smallRoot = new BorderPane();
 
@@ -1063,7 +1107,7 @@ public class StartClass extends Application {
 
             Button ok = new Button("ok");
 
-            ok.setOnAction(actionEvent -> smallStage.close());
+            ok.setOnAction(actionEvent -> chechWinnerStage.close());
 
             Button disable = new Button("Ich brauche noch kein Golden Score");
             disable.setOnAction(actionEvent -> {
@@ -1081,7 +1125,7 @@ public class StartClass extends Application {
                 if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
             });
 
-            smallStage.setScene(scn);
+            chechWinnerStage.setScene(scn);
         }else{
 
             Button b01 = new Button(allFighterPairs.get(kampfIndex).getName01());
@@ -1091,7 +1135,7 @@ public class StartClass extends Application {
 
 
             Button cancel = new Button("Cancel");
-            cancel.setOnAction(actionEvent -> smallStage.close());
+            cancel.setOnAction(actionEvent -> chechWinnerStage.close());
 
 
             HBox buttons = new HBox(30, b01, b02, cancel);
@@ -1114,11 +1158,11 @@ public class StartClass extends Application {
             });
 
 
-            smallStage.setScene(scn);
+            chechWinnerStage.setScene(scn);
 
         }
 
-        smallStage.show();
+        chechWinnerStage.show();
 
     }
 
