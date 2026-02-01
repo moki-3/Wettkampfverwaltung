@@ -5,6 +5,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,12 +15,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.swing.*;
 import java.io.File;
 import java.sql.SQLOutput;
 import java.sql.Time;
@@ -73,6 +77,9 @@ public class StartClass extends Application {
     private boolean r_flag;
 
     Stage chechWinnerStage;
+
+    //wenn dieser boolean wahr ist, kann man den nächsten kampf auswählen
+    boolean chooseFight = false;
 
 
 
@@ -222,10 +229,11 @@ public class StartClass extends Application {
      */
     public void updateViewStage(){
         System.out.println("r_flag: " + r_flag);
+        System.out.println("isFight: " + isFight);
         if(isFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
-            if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
-
+            //if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
+            mv.updateTimeLabel(formatTime(remainingtime));
             mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
         }else {
             if(kampfIndex + 1 < allFighterPairs.size()){
@@ -234,8 +242,6 @@ public class StartClass extends Application {
                 mv.timeFiller(vereine, null);
             }
         }
-
-
     }
 
 
@@ -244,19 +250,27 @@ public class StartClass extends Application {
         sie managed auch alles in der ViewStage
         es steht dann "Bitte nächsten kampf auswählen" und man kann links den nächsten kampf auswählen
      */
-    public void continueToNextFight(int index){
+    public void continueToNextFight(){
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
-        kampfIndex = index;
 
+        System.out.println("in continueToNextFight");
 
         //neuen Kampf in mv anzeigen
-        mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
+
 
         //RemainingTime in mv setzten
-        if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")) mv.setFightTime(U10_TIME);
-        else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.setFightTime(U12_TIME);
+        //if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")) mv.setFightTime(U10_TIME);
+        //else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.setFightTime(U12_TIME);
 
-        updateFightControlView(allFighterPairs.get(kampfIndex));
+        //updateFightControlView(allFighterPairs.get(kampfIndex));
+    }
+
+    /*
+    Diese Methode wird aufgerufen wenn man links einen Kampf klickt unc chooseFight = true ist.
+    Dann wird die view in controlstage und in mv upgedated
+     */
+    public void setNextFight(int index){
+        ;
     }
 
 
@@ -447,8 +461,20 @@ public class StartClass extends Application {
             }
             //start_stop.setText(isFight ? "Matte" : "Hajime");
 
-            stopOaseiKomi01();
-            stopOaseiKomi02();
+
+            if(osae_komi02.getText().equals("Toketa [J]")) {
+                stopOaseiKomi02();
+                isFesthalter02 = false;
+            }
+            if(osae_komi01.getText().equals("Toketa [J]")) {
+                stopOaseiKomi01();
+                isFesthalter02 = false;
+            }
+
+            r_flag = false;
+            osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
+            osae_komi02.setText(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
+
             resetOaseiKomi01();
             resetOaseiKomi02();
 
@@ -546,7 +572,7 @@ public class StartClass extends Application {
 
         VBox controls01 = new VBox(10, editIppon01, editWaza_ari01, editYuko01, editShido01, hansoku_make01);
 
-        osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi  [F]");
+        osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
 
         osae_komi01.setOnAction(actionEvent -> {
             if(r_flag || osae_komi01.getText().equals("Toketa [F]")){
@@ -722,17 +748,8 @@ public class StartClass extends Application {
 
     private void resetOaseiKomi01(){
         //Punkte vergeben
-        if(remainingOaseKomi == OASEI_KOMI){
-            allFighterPairs.get(kampfIndex).incIppon01();
-
-            //warnWinning01();
-            checkWinner();
-        }else if(remainingOaseKomi >= OASEI_KOMI_SHORT){
+        if(remainingOaseKomi >= OASEI_KOMI_SHORT && allFighterPairs.get(kampfIndex).getWaza_ari01() == 0){
             allFighterPairs.get(kampfIndex).incWaza_ari01();
-            if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) {
-                //warnWinning01();
-                checkWinner();
-            }
         }
         if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
         if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
@@ -755,17 +772,10 @@ public class StartClass extends Application {
 
     private void resetOaseiKomi02(){
         //Punkte vergeben
-        if(remainingOaseKomi == OASEI_KOMI){
-            allFighterPairs.get(kampfIndex).incIppon02();
-            //warnWinning02();
-            checkWinner();
-        }else if(remainingOaseKomi >= OASEI_KOMI_SHORT){
+        if(remainingOaseKomi >= OASEI_KOMI_SHORT && allFighterPairs.get(kampfIndex).getWaza_ari02() == 0){
             allFighterPairs.get(kampfIndex).incWaza_ari02();
-            if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) {
-                //warnWinning01();
-                checkWinner();
-            }
         }
+
         if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
         if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
         if(festhalterzeit02 != null) festhalterzeit02.stop();
@@ -806,11 +816,12 @@ public class StartClass extends Application {
             stopOaseiKomi02();
 
             String[] parts = festhalertLabel02.getText().split(":");
-            seconds = Integer.parseInt(parts[1]);
-            before = true;
-            resetOaseiKomi02();
-            System.out.println("seconds: " + seconds);
-
+            if (parts.length <= 2) {
+                seconds = Integer.parseInt(parts[1]);
+                before = true;
+                resetOaseiKomi02();
+                System.out.println("seconds: " + seconds);
+            }
         }
 
 
@@ -877,10 +888,12 @@ public class StartClass extends Application {
         if(festhalterzeit01 != null && festhalterzeit02 == null){
             stopOaseiKomi01();
             String[] parts = festhalertLabel01.getText().split(":");
-            seconds = Integer.parseInt(parts[1]);
-            before = true;
-            resetOaseiKomi01();
-            System.out.println("Seconds: " + seconds);
+            if (parts.length <= 2) {
+                seconds = Integer.parseInt(parts[1]);
+                before = true;
+                resetOaseiKomi01();
+                System.out.println("Seconds: " + seconds);
+            }
         }
 
         if(festhalterzeit02 == null){
@@ -902,7 +915,7 @@ public class StartClass extends Application {
                     stopOaseiKomi02();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
-                    allFighterPairs.get(kampfIndex).incIppon02();
+                    allFighterPairs.get(kampfIndex).incWaza_ari02();
                     checkWinner();
                 }else if(remainingOaseKomi == OASEI_KOMI){
                     stopOaseiKomi02();
@@ -1050,6 +1063,9 @@ public class StartClass extends Application {
 
     // checkt wer gewonnen hat, wenn gleichstand ist dann wird golden score button disabled(false)
     private void checkWinner(){
+
+        resetTimer();
+
         int points01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
         int points02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
         if(points01 >= 100) points01 = 100;
@@ -1135,6 +1151,35 @@ public class StartClass extends Application {
 
             //hier if mit css machen, dass button, wo name gleich winner ist, primary button wird
 
+            b01.setOnAction(actionEvent -> {
+                allFighterPairs.get(kampfIndex).setWinner(allFighterPairs.get(kampfIndex).getName01());
+                allFighterPairs.get(kampfIndex).setWinnerVerein(allFighterPairs.get(kampfIndex).getVerein01());
+                for (Verein v : vereine){
+                    if(v.getName().equals(allFighterPairs.get(kampfIndex).getVerein01()) ){
+                        v.increasePoints(10);
+                        break;
+                    }
+                }
+                chechWinnerStage.close();
+                allFighterPairs.get(kampfIndex).setDone(true);
+                highlightWinner();
+            });
+
+            b02.setOnAction(actionEvent -> {
+                allFighterPairs.get(kampfIndex).setWinner(allFighterPairs.get(kampfIndex).getName02());
+                allFighterPairs.get(kampfIndex).setWinnerVerein(allFighterPairs.get(kampfIndex).getVerein02());
+                for (Verein v : vereine){
+                    if(v.getName().equals(allFighterPairs.get(kampfIndex).getVerein02()) ){
+                        v.increasePoints(10);
+                        break;
+                    }
+                }
+                chechWinnerStage.close();
+                allFighterPairs.get(kampfIndex).setDone(true);
+                highlightWinner();
+
+            });
+
 
             Button cancel = new Button("Cancel");
             cancel.setOnAction(actionEvent -> chechWinnerStage.close());
@@ -1186,6 +1231,96 @@ public class StartClass extends Application {
 
      */
 
+
+
+    private void highlightWinner(){
+
+
+
+
+        Label winner = new Label(allFighterPairs.get(kampfIndex).getWinner() + " hat gewonnen!");
+
+        String fighter01 = allFighterPairs.get(kampfIndex).getName01();
+        String fighter02 = allFighterPairs.get(kampfIndex).getName02();
+
+        Label winnerPoints = new Label();
+        Label winnerVerein = new Label();
+        Label name02 = new Label();
+        Label points02 = new Label();
+        Label verein02 = new Label();
+
+        if(allFighterPairs.get(kampfIndex).getWinner().equals(fighter01)){
+            System.out.println("winner: " + winner.getText());
+            System.out.println("Name01: " + allFighterPairs.get(kampfIndex).getName01());
+            System.out.println("Name02: " + allFighterPairs.get(kampfIndex).getName02());
+
+            //wenn 01 Gewinenr*in ist
+            int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() + allFighterPairs.get(kampfIndex).getWaza_ari01() + allFighterPairs.get(kampfIndex).getYuko01();
+            if(tmp01 >= 100) tmp01 = 100;
+            winnerPoints.setText(""+tmp01);
+
+            winnerVerein.setText(allFighterPairs.get(kampfIndex).getVerein01());
+
+            name02.setText(allFighterPairs.get(kampfIndex).getName02());
+
+            int tmp02 = allFighterPairs.get(kampfIndex).getIppon02() + allFighterPairs.get(kampfIndex).getWaza_ari02() + allFighterPairs.get(kampfIndex).getYuko02();
+            if(tmp02 >= 100) tmp02 = 100;
+            points02.setText(""+tmp02);
+            verein02.setText(allFighterPairs.get(kampfIndex).getVerein02());
+
+
+
+        }else{
+            int tmp01 = allFighterPairs.get(kampfIndex).getIppon02() + allFighterPairs.get(kampfIndex).getWaza_ari02() + allFighterPairs.get(kampfIndex).getYuko02();
+            if(tmp01 >= 100) tmp01 = 100;
+            winnerPoints.setText(""+tmp01);
+
+            winnerVerein.setText(allFighterPairs.get(kampfIndex).getVerein02());
+
+            name02.setText(allFighterPairs.get(kampfIndex).getName01());
+
+            int tmp02 = allFighterPairs.get(kampfIndex).getIppon01() + allFighterPairs.get(kampfIndex).getWaza_ari01() + allFighterPairs.get(kampfIndex).getYuko01();
+            if(tmp02 >= 100) tmp02 = 100;
+            points02.setText(""+tmp02);
+            verein02.setText(allFighterPairs.get(kampfIndex).getVerein01());
+        }
+
+
+
+
+
+        System.out.println("winner: " + winner.getText());
+        System.out.println("winnerPoints: " + winnerPoints.getText());
+        System.out.println("winnerVerein: " + winnerVerein.getText());
+        System.out.println("name02: " + name02.getText());
+        System.out.println("points02: " + points02.getText());
+        System.out.println("verein02: " + verein02.getText());
+
+
+
+        VBox box01 = new VBox(10, winner, winnerPoints, winnerVerein);
+        VBox box02 = new VBox(10, name02, points02, verein02);
+        VBox contents = new VBox(30, box01, box02);
+
+
+        Button select = new Button("Weiter");
+        select.setOnAction(actionEvent -> continueToNextFight());
+
+
+
+        VBox allContents = new VBox(20, contents, select);
+        mv.hightlightWinner(winner.getText(), winnerPoints.getText(), winnerVerein.getText(), name02.getText(), points02.getText(), verein02.getText());
+
+
+        //controlRoot.setBottom(null);
+
+        controlRoot.setCenter(allContents);
+
+
+
+
+
+    }
 
 
 

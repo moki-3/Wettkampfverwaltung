@@ -16,7 +16,7 @@ public class FighterPair {
 
     private String winner = "nicht gesetzt";
     private String winnerVerein = "nicht gesetzt";
-    private int points = 0; // punkte die das gewinnerverein bekommt, zum nachrechnen. Ist ja redundant weil ic das ganze schon in der verein klasse berechne
+
     private boolean done = false; // boolean, um dann styleklassen gut zuzuteilen. Wichtig immer index der liste der fighterPairs speichern und über den index drauf zugreifen
 
     private int ippon01 = 0;
@@ -158,13 +158,7 @@ public class FighterPair {
         this.winner = winner;
     }
 
-    public int getPoints() {
-        return points;
-    }
 
-    public void increasePoints(int amount) {
-        this.points += amount;
-    }
 
     public FighterPair(String name01, String verein01, String name02, String verein02, String altersKlasse, String gewichtsKlasse) {
         this.name01 = name01;

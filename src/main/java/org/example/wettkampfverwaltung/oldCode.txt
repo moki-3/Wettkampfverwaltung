@@ -716,7 +716,7 @@ private void startOaseiKomi01(){
 
 
 
-    ############################################################################
+############################################################################
 
 
 
@@ -801,3 +801,39 @@ private void startOaseiKomi01(){
             }
             festhalterzeit01.play();
         }
+
+############################################################################
+
+Punkte vergebeb Oasei Komi:
+
+startOaseiKomi01:
+    Wenn Kämpfer01 >= 1 Waza ari hat, und remainingOaseKomi == OASEI_KOMI_SHORT (15s)
+        -> +1 Waza ari für Kämpfer01
+        checkWinner();
+    Wenn remainingOaseKomi == OASEI_KOMI (20s)
+        -> +1 Ippon
+        checkWinner();
+
+startOaseiKomi02:
+    Wenn Kämpfer02 >= 1 Waza ari, und  remainingOaseKomi == OASEI_KOMI_SHORT (15s)
+        -> +1 Waza ari für Kämpfer02
+        checkWinner();
+    Wenn remainingOaseKomi == OASEI_KOMI (20s)
+        -> +1 Ippon
+        checkWinner();
+
+
+
+Exception in thread "JavaFX Application Thread" java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+	at org.example.wettkampfverwaltung/org.example.wettkampfverwaltung.StartClass.startOaseiKomi02(StartClass.java:875)
+	at org.example.wettkampfverwaltung/org.example.wettkampfverwaltung.StartClass.lambda$updateFightControlView$21(StartClass.java:671)
+	at javafx.base@21.0.6/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:86)
+	at javafx.base@21.0.6/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:232)
+	at javafx.base@21.0.6/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:189)
+	at javafx.base@21.0.6/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base@21.0.6/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base@21.0.6/c om.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+
+
+############################################################################
+

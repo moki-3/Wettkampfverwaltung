@@ -196,7 +196,7 @@ public class ManageView {
     }
 
     public void initProgressbar02(){
-        progressbar02 = new ProgressBar(0);
+        progressbar02 = new ProgressBar(    0);
     }
 
     public void updateProgressbar01(double v){
@@ -219,6 +219,29 @@ public class ManageView {
         HBox bottombox = new HBox(10, box01, timeLabel, box02);
             bottombox.setAlignment(Pos.CENTER);
             viewRoot.setBottom(bottombox);
-        }
+    }
+
+
+    public void hightlightWinner(String winner, String winnerPoints, String winnerVerein, String name02, String points02, String verein02){
+
+        Label lwinner = new Label(winner);
+        Label lwinnerPoints = new Label(winnerPoints);
+        Label lwinnerVerein = new Label(winnerVerein);
+        Label lname02 = new Label(name02);
+        Label lpoints02 = new Label(points02);
+        Label lverein02 = new Label(verein02);
+
+
+        VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
+        VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
+        VBox contents = new VBox(30, box01, box02);
+
+
+
+        viewRoot.setCenter(contents);
+        viewRoot.setBottom(null);
 
     }
+
+
+}
