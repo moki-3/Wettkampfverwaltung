@@ -143,10 +143,13 @@ public class ManageView {
             Label nextN02 = new Label(next.getName02());
             Label l = new Label("Nächster Kampf:");
 
+            Label alter = new Label(next.getAltersKlasse());
+
             VBox box01 = new VBox(nextN01, nextV01);
             VBox box02 = new VBox(nextN02, nextV02);
             HBox nextFight = new HBox(box01, box02);
-            root.getChildren().addAll(l, nextFight);
+            VBox box = new VBox(nextFight, alter);
+            root.getChildren().addAll(l, box);
         }
         viewRoot.setCenter(root);
     }

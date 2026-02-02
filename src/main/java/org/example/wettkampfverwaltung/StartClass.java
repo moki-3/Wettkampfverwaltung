@@ -8,10 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -186,11 +183,71 @@ public class StartClass extends Application {
         });
 
         HBox fullscreenbox = new HBox(20, new Label("viewStage Vollbildmodus"), viewStageFullscreen);
-        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, createVereinList(),wf.createList());
+        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, createVereinList(), createList());
         controlRoot.setLeft(leftControls);
 
     }
 
+    public ScrollPane createList() {
+        VBox vbox = new VBox();
+        for (FighterPair fp : allFighterPairs) {
+//            Button button = new Button(fp.getName01() + " (" + fp.getVerein01() + ") " + " | "
+//                    + fp.getName02() + " (" + fp.getVerein02() + ") " + " | " + fp.getAltersKlasse() + fp.getGewichtsKlasse());
+            Label name01 = new Label(fp.getName01());
+            Label name02 = new Label(fp.getName02());
+            Label verein01 = new Label("(" + fp.getVerein01() + ")");
+            Label verein02 = new Label("(" + fp.getVerein02() + ")");
+            Label altersklasse = new Label(fp.getAltersKlasse());
+            Label gewichtsklasse = new Label(fp.getGewichtsKlasse());
+            if (!fp.getWinner().equals("nicht gesetzt")) {
+                //wenn es einen gewinner gibt, css klassen setzten
+                if (fp.getWinner().equals(name01.getText())) {
+                    /*
+                        CSS klassen: schrift bei name01 und verein01 grün, und bei name02 und verein02 rot machen
+                     */
+                } else {
+                    /*
+                        CSS klassen: schrift bei name02 und verein02 grün, und bei name01 und verein01 rot machen
+                     */
+                }
+
+            }
+
+            HBox row01 = new HBox();
+            HBox row02 = new HBox();
+            HBox row03 = new HBox();
+            row01.getChildren().addAll(name01, verein01);
+            row01.setSpacing(30);
+            row02.getChildren().addAll(name02, verein02);
+            row02.setSpacing(30);
+            row03.getChildren().addAll(altersklasse, gewichtsklasse);
+            row03.setSpacing(50);
+
+
+            //css klassen für die hboxes
+
+
+            VBox tmp = new VBox(10, row01, row02, row03);
+
+            //css klassen
+
+            tmp.setOnMouseClicked(mouseEvent -> {
+                int index = allFighterPairs.indexOf(fp);
+                System.out.println("\nvbox geklickt\t index = " + index);
+                System.out.println("chooseFight: " + chooseFight);
+                setNextFight(index);
+            });
+
+            vbox.getChildren().add(tmp);
+
+
+        }
+
+        ScrollPane sp = new ScrollPane(vbox);
+        sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // immer vertikal scrollen
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); //bei bedarf horizonal scrollen
+        return sp;
+    }
 
 
     /*
@@ -254,6 +311,12 @@ public class StartClass extends Application {
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
 
         System.out.println("in continueToNextFight");
+        mv.timeFiller(vereine, null);
+
+        Label text = new Label("Wähle den nächsten Kampf aus");
+        chooseFight = true;
+        controlRoot.setCenter(text);
+
 
         //neuen Kampf in mv anzeigen
 
@@ -270,7 +333,26 @@ public class StartClass extends Application {
     Dann wird die view in controlstage und in mv upgedated
      */
     public void setNextFight(int index){
-        ;
+        mv.timeFiller(vereine, allFighterPairs.get(index));
+        Label frage = new Label("Nächster Kampf:");
+        Label name01 = new Label(allFighterPairs.get(index).getName01());
+        Label verein01 = new Label(allFighterPairs.get(index).getVerein01());
+
+        Label name02 = new Label(allFighterPairs.get(index).getName02());
+        Label verein02 = new Label(allFighterPairs.get(index).getVerein02());
+
+        Label alter = new Label(allFighterPairs.get(kampfIndex).getAltersKlasse());
+
+
+        VBox box01 = new VBox(name01, verein01);
+        VBox box02 = new VBox(name02, verein02);
+        HBox nextFighters = new HBox(box01, box02);
+
+        Button validate = new Button("Weiter");
+        validate.setOnAction(actionEvent -> System.out.println("Weiter geklickt"));
+
+        VBox box = new VBox(frage, nextFighters, alter, validate);
+        controlRoot.setCenter(box);
     }
 
 
@@ -1255,7 +1337,7 @@ public class StartClass extends Application {
             System.out.println("Name02: " + allFighterPairs.get(kampfIndex).getName02());
 
             //wenn 01 Gewinenr*in ist
-            int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() + allFighterPairs.get(kampfIndex).getWaza_ari01() + allFighterPairs.get(kampfIndex).getYuko01();
+            int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
             if(tmp01 >= 100) tmp01 = 100;
             winnerPoints.setText(""+tmp01);
 
@@ -1263,7 +1345,7 @@ public class StartClass extends Application {
 
             name02.setText(allFighterPairs.get(kampfIndex).getName02());
 
-            int tmp02 = allFighterPairs.get(kampfIndex).getIppon02() + allFighterPairs.get(kampfIndex).getWaza_ari02() + allFighterPairs.get(kampfIndex).getYuko02();
+            int tmp02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
             if(tmp02 >= 100) tmp02 = 100;
             points02.setText(""+tmp02);
             verein02.setText(allFighterPairs.get(kampfIndex).getVerein02());
@@ -1271,7 +1353,7 @@ public class StartClass extends Application {
 
 
         }else{
-            int tmp01 = allFighterPairs.get(kampfIndex).getIppon02() + allFighterPairs.get(kampfIndex).getWaza_ari02() + allFighterPairs.get(kampfIndex).getYuko02();
+            int tmp01 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
             if(tmp01 >= 100) tmp01 = 100;
             winnerPoints.setText(""+tmp01);
 
@@ -1279,7 +1361,7 @@ public class StartClass extends Application {
 
             name02.setText(allFighterPairs.get(kampfIndex).getName01());
 
-            int tmp02 = allFighterPairs.get(kampfIndex).getIppon01() + allFighterPairs.get(kampfIndex).getWaza_ari01() + allFighterPairs.get(kampfIndex).getYuko01();
+            int tmp02 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
             if(tmp02 >= 100) tmp02 = 100;
             points02.setText(""+tmp02);
             verein02.setText(allFighterPairs.get(kampfIndex).getVerein01());
