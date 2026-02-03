@@ -235,7 +235,7 @@ public class StartClass extends Application {
                 int index = allFighterPairs.indexOf(fp);
                 System.out.println("\nvbox geklickt\t index = " + index);
                 System.out.println("chooseFight: " + chooseFight);
-                setNextFight(index);
+                if(chooseFight) setNextFight(index);
             });
 
             vbox.getChildren().add(tmp);
@@ -341,7 +341,7 @@ public class StartClass extends Application {
         Label name02 = new Label(allFighterPairs.get(index).getName02());
         Label verein02 = new Label(allFighterPairs.get(index).getVerein02());
 
-        Label alter = new Label(allFighterPairs.get(kampfIndex).getAltersKlasse());
+        Label alter = new Label(allFighterPairs.get(index).getAltersKlasse());
 
 
         VBox box01 = new VBox(name01, verein01);
@@ -349,11 +349,20 @@ public class StartClass extends Application {
         HBox nextFighters = new HBox(box01, box02);
 
         Button validate = new Button("Weiter");
-        validate.setOnAction(actionEvent -> System.out.println("Weiter geklickt"));
+        validate.setOnAction(actionEvent -> {
+            //System.out.println("Weiter geklickt");
+            chooseFight = false;
+            kampfIndex = index;
+            updateControlStage();
+
+        });
 
         VBox box = new VBox(frage, nextFighters, alter, validate);
         controlRoot.setCenter(box);
     }
+
+
+
 
 
     private void updateControlStage(){
@@ -928,7 +937,7 @@ public class StartClass extends Application {
                 progressBar01.setProgress(progress);
                 //mv Progressbar
                 mv.updateProgressbar01(progress);
-                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi >= OASEI_KOMI_SHORT){
                     stopOaseiKomi01();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
@@ -993,7 +1002,8 @@ public class StartClass extends Application {
                 if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1) progress = (double) remainingOaseKomi / OASEI_KOMI_SHORT;
                 progressBar02.setProgress(progress);
                 mv.updateProgressbar02(progress);
-                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1 && remainingOaseKomi == OASEI_KOMI_SHORT){
+                //remainingOaseKomi >= OASEI_KOMI_SHORT weil wenn man die person wechselt während dem festhalter
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1 && remainingOaseKomi >= OASEI_KOMI_SHORT){
                     stopOaseiKomi02();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
