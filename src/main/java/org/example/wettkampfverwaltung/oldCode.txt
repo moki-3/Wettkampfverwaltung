@@ -837,3 +837,20 @@ Exception in thread "JavaFX Application Thread" java.lang.ArrayIndexOutOfBoundsE
 
 ############################################################################
 
+Mehtode, die überprüft ob die Golden Score Zeit valide ist
+
+if(timeField.getText().length() != 5) warnung.setText("Ungültige Eingabe: die Eingabe muss 5 Zeichen lang sein. Aktuelle länge: " + timeField.getText().length());
+            else if(timeField.getText().toCharArray()[2] != ':') warnung.setText("Ungültige Eingabe: das 3. Zeichen muss ein ':' sein");
+            else {
+                String[] zeichen = timeField.getText().split(":");
+                try{
+                    minutes.set(Integer.parseInt(zeichen[0]));
+                    seconds.set(Integer.parseInt(zeichen[1]));
+                    valid[0] = true;
+                    submit.setDisable(false);
+                }catch (Exception e){
+                    submit.setDisable(true);
+                    System.out.println(e);
+                    warnung.setText("Ungültige Eingabe: Es sind keine Zahlen. Schreibe z.B.: '02:00' für 2 Minuten");
+                }
+            }

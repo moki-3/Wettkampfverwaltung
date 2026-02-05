@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import javax.swing.*;
+import java.beans.Expression;
 import java.io.File;
 import java.sql.SQLOutput;
 import java.sql.Time;
@@ -48,6 +49,7 @@ public class StartClass extends Application {
 
 
     private boolean isGoldenScore = false;
+    private int goldenScoreAbsoluteTime = -1;
 
     private BorderPane fightPane;
 
@@ -77,6 +79,8 @@ public class StartClass extends Application {
 
     //wenn dieser boolean wahr ist, kann man den nächsten kampf auswählen
     boolean chooseFight = false;
+    boolean isFesthalter01 = false;
+    boolean isFesthalter02 = false;
 
 
 
@@ -362,19 +366,14 @@ public class StartClass extends Application {
     }
 
 
-
-
-
     private void updateControlStage(){
         buildLeftControlPane();
-        updateFightControlView(allFighterPairs.get(kampfIndex));
+        updateFightControlView();
         controlRoot.setCenter(fightPane);
         updateViewStage();
 
 
     }
-
-
 
     public void play(){
         isFight = true; // TEST
@@ -407,8 +406,6 @@ public class StartClass extends Application {
 
     }
 
-
-
     private String formatTime(int totalTimeInSeconds){
         int minutes = totalTimeInSeconds / 60;
         int seconds = totalTimeInSeconds % 60;
@@ -417,12 +414,20 @@ public class StartClass extends Application {
 
 
     private void startTimer(){
-        if(fighTime == null){
+        if (fighTime == null) {
             fighTime = new Timeline(new KeyFrame(Duration.seconds(1), (ActionEvent e) -> {
-                remainingtime--;
+                //Wenn Golden Score, dann wird raufgezählt
+                if(isGoldenScore) remainingtime ++;
+                else remainingtime--;
+
+
+
                 timerLabel.setText(formatTime(remainingtime));
                 mv.updateTimeLabel(formatTime(remainingtime));
-                if(remainingtime <= 0){
+                if(isGoldenScore && remainingtime >= goldenScoreAbsoluteTime){
+                    fighTime.stop();
+                }
+                if ((isGoldenScore && remainingtime >= goldenScoreAbsoluteTime) || (!isGoldenScore && remainingtime <= 0)) {
                     fighTime.stop();
                     checkWinner();
                 }
@@ -430,13 +435,11 @@ public class StartClass extends Application {
             fighTime.setCycleCount(Timeline.INDEFINITE);
         }
         fighTime.play();
-
     }
 
     private void stopTimer(){
         if (fighTime != null){
             fighTime.stop();
-
         }
     }
 
@@ -445,7 +448,10 @@ public class StartClass extends Application {
             fighTime.stop();
         }
 
-        if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")){
+        if(isGoldenScore){
+            remainingtime = 0; // weil es ja raufzählt
+        }
+        else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10")){
             remainingtime = U10_TIME;
         }
         else if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")){
@@ -490,7 +496,6 @@ public class StartClass extends Application {
 //        }
     }
 
-
     /*
 
     Ich kann hier dann auch machen, das nur dann das sieht, wenn man es braucht.
@@ -499,11 +504,7 @@ public class StartClass extends Application {
 
      */
 
-    boolean isFesthalter01 = false;
-    boolean isFesthalter02 = false;
-
-
-    public void updateFightControlView(FighterPair f){
+    public void updateFightControlView(){
         if(fightPane == null){
             fightPane = new BorderPane();
         }
@@ -545,11 +546,7 @@ public class StartClass extends Application {
                 start_stop.setText("Hajime");
                 //System.out.println("Timer Stopped");
             }
-            if(isFight){
-                isFight = false;
-            }else{
-                isFight = true;
-            }
+            isFight = !isFight;
             //start_stop.setText(isFight ? "Matte" : "Hajime");
 
 
@@ -579,7 +576,9 @@ public class StartClass extends Application {
 
         Label rMode = new Label(r_flag ? "R Modus ein" : "R Modus aus");
 
-        VBox top = new VBox(20, rMode, topBox);
+        Label goldenScore = new Label(isGoldenScore ? "Golden Score: " + formatTime(goldenScoreAbsoluteTime) : "");
+
+        VBox top = new VBox(20, rMode, topBox, goldenScore);
 
         // TOP HBOX END
         //################################################################################################
@@ -587,25 +586,25 @@ public class StartClass extends Application {
 
         HBox upperFighter = new HBox();
 
-        Label name01 = new Label(f.getName01());
-        Label verein01 = new Label(f.getVerein01());
+        Label name01 = new Label(allFighterPairs.get(kampfIndex).getName01());
+        Label verein01 = new Label(allFighterPairs.get(kampfIndex).getVerein01());
 
         VBox daten01 = new VBox(10, name01, verein01);
 
         String points01 = "0";
-        if(f.getIppon01() > 0 || f.getWaza_ari01() >= 2) {
+        if(allFighterPairs.get(kampfIndex).getIppon01() > 0 || allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) {
             points01 = "100";
             if(!r_flag) checkWinner();
         }
         else {
-            int tmp = 10 * f.getWaza_ari01() + f.getYuko01();
+            int tmp = 10 * allFighterPairs.get(kampfIndex).getWaza_ari01() + allFighterPairs.get(kampfIndex).getYuko01();
             points01 = tmp + "";
         }
 
 
         Label points01l = new Label(points01);
 
-        Button editIppon01 = new Button("Ippon [A] : " + f.getIppon01());
+        Button editIppon01 = new Button("Ippon [A] : " + allFighterPairs.get(kampfIndex).getIppon01());
         editIppon01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon01();
@@ -618,7 +617,7 @@ public class StartClass extends Application {
         });
         // strg + 1
 
-        Button editWaza_ari01 = new Button("Waza-ari [S] : " + f.getWaza_ari01());
+        Button editWaza_ari01 = new Button("Waza-ari [S] : " + allFighterPairs.get(kampfIndex).getWaza_ari01());
         editWaza_ari01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari01();
@@ -631,7 +630,7 @@ public class StartClass extends Application {
         });
         // strg + 2
 
-        Button editYuko01 = new Button("Yuko [D] : " + f.getYuko01());
+        Button editYuko01 = new Button("Yuko [D] : " + allFighterPairs.get(kampfIndex).getYuko01());
         editYuko01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decYuko01();
@@ -643,7 +642,7 @@ public class StartClass extends Application {
         });
         // strg + 3
 
-        Button editShido01 = new Button("Shido [G] : " + f.getShido01());
+        Button editShido01 = new Button("Shido [G] : " + allFighterPairs.get(kampfIndex).getShido01());
         editShido01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido01();
@@ -656,7 +655,7 @@ public class StartClass extends Application {
 
 
         Button hansoku_make01 = new Button("Hansoku-make");
-        hansoku_make01.setDisable(!f.isHansoku_make01());
+        hansoku_make01.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make01());
         hansoku_make01.setOnAction(actionEvent -> {
             //Hansoku-make
         });
@@ -694,24 +693,24 @@ public class StartClass extends Application {
         // LOWER FITHER START
         HBox lowerFighter = new HBox();
 
-        Label name02 = new Label(f.getName02());
-        Label verein02 = new Label(f.getVerein02());
+        Label name02 = new Label(allFighterPairs.get(kampfIndex).getName02());
+        Label verein02 = new Label(allFighterPairs.get(kampfIndex).getVerein02());
 
         VBox daten02 = new VBox(10, name02, verein02);
 
         String points02 = "0";
-        if(f.getIppon02() > 0 || f.getWaza_ari02() == 2){
+        if(allFighterPairs.get(kampfIndex).getIppon02() > 0 || allFighterPairs.get(kampfIndex).getWaza_ari02() == 2){
             points02 = "100";
             if(!r_flag) checkWinner();
         }
         else {
-            int tmp = 10 * f.getWaza_ari02() + f.getYuko02();
+            int tmp = 10 * allFighterPairs.get(kampfIndex).getWaza_ari02() + allFighterPairs.get(kampfIndex).getYuko02();
             points02 = tmp + "";
         }
 
         Label points02l = new Label(points02);
 
-        Button editIppon02 = new Button("Ippon [Ö] : " + f.getIppon02());
+        Button editIppon02 = new Button("Ippon [Ö] : " + allFighterPairs.get(kampfIndex).getIppon02());
         editIppon02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon02();
@@ -724,7 +723,7 @@ public class StartClass extends Application {
         });
 
 
-        Button editWaza_ari02 = new Button("Waza-ari [L] : " + f.getWaza_ari02());
+        Button editWaza_ari02 = new Button("Waza-ari [L] : " + allFighterPairs.get(kampfIndex).getWaza_ari02());
         editWaza_ari02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari02();
@@ -737,7 +736,7 @@ public class StartClass extends Application {
         });
 
 
-        Button editYuko02 = new Button("Yuko [K] : " + f.getYuko02());
+        Button editYuko02 = new Button("Yuko [K] : " + allFighterPairs.get(kampfIndex).getYuko02());
         editYuko02.setOnAction(actionEvent -> {
             if (r_flag) {
                 allFighterPairs.get(kampfIndex).decYuko02();
@@ -748,7 +747,7 @@ public class StartClass extends Application {
             updateControlStage();
         });
 
-        Button editShido02 = new Button("Shido [H] : " + f.getShido02());
+        Button editShido02 = new Button("Shido [H] : " + allFighterPairs.get(kampfIndex).getShido02());
         editShido02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido02();
@@ -761,7 +760,7 @@ public class StartClass extends Application {
 
 
         Button hansoku_make02 = new Button("Hansoku-make");
-        hansoku_make02.setDisable(!f.isHansoku_make02());
+        hansoku_make02.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make02());
         hansoku_make02.setOnAction(actionEvent -> {
             //Hansoku-make
         });
@@ -831,10 +830,6 @@ public class StartClass extends Application {
         fightPane.setOnMouseClicked(event -> {
             fightPane.requestFocus();
         });
-
-
-
-
     }
 
     private void resetOaseiKomi01(){
@@ -842,7 +837,7 @@ public class StartClass extends Application {
         if(remainingOaseKomi >= OASEI_KOMI_SHORT && allFighterPairs.get(kampfIndex).getWaza_ari01() == 0){
             allFighterPairs.get(kampfIndex).incWaza_ari01();
         }
-        if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
+        if(controlRoot != null)updateFightControlView();
         if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
 
         //alles reseten
@@ -867,7 +862,7 @@ public class StartClass extends Application {
             allFighterPairs.get(kampfIndex).incWaza_ari02();
         }
 
-        if(controlRoot != null)updateFightControlView(allFighterPairs.get(kampfIndex));
+        if(controlRoot != null)updateFightControlView();
         if(mv != null) mv.updateFight(allFighterPairs.get(kampfIndex));
         if(festhalterzeit02 != null) festhalterzeit02.stop();
         festhalterzeit02 = null;
@@ -883,7 +878,6 @@ public class StartClass extends Application {
         }
         drawBottom();
     }
-
 
     private void startOaseiKomi01(){
         /*
@@ -1036,17 +1030,14 @@ public class StartClass extends Application {
     private void stopOaseiKomi01(){
         if(festhalterzeit01 != null){
             festhalterzeit01.stop();
-
         }
     }
 
     private void stopOaseiKomi02(){
         if(festhalterzeit02 != null){
             festhalterzeit02.stop();
-
         }
     }
-
 
     public void drawBottom(){
 
@@ -1071,63 +1062,56 @@ public class StartClass extends Application {
         if(fightPane != null)fightPane.setBottom(bottomRoot);
     }
 
-
-
-
-
-
-
-
-
-
     public void startGoldeScore(){
         Stage goldenScoreStage = new Stage();
         goldenScoreStage.initOwner(controlStage);
         goldenScoreStage.initModality(Modality.WINDOW_MODAL);
-        final boolean[] valid = {false};
+
         Label start = new Label("Golden Score starten");
         Label warnung = new Label("");
         TextField timeField = new TextField("02:00");
         AtomicInteger timeInSeconds = new AtomicInteger();
-        AtomicInteger minutes = new AtomicInteger();
-        AtomicInteger seconds = new AtomicInteger();
+
 
         Button submit = new Button("Fertig");
+        submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
         Button exit = new Button("Cancel");
         exit.setOnAction(actionEvent -> goldenScoreStage.close());
-        submit.setDisable(true);
+        //submit.setDisable(true);
 
-        timeField.setOnAction(actionEvent -> {
+//        timeField.setOnAction(actionEvent -> {
+//            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
+//        });
+        timeField.setOnKeyTyped(keyEvent -> {
+            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
+        });
+        timeField.setOnAction(actionEvent -> submit.fire());
 
-            if(timeField.getText().length() != 5) warnung.setText("Ungültige Eingabe: die Eingabe muss 5 Zeichen lang sein. Aktuelle länge: " + timeField.getText().length());
-            else if(timeField.getText().toCharArray()[2] != ':') warnung.setText("Ungültige Eingabe: das 3. Zeichen muss ein ':' sein");
-            else {
-                String[] zeichen = timeField.getText().split(":");
-                try{
-                    minutes.set(Integer.parseInt(zeichen[0]));
-                    seconds.set(Integer.parseInt(zeichen[1]));
-                    valid[0] = true;
-                    submit.setDisable(false);
-                }catch (Exception e){
-                    submit.setDisable(true);
-                    System.out.println(e);
-                    warnung.setText("Ungültige Eingabe: Es sind keine Zahlen. Schreibe z.B.: '02:00' für 2 Minuten");
-                }
-            }
+        Button resetTimeField = new Button("Reset Input");
+        resetTimeField.setOnAction(actionEvent -> {
+            timeField.setText("02:00");
+            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
         });
 
         submit.setOnAction(actionEvent -> {
-            if(valid[0]){
-                timeInSeconds.set(minutes.get() * 60 + seconds.get());
+            if(isInputValidAsTimeformat_mm_ss(timeField.getText())){
+                String[] zeichen = timeField.getText().split(":");
+                int minutes = Integer.parseInt(zeichen[0]);
+                int seconds = Integer.parseInt(zeichen[1]);
+                timeInSeconds.set(minutes * 60 + seconds);
                 goldenScoreStage.close();
                 setGoldenScoreTime(timeInSeconds.get());
+
             }else{
                 warnung.setText("Ungültige Eingabe!");
+                resetTimeField.fire();
                 submit.setDisable(true);
             }
         });
 
-        VBox buttons = new VBox(30, exit, submit);
+
+
+        VBox buttons = new VBox(30, exit, resetTimeField, submit);
         BorderPane goldenRoot = new BorderPane();
         HBox center = new HBox(20, start, warnung, timeField);
         goldenRoot.setBottom(buttons);
@@ -1144,19 +1128,37 @@ public class StartClass extends Application {
 
     }
 
-
-    public void setGoldenScoreTime(int time){
-        isGoldenScore = true;
-        System.out.println(formatTime(time));
-        System.out.println("isGoldenScore = " + true);
+    private boolean isInputValidAsTimeformat_mm_ss(String exp){
+        //Wenn die Expression nicht 5 Zeichen (z.B.: 02:00) oder kein ':' an der richtigen Stelle hat
+        if(exp.length() != 5 || exp.toCharArray()[2] != ':') return false;
+        //Testen, ob man die Zeichen in int umwandeln kann
+        String[] zeichen = exp.split(":");
+        try{
+            int a = Integer.parseInt(zeichen[0]);
+            int b = Integer.parseInt(zeichen[1]);
+            //System.out.println("a: " + a + "\nb: " + b);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
     }
 
+    public void setGoldenScoreTime(int time){
+        //time ist in Sekunden
+        isGoldenScore = true;
+        goldenScoreAbsoluteTime = time;
+        resetTimer();
+        System.out.println(formatTime(time));
+        System.out.println("isGoldenScore = " + isGoldenScore);
 
+        // updateFightControlView();
+        updateControlStage();
+    }
 
     // checkt wer gewonnen hat, wenn gleichstand ist dann wird golden score button disabled(false)
     private void checkWinner(){
 
-        resetTimer();
+        stopTimer();
 
         int points01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
         int points02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
@@ -1217,7 +1219,10 @@ public class StartClass extends Application {
 
             Button ok = new Button("ok");
 
-            ok.setOnAction(actionEvent -> chechWinnerStage.close());
+            ok.setOnAction(actionEvent -> {
+                chechWinnerStage.close();
+
+            });
 
             Button disable = new Button("Ich brauche noch kein Golden Score");
             disable.setOnAction(actionEvent -> {
@@ -1253,6 +1258,7 @@ public class StartClass extends Application {
                     }
                 }
                 chechWinnerStage.close();
+
                 allFighterPairs.get(kampfIndex).setDone(true);
                 highlightWinner();
             });
@@ -1323,13 +1329,7 @@ public class StartClass extends Application {
 
      */
 
-
-
     private void highlightWinner(){
-
-
-
-
         Label winner = new Label(allFighterPairs.get(kampfIndex).getWinner() + " hat gewonnen!");
 
         String fighter01 = allFighterPairs.get(kampfIndex).getName01();
@@ -1360,8 +1360,6 @@ public class StartClass extends Application {
             points02.setText(""+tmp02);
             verein02.setText(allFighterPairs.get(kampfIndex).getVerein02());
 
-
-
         }else{
             int tmp01 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
             if(tmp01 >= 100) tmp01 = 100;
@@ -1378,16 +1376,12 @@ public class StartClass extends Application {
         }
 
 
-
-
-
         System.out.println("winner: " + winner.getText());
         System.out.println("winnerPoints: " + winnerPoints.getText());
         System.out.println("winnerVerein: " + winnerVerein.getText());
         System.out.println("name02: " + name02.getText());
         System.out.println("points02: " + points02.getText());
         System.out.println("verein02: " + verein02.getText());
-
 
 
         VBox box01 = new VBox(10, winner, winnerPoints, winnerVerein);
@@ -1407,15 +1401,7 @@ public class StartClass extends Application {
         //controlRoot.setBottom(null);
 
         controlRoot.setCenter(allContents);
-
-
-
-
-
     }
-
-
-
 
 }
 
