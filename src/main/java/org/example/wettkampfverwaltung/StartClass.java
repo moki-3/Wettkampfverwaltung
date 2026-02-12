@@ -313,7 +313,7 @@ public class StartClass extends Application {
      */
     public void continueToNextFight(){
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
-
+        isGoldenScore = false;
         System.out.println("in continueToNextFight");
         mv.timeFiller(vereine, null);
 
@@ -1167,8 +1167,12 @@ public class StartClass extends Application {
 
         String winner = "-1";
 
-        if(points01 == points02) {
+        boolean unentschiedenNachGoldenScore = false;
+
+        if(points01 == points02 && !isGoldenScore) {
             bStartGoldenScore.setDisable(false); // wenn gleichstand kann goldenScore gemacht werden
+        }else if(points01 == points02 && isGoldenScore){
+            unentschiedenNachGoldenScore = true;
         }
         else if(points01 > points02){
             winner = allFighterPairs.get(kampfIndex).getName01();
@@ -1207,10 +1211,11 @@ public class StartClass extends Application {
 
 
 
-        if(winner == "-1"){
+        if(winner == "-1" && !unentschiedenNachGoldenScore){
             //wenn untentschieden
 
-            Label info = new Label("Untenschieden!\nGoldenScore kann jetzt gestartet werden!");
+            Label info = new Label(isGoldenScore ? "Untenschieden!\nGoldenScore kann jetzt gestartet werden!" :
+                    "Unentschieden!");
 
             VBox content = new VBox(50, info, allInfo);
             smallRoot.setCenter(content);
@@ -1221,7 +1226,6 @@ public class StartClass extends Application {
 
             ok.setOnAction(actionEvent -> {
                 chechWinnerStage.close();
-
             });
 
             Button disable = new Button("Ich brauche noch kein Golden Score");
@@ -1241,6 +1245,33 @@ public class StartClass extends Application {
             });
 
             chechWinnerStage.setScene(scn);
+        }else if(unentschiedenNachGoldenScore){
+            //System.out.println("im unentschiedenNachGoldenScore if");
+
+            Label info = new Label("Unetnschieden");
+
+
+            Button ok = new Button("ok");
+
+            ok.setOnAction(actionEvent -> {
+                /*
+                Alles setzten damit ein Unentschieden richtig in der viewstage und in der
+                Controlstage angezeigt wird
+                 */
+                System.out.println("Ok im unentschiedenNachGoldenScore if geklickt");
+            });
+
+            VBox content = new VBox(50, info, allInfo, ok);
+            smallRoot.setCenter(content);
+
+            Scene scn = new Scene(smallRoot);
+
+            scn.setOnKeyPressed(keyEvent -> {
+                if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
+            });
+
+            chechWinnerStage.setScene(scn);
+
         }else{
 
             Button b01 = new Button(allFighterPairs.get(kampfIndex).getName01());
@@ -1329,6 +1360,12 @@ public class StartClass extends Application {
 
      */
 
+    /*
+    Diese Methode zeigt nach checkWinner, wenn es einen Winner gibt und man auf diesen Namen bei checkWinner
+    geklickt hat, in Controlstage und Viewstagen den Winner an.
+    TODO
+    CSS Klassen in den ifs, damit es verschieden Designs gibt, wenn es unetnschieden ist und wenn nicht
+     */
     private void highlightWinner(){
         Label winner = new Label(allFighterPairs.get(kampfIndex).getWinner() + " hat gewonnen!");
 
@@ -1341,10 +1378,33 @@ public class StartClass extends Application {
         Label points02 = new Label();
         Label verein02 = new Label();
 
-        if(allFighterPairs.get(kampfIndex).getWinner().equals(fighter01)){
+        boolean unentschieden = false;
+
+        if(allFighterPairs.get(kampfIndex).getWinner().toLowerCase().equals("untentschieden")){
+            //wenn unentschieden nach Golden Score
+
+            //einfach 01 auf gewinner machen, weil weiß ja eh niemand und ich habe die Labels schon
+            int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
+            if(tmp01 >= 100) tmp01 = 100;
+            winnerPoints.setText(""+tmp01);
+
+            winnerVerein.setText(allFighterPairs.get(kampfIndex).getVerein01());
+
+            name02.setText(fighter02);
+
+            int tmp02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
+            if(tmp02 >= 100) tmp02 = 100;
+            points02.setText(""+tmp02);
+            verein02.setText(allFighterPairs.get(kampfIndex).getVerein02());
+
+
+        unentschieden = true;
+
+
+        }else if(allFighterPairs.get(kampfIndex).getWinner().equals(fighter01)){
             System.out.println("winner: " + winner.getText());
             System.out.println("Name01: " + allFighterPairs.get(kampfIndex).getName01());
-            System.out.println("Name02: " + allFighterPairs.get(kampfIndex).getName02());
+            System.out.println("Name02: " + fighter02);
 
             //wenn 01 Gewinenr*in ist
             int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
@@ -1353,7 +1413,7 @@ public class StartClass extends Application {
 
             winnerVerein.setText(allFighterPairs.get(kampfIndex).getVerein01());
 
-            name02.setText(allFighterPairs.get(kampfIndex).getName02());
+            name02.setText(fighter02);
 
             int tmp02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
             if(tmp02 >= 100) tmp02 = 100;
@@ -1395,7 +1455,7 @@ public class StartClass extends Application {
 
 
         VBox allContents = new VBox(20, contents, select);
-        mv.hightlightWinner(winner.getText(), winnerPoints.getText(), winnerVerein.getText(), name02.getText(), points02.getText(), verein02.getText());
+        mv.hightlightWinner(winner.getText(), winnerPoints.getText(), winnerVerein.getText(), name02.getText(), points02.getText(), verein02.getText(), unentschieden);
 
 
         //controlRoot.setBottom(null);

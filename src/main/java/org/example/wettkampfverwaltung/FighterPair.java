@@ -14,7 +14,7 @@ public class FighterPair {
     private String altersKlasse;
     private String gewichtsKlasse;
 
-    private String winner = "nicht gesetzt";
+    private String winner = "nicht gesetzt"; //"untentschieden", wenn unentschieden
     private String winnerVerein = "nicht gesetzt";
 
     private boolean done = false; // boolean, um dann styleklassen gut zuzuteilen. Wichtig immer index der liste der fighterPairs speichern und über den index drauf zugreifen

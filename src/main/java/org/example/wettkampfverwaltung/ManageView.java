@@ -83,8 +83,6 @@ public class ManageView {
 
         updateFight(f); // fügt im Center des BorderPanes den Kampf mit den Daten
 
-
-
         drawBottom();
     }
     /*
@@ -224,26 +222,43 @@ public class ManageView {
             viewRoot.setBottom(bottombox);
     }
 
+    /*
+    Diese Methode zeigt an, wer gewonnen hat.
+    TODO
+    CSS Klassen im if, damit es verschieden Designs gibt, wenn unentschieden ist.
+     */
+    public void hightlightWinner(String winner, String winnerPoints, String winnerVerein, String name02, String points02, String verein02, boolean isUnentschieden){
+        if(isUnentschieden){
+            Label info = new Label("Unetnschieden!");
+            Label lwinner = new Label(winner);
+            Label lwinnerPoints = new Label(winnerPoints);
+            Label lwinnerVerein = new Label(winnerVerein);
+            Label lname02 = new Label(name02);
+            Label lpoints02 = new Label(points02);
+            Label lverein02 = new Label(verein02);
 
-    public void hightlightWinner(String winner, String winnerPoints, String winnerVerein, String name02, String points02, String verein02){
+            VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
+            VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
+            HBox boxes = new HBox(30, box01, box02);
+            VBox contents = new VBox(info, boxes);
+            viewRoot.setCenter(contents);
+            viewRoot.setBottom(null);
 
-        Label lwinner = new Label(winner);
-        Label lwinnerPoints = new Label(winnerPoints);
-        Label lwinnerVerein = new Label(winnerVerein);
-        Label lname02 = new Label(name02);
-        Label lpoints02 = new Label(points02);
-        Label lverein02 = new Label(verein02);
+        }else{
+            Label lwinner = new Label(winner);
+            Label lwinnerPoints = new Label(winnerPoints);
+            Label lwinnerVerein = new Label(winnerVerein);
+            Label lname02 = new Label(name02);
+            Label lpoints02 = new Label(points02);
+            Label lverein02 = new Label(verein02);
 
 
-        VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
-        VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
-        VBox contents = new VBox(30, box01, box02);
-
-
-
-        viewRoot.setCenter(contents);
-        viewRoot.setBottom(null);
-
+            VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
+            VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
+            VBox contents = new VBox(30, box01, box02);
+            viewRoot.setCenter(contents);
+            viewRoot.setBottom(null);
+        }
     }
 
 
