@@ -42,7 +42,7 @@ public class StartClass extends Application {
         this.vereine = vereine;
     }
     private int kampfIndex = 0; //akluteller kampf
-    private boolean isFight = false;
+    private boolean isFight = false; // wenn gerade hajime ist also wirklich jetzt gekämpft wird
     ManageView mv;
 
     private BorderPane controlRoot;
@@ -81,6 +81,8 @@ public class StartClass extends Application {
     boolean chooseFight = false;
     boolean isFesthalter01 = false;
     boolean isFesthalter02 = false;
+
+    private boolean isCurrentlyAFight = false; // wenn gerade ein Kampf ist. Bleibt auch true, wenn Matte ist.
 
 
 
@@ -289,6 +291,7 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
+        System.out.println("In updateViewStage");
         System.out.println("r_flag: " + r_flag);
         System.out.println("isFight: " + isFight);
         if(isFight){
@@ -547,6 +550,7 @@ public class StartClass extends Application {
                 //System.out.println("Timer Stopped");
             }
             isFight = !isFight;
+            System.out.println("\nneues isFight: " + isFight + "\n");
             //start_stop.setText(isFight ? "Matte" : "Hajime");
 
 

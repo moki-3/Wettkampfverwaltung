@@ -1,0 +1,3 @@
+Diesen Boolean verwende ich, um abzuspeichern, ob gerade ein Kampf ist. Dieser Wert bleibt auch true, wenn gerade ein Kampf ist, aber Matte ist.
+[[Boolean isFight]] bleibt ja nur true, wenn ein Kampf ist und gerade Hajime ist.
+Das heißt auch, dass ich isCurrentlyAFight nur einmal auf true setzen muss, wenn der Kampf ausgewählt wurde, und auf false setzten muss, wenn der Kampf komplett zu Ende ist. Und Timefiller wird nur aufgerufen, wenn isCurrentlyAFight = false ist.
