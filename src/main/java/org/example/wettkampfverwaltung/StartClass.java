@@ -294,17 +294,18 @@ public class StartClass extends Application {
         System.out.println("In updateViewStage");
         System.out.println("r_flag: " + r_flag);
         System.out.println("isFight: " + isFight);
-        if(isFight){
+        if(isFight || isCurrentlyAFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
             //if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
             mv.updateTimeLabel(formatTime(remainingtime));
             mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
-        }else {
-            if(kampfIndex + 1 < allFighterPairs.size()){
-                mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1));
-            }else{
-                mv.timeFiller(vereine, null);
-            }
+        }else{
+//            if(kampfIndex + 1 < allFighterPairs.size()){
+//                mv.timeFiller(vereine, allFighterPairs.get(kampfIndex+1));
+//            }else{
+//                mv.timeFiller(vereine, null);
+//            }
+            if(!isCurrentlyAFight) mv.timeFiller(vereine, null);
         }
     }
 
@@ -318,7 +319,7 @@ public class StartClass extends Application {
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
         isGoldenScore = false;
         System.out.println("in continueToNextFight");
-        mv.timeFiller(vereine, null);
+        if(!isCurrentlyAFight) mv.timeFiller(vereine, null);
 
         Label text = new Label("Wähle den nächsten Kampf aus");
         chooseFight = true;
@@ -360,6 +361,7 @@ public class StartClass extends Application {
             //System.out.println("Weiter geklickt");
             chooseFight = false;
             kampfIndex = index;
+            isCurrentlyAFight = true;
             updateControlStage();
 
         });
@@ -379,8 +381,8 @@ public class StartClass extends Application {
     }
 
     public void play(){
-        isFight = true; // TEST
-        kampfIndex = 0; // test
+
+
         //Kommentare, weil wenn ich die ProgressBars von anfang an habe, sehe ich sie auch immer, und das will ich nicth
         //progressBar01 = new ProgressBar(0);
         //progressBar02 = new ProgressBar(0);
@@ -403,7 +405,8 @@ public class StartClass extends Application {
         controlStage.setMinHeight(550);
 
 
-        updateControlStage();
+        //updateControlStage();
+        continueToNextFight();
 
 
 
@@ -1371,6 +1374,9 @@ public class StartClass extends Application {
     CSS Klassen in den ifs, damit es verschieden Designs gibt, wenn es unetnschieden ist und wenn nicht
      */
     private void highlightWinner(){
+        //wenn ein Kampf fertig ist, kommt man hier her
+        isCurrentlyAFight = false;
+
         Label winner = new Label(allFighterPairs.get(kampfIndex).getWinner() + " hat gewonnen!");
 
         String fighter01 = allFighterPairs.get(kampfIndex).getName01();

@@ -1,0 +1,1 @@
+Diese Methode wird aufgerufen, wenn ein Kampf endgültig fertig ist, ein Winner festgestellt wurde oder unetnschieden ist. Hier wird [[Boolean isCurrentlyAFight]] auf **false** gesetzt

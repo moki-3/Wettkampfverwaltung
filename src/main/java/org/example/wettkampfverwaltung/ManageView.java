@@ -76,6 +76,7 @@ public class ManageView {
        zum BorderPane
      */
     public void newFight(FighterPair f, int index) {
+        viewRoot.setCenter(null);
         Label count = new Label(index + "/" + fightsCount);
         HBox tmpTop = new HBox(count);
         tmpTop.setAlignment(Pos.CENTER);
@@ -149,6 +150,7 @@ public class ManageView {
             VBox box = new VBox(nextFight, alter);
             root.getChildren().addAll(l, box);
         }
+        viewRoot.setCenter(null);
         viewRoot.setCenter(root);
     }
 
