@@ -22,6 +22,9 @@ public class ReadFromCSV {
             for(int i = 0; i < zeilen.length; i++){
                 String[] row = zeilen[i].split(",");
                 if(row.length == 6){
+                    for(int j = 0; j < row.length; j++){
+                        row[j] = row[j].replace("\uFEFF", "").trim();
+                    }
                     FighterPair fp = new FighterPair(row[0], row[1], row[2], row[3],row[4],row[5]);
                     fighterPairs.add(fp);
                 }else{

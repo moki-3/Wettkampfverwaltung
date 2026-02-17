@@ -219,5 +219,13 @@ public class FighterPair {
     public boolean isHansoku_make02() {
         return hansoku_make02;
     }
+
+    public void setHansoku_make01(boolean hansoku_make01) {
+        this.hansoku_make01 = hansoku_make01;
+    }
+
+    public void setHansoku_make02(boolean hansoku_make02) {
+        this.hansoku_make02 = hansoku_make02;
+    }
 }
 

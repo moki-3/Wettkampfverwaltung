@@ -22,6 +22,7 @@ import javafx.util.Duration;
 import javax.swing.*;
 import java.beans.Expression;
 import java.io.File;
+import java.sql.Array;
 import java.sql.SQLOutput;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -241,6 +242,8 @@ public class StartClass extends Application {
                 int index = allFighterPairs.indexOf(fp);
                 System.out.println("\nvbox geklickt\t index = " + index);
                 System.out.println("chooseFight: " + chooseFight);
+                System.out.println("isDone = " + fp.isDone());
+                System.out.println("allFighterPairs.get(index).isDone() = " + allFighterPairs.get(index).isDone());
                 if(chooseFight && !fp.isDone()) setNextFight(index);
             });
 
@@ -291,9 +294,9 @@ public class StartClass extends Application {
         muss
      */
     public void updateViewStage(){
-        System.out.println("In updateViewStage");
-        System.out.println("r_flag: " + r_flag);
-        System.out.println("isFight: " + isFight);
+        //System.out.println("In updateViewStage");
+        //System.out.println("r_flag: " + r_flag);
+        //System.out.println("isFight: " + isFight);
         if(isFight || isCurrentlyAFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
             //if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
@@ -670,7 +673,8 @@ public class StartClass extends Application {
         Button hansoku_make01 = new Button("Hansoku-make");
         hansoku_make01.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make01());
         hansoku_make01.setOnAction(actionEvent -> {
-            //Hansoku-make
+            allFighterPairs.get(kampfIndex).setHansoku_make01(true);
+            checkWinner();
         });
 
         VBox controls01 = new VBox(10, editIppon01, editWaza_ari01, editYuko01, editShido01, hansoku_make01);
@@ -776,7 +780,8 @@ public class StartClass extends Application {
         Button hansoku_make02 = new Button("Hansoku-make");
         hansoku_make02.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make02());
         hansoku_make02.setOnAction(actionEvent -> {
-            //Hansoku-make
+            allFighterPairs.get(kampfIndex).setHansoku_make02(true);
+            checkWinner();
         });
 
         VBox controls02 = new VBox(10, editIppon02, editWaza_ari02, editYuko02, editShido02, hansoku_make02);
@@ -1200,6 +1205,7 @@ public class StartClass extends Application {
         }
 
         chechWinnerStage = new Stage();
+        chechWinnerStage.setTitle("Kampf zuende");
         chechWinnerStage.initOwner(controlStage);
         chechWinnerStage.initModality(Modality.WINDOW_MODAL);
 
@@ -1225,8 +1231,8 @@ public class StartClass extends Application {
 
 
 
-        if(winner == "-1" && !unentschiedenNachGoldenScore){
-            //wenn untentschieden
+        if(winner == "-1" && !unentschiedenNachGoldenScore && !allFighterPairs.get(kampfIndex).isHansoku_make01() && !allFighterPairs.get(kampfIndex).isHansoku_make02()){
+            //wenn untentschieden vor Golden Score
 
             Label info = new Label(isGoldenScore ? "Untenschieden!\nGoldenScore kann jetzt gestartet werden!" :
                     "Unentschieden!");
@@ -1259,7 +1265,7 @@ public class StartClass extends Application {
             });
 
             chechWinnerStage.setScene(scn);
-        }else if(unentschiedenNachGoldenScore){
+        }else if(unentschiedenNachGoldenScore && !allFighterPairs.get(kampfIndex).isHansoku_make01() && !allFighterPairs.get(kampfIndex).isHansoku_make02()){
             //System.out.println("im unentschiedenNachGoldenScore if");
             /*
             Wenn ich hier bin, wird in der Stage, die dem Controler angezeigt wird,
@@ -1268,6 +1274,7 @@ public class StartClass extends Application {
             in der viewstage
              */
             Label info = new Label("Unetnschieden");
+
 
 
             Button ok = new Button("ok");
@@ -1301,6 +1308,17 @@ public class StartClass extends Application {
             chechWinnerStage.setScene(scn);
 
         }else{
+
+            if(allFighterPairs.get(kampfIndex).isHansoku_make01()){
+                System.out.println("01 hat ein hansoku make");
+                chechWinnerStage.setTitle(allFighterPairs.get(kampfIndex).getName01() + " hat ein Hansoku make");
+                isDoneGesuchterName(allFighterPairs.get(kampfIndex).getName01());
+            }
+            if(allFighterPairs.get(kampfIndex).isHansoku_make02()){
+                System.out.println("02 hat ein hansoku make");
+                chechWinnerStage.setTitle(allFighterPairs.get(kampfIndex).getName02() + " hat ein Hansoku make");
+                isDoneGesuchterName(allFighterPairs.get(kampfIndex).getName02());
+            }
 
             Button b01 = new Button(allFighterPairs.get(kampfIndex).getName01());
             Button b02 = new Button(allFighterPairs.get(kampfIndex).getName02());
@@ -1493,6 +1511,15 @@ public class StartClass extends Application {
         //controlRoot.setBottom(null);
 
         controlRoot.setCenter(allContents);
+    }
+
+    private void isDoneGesuchterName(String gesuchterName){
+        for (FighterPair fp : allFighterPairs) {
+            if (fp.getName01().equals(gesuchterName) || fp.getName02().equals(gesuchterName)) {
+                fp.setDone(true);
+            }
+        }
+        buildLeftControlPane();
     }
 
 }

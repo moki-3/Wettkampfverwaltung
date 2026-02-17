@@ -24,7 +24,7 @@ public class ManageView {
         this.fightTime = fightTime;
     }
 
-    private String altersKlasse;
+    //private String altersKlasse;
 
 
 
