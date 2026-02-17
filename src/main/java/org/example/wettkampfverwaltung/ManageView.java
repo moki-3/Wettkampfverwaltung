@@ -254,7 +254,6 @@ public class ManageView {
             Label lpoints02 = new Label(points02);
             Label lverein02 = new Label(verein02);
 
-
             VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
             VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
             VBox contents = new VBox(30, box01, box02);

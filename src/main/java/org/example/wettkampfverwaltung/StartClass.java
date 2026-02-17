@@ -241,7 +241,7 @@ public class StartClass extends Application {
                 int index = allFighterPairs.indexOf(fp);
                 System.out.println("\nvbox geklickt\t index = " + index);
                 System.out.println("chooseFight: " + chooseFight);
-                if(chooseFight) setNextFight(index);
+                if(chooseFight && !fp.isDone()) setNextFight(index);
             });
 
             vbox.getChildren().add(tmp);
@@ -318,6 +318,11 @@ public class StartClass extends Application {
     public void continueToNextFight(){
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
         isGoldenScore = false;
+        bStartGoldenScore.setDisable(true);
+        resetTimer();
+        resetOaseiKomi02();
+        resetOaseiKomi01();
+        buildLeftControlPane();
         System.out.println("in continueToNextFight");
         if(!isCurrentlyAFight) mv.timeFiller(vereine, null);
 
@@ -630,7 +635,7 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decWaza_ari01();
             }else{
                 allFighterPairs.get(kampfIndex).incWaza_ari01();
-                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) checkWinner();
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2 || isGoldenScore) checkWinner();
             }
             r_flag = false;
             updateControlStage();
@@ -643,6 +648,7 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decYuko01();
             }else{
                 allFighterPairs.get(kampfIndex).incYuko01();
+                if (isGoldenScore) checkWinner();
             }
             r_flag = false;
             updateControlStage();
@@ -736,7 +742,7 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decWaza_ari02();
             }else{
                 allFighterPairs.get(kampfIndex).incWaza_ari02();
-                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) checkWinner();
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2 || isGoldenScore) checkWinner();
             }
             r_flag = false;
             updateControlStage();
@@ -749,6 +755,7 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decYuko02();
             }else{
                 allFighterPairs.get(kampfIndex).incYuko02();
+                if (isGoldenScore) checkWinner();
             }
             r_flag = false;
             updateControlStage();
@@ -1254,7 +1261,12 @@ public class StartClass extends Application {
             chechWinnerStage.setScene(scn);
         }else if(unentschiedenNachGoldenScore){
             //System.out.println("im unentschiedenNachGoldenScore if");
-
+            /*
+            Wenn ich hier bin, wird in der Stage, die dem Controler angezeigt wird,
+            schon angezeigt, das unentschieden ist.
+            Ich muss dann noch hier in Controlstage anzeigen, dass untschieden ist und
+            in der viewstage
+             */
             Label info = new Label("Unetnschieden");
 
 
@@ -1264,8 +1276,17 @@ public class StartClass extends Application {
                 /*
                 Alles setzten damit ein Unentschieden richtig in der viewstage und in der
                 Controlstage angezeigt wird
+                hightlightWinner mit unentschieden = true
                  */
-                System.out.println("Ok im unentschiedenNachGoldenScore if geklickt");
+                allFighterPairs.get(kampfIndex).setWinner("untentschieden");
+                for (Verein v : vereine){
+                    if(v.getName().equals(allFighterPairs.get(kampfIndex).getVerein01()) || v.getName().equals(allFighterPairs.get(kampfIndex).getVerein02())){
+                        v.increasePoints(3);
+                    }
+                }
+                chechWinnerStage.close();
+                allFighterPairs.get(kampfIndex).setDone(true);
+                highlightWinner();
             });
 
             VBox content = new VBox(50, info, allInfo, ok);
@@ -1296,7 +1317,6 @@ public class StartClass extends Application {
                     }
                 }
                 chechWinnerStage.close();
-
                 allFighterPairs.get(kampfIndex).setDone(true);
                 highlightWinner();
             });
@@ -1379,6 +1399,7 @@ public class StartClass extends Application {
 
         Label winner = new Label(allFighterPairs.get(kampfIndex).getWinner() + " hat gewonnen!");
 
+
         String fighter01 = allFighterPairs.get(kampfIndex).getName01();
         String fighter02 = allFighterPairs.get(kampfIndex).getName02();
 
@@ -1391,8 +1412,9 @@ public class StartClass extends Application {
         boolean unentschieden = false;
 
         if(allFighterPairs.get(kampfIndex).getWinner().toLowerCase().equals("untentschieden")){
+            //System.out.println("\nIm unentschieden if in highlightWinner!\n");
             //wenn unentschieden nach Golden Score
-
+            winner.setText("Unentschieden!");
             //einfach 01 auf gewinner machen, weil weiß ja eh niemand und ich habe die Labels schon
             int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
             if(tmp01 >= 100) tmp01 = 100;
@@ -1408,7 +1430,7 @@ public class StartClass extends Application {
             verein02.setText(allFighterPairs.get(kampfIndex).getVerein02());
 
 
-        unentschieden = true;
+            unentschieden = true;
 
 
         }else if(allFighterPairs.get(kampfIndex).getWinner().equals(fighter01)){
