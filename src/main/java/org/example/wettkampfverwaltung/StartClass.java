@@ -1312,12 +1312,12 @@ public class StartClass extends Application {
             if(allFighterPairs.get(kampfIndex).isHansoku_make01()){
                 System.out.println("01 hat ein hansoku make");
                 chechWinnerStage.setTitle(allFighterPairs.get(kampfIndex).getName01() + " hat ein Hansoku make");
-                isDoneGesuchterName(allFighterPairs.get(kampfIndex).getName01());
+                setAllFightsDoneWithName(allFighterPairs.get(kampfIndex).getName01());
             }
             if(allFighterPairs.get(kampfIndex).isHansoku_make02()){
                 System.out.println("02 hat ein hansoku make");
                 chechWinnerStage.setTitle(allFighterPairs.get(kampfIndex).getName02() + " hat ein Hansoku make");
-                isDoneGesuchterName(allFighterPairs.get(kampfIndex).getName02());
+                setAllFightsDoneWithName(allFighterPairs.get(kampfIndex).getName02());
             }
 
             Button b01 = new Button(allFighterPairs.get(kampfIndex).getName01());
@@ -1414,6 +1414,8 @@ public class StartClass extends Application {
     private void highlightWinner(){
         //wenn ein Kampf fertig ist, kommt man hier her
         isCurrentlyAFight = false;
+        //eigentlich sollte done schon auf true gesetzt sein aber sicher ist sicher
+        allFighterPairs.get(kampfIndex).setDone(true);
 
         Label winner = new Label(allFighterPairs.get(kampfIndex).getWinner() + " hat gewonnen!");
 
@@ -1513,15 +1515,12 @@ public class StartClass extends Application {
         controlRoot.setCenter(allContents);
     }
 
-    private void isDoneGesuchterName(String gesuchterName){
-        for (FighterPair fp : allFighterPairs) {
-            if (fp.getName01().equals(gesuchterName) || fp.getName02().equals(gesuchterName)) {
-                fp.setDone(true);
-            }
+    private void setAllFightsDoneWithName(String name){
+        for (FighterPair fp : allFighterPairs){
+            if(fp.getName01().equals(name) || fp.getName02().equals(name)) fp.setDone(true);
         }
         buildLeftControlPane();
     }
-
 }
 
 
