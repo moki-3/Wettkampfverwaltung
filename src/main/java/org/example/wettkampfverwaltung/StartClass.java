@@ -671,7 +671,8 @@ public class StartClass extends Application {
 
 
         Button hansoku_make01 = new Button("Hansoku-make");
-        hansoku_make01.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make01());
+        //hansoku_make01.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make01());
+        hansoku_make01.setDisable(false);
         hansoku_make01.setOnAction(actionEvent -> {
             allFighterPairs.get(kampfIndex).setHansoku_make01(true);
             checkWinner();
@@ -778,7 +779,8 @@ public class StartClass extends Application {
 
 
         Button hansoku_make02 = new Button("Hansoku-make");
-        hansoku_make02.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make02());
+        //hansoku_make02.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make02());
+        hansoku_make02.setDisable(false);
         hansoku_make02.setOnAction(actionEvent -> {
             allFighterPairs.get(kampfIndex).setHansoku_make02(true);
             checkWinner();
@@ -1179,6 +1181,8 @@ public class StartClass extends Application {
 
         stopTimer();
 
+        playSound();
+
         int points01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
         int points02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
         if(points01 >= 100) points01 = 100;
@@ -1520,6 +1524,11 @@ public class StartClass extends Application {
             if(fp.getName01().equals(name) || fp.getName02().equals(name)) fp.setDone(true);
         }
         buildLeftControlPane();
+    }
+
+    private void playSound(){
+        SoundPlayer sp = new SoundPlayer();
+        sp.playEndFight();
     }
 }
 

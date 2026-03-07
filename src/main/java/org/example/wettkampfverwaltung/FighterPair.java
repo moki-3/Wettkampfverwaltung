@@ -51,16 +51,11 @@ public class FighterPair {
         if(shido01 >= 3){
             shido01 = 3;
             hansoku_make01 = true;
-        }else{
-            hansoku_make01 = false;
         }
     }
     public void decShido01(){
         if(shido01 - 1 >= 0){
             shido01--;
-        }
-        if(shido01 < 3){
-            hansoku_make01 = false;
         }
     }
 
@@ -96,16 +91,11 @@ public class FighterPair {
         if(shido02 >= 3){
             shido02 = 3;
             hansoku_make02 = true;
-        }else{
-            hansoku_make02 = false;
         }
     }
     public void decShido02(){
-        if(shido02 - 1 >= 0){
+        if(shido02 - 1 >= 0) {
             shido02--;
-        }
-        if(shido02 < 3){
-            hansoku_make02 = false;
         }
     }
 
