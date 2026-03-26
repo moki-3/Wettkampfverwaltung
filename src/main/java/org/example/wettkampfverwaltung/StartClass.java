@@ -1153,6 +1153,8 @@ public class StartClass extends Application {
                 int seconds = Integer.parseInt(zeichen[1]);
                 timeInSeconds.set(minutes * 60 + seconds);
                 goldenScoreStage.close();
+                hasCheckWinnerAlreadyBeenCalled = false;
+                soundHasAlreadyBeenPlayed = false;
                 setGoldenScoreTime(timeInSeconds.get());
 
             }else{
