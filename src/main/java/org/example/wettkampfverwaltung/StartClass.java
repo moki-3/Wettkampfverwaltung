@@ -85,6 +85,9 @@ public class StartClass extends Application {
 
     private boolean isCurrentlyAFight = false; // wenn gerade ein Kampf ist. Bleibt auch true, wenn Matte ist.
 
+    private boolean hasCheckWinnerAlreadyBeenCalled = false; //diesen boolean brauche ich um einen bug zu beheben
+    private boolean soundHasAlreadyBeenPlayed = false; //gleiches Konzept wie hasCheckWinnerAlreadyBeenCalled
+
 
 
 
@@ -328,7 +331,8 @@ public class StartClass extends Application {
         buildLeftControlPane();
         System.out.println("in continueToNextFight");
         if(!isCurrentlyAFight) mv.timeFiller(vereine, null);
-
+        hasCheckWinnerAlreadyBeenCalled = false;
+        soundHasAlreadyBeenPlayed = false;
         Label text = new Label("Wähle den nächsten Kampf aus");
         chooseFight = true;
         controlRoot.setCenter(text);
@@ -443,6 +447,7 @@ public class StartClass extends Application {
                 }
                 if ((isGoldenScore && remainingtime >= goldenScoreAbsoluteTime) || (!isGoldenScore && remainingtime <= 0)) {
                     fighTime.stop();
+                    playSound();
                     checkWinner();
                 }
             }));
@@ -533,6 +538,7 @@ public class StartClass extends Application {
         endFight.setOnAction(actionEvent -> {
             //Kampf beenden
             if(fighTime != null && fighTime.getStatus() != Animation.Status.STOPPED) stopTimer();
+            playSound();
             checkWinner();
         });
 
@@ -609,7 +615,10 @@ public class StartClass extends Application {
         String points01 = "0";
         if(allFighterPairs.get(kampfIndex).getIppon01() > 0 || allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2) {
             points01 = "100";
-            if(!r_flag) checkWinner();
+            if(!r_flag) {
+                playSound();
+                checkWinner();
+            }
         }
         else {
             int tmp = 10 * allFighterPairs.get(kampfIndex).getWaza_ari01() + allFighterPairs.get(kampfIndex).getYuko01();
@@ -624,6 +633,7 @@ public class StartClass extends Application {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon01();
             }else{
+                playSound();
                 allFighterPairs.get(kampfIndex).incIppon01();
                 checkWinner();
             }
@@ -638,7 +648,10 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decWaza_ari01();
             }else{
                 allFighterPairs.get(kampfIndex).incWaza_ari01();
-                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2 || isGoldenScore) checkWinner();
+                if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 2 || isGoldenScore) {
+                    playSound();
+                    checkWinner();
+                }
             }
             r_flag = false;
             updateControlStage();
@@ -651,7 +664,10 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decYuko01();
             }else{
                 allFighterPairs.get(kampfIndex).incYuko01();
-                if (isGoldenScore) checkWinner();
+                if (isGoldenScore) {
+                    playSound();
+                    checkWinner();
+                }
             }
             r_flag = false;
             updateControlStage();
@@ -674,6 +690,7 @@ public class StartClass extends Application {
         //hansoku_make01.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make01());
         hansoku_make01.setDisable(false);
         hansoku_make01.setOnAction(actionEvent -> {
+            playSound();
             allFighterPairs.get(kampfIndex).setHansoku_make01(true);
             checkWinner();
         });
@@ -719,7 +736,10 @@ public class StartClass extends Application {
         String points02 = "0";
         if(allFighterPairs.get(kampfIndex).getIppon02() > 0 || allFighterPairs.get(kampfIndex).getWaza_ari02() == 2){
             points02 = "100";
-            if(!r_flag) checkWinner();
+            if(!r_flag) {
+                playSound();
+                checkWinner();
+            }
         }
         else {
             int tmp = 10 * allFighterPairs.get(kampfIndex).getWaza_ari02() + allFighterPairs.get(kampfIndex).getYuko02();
@@ -733,6 +753,7 @@ public class StartClass extends Application {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon02();
             }else{
+                playSound();
                 allFighterPairs.get(kampfIndex).incIppon02();
                 checkWinner();
             }
@@ -747,7 +768,10 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decWaza_ari02();
             }else{
                 allFighterPairs.get(kampfIndex).incWaza_ari02();
-                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2 || isGoldenScore) checkWinner();
+                if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2 || isGoldenScore) {
+                    playSound();
+                    checkWinner();
+                }
             }
             r_flag = false;
             updateControlStage();
@@ -760,7 +784,10 @@ public class StartClass extends Application {
                 allFighterPairs.get(kampfIndex).decYuko02();
             }else{
                 allFighterPairs.get(kampfIndex).incYuko02();
-                if (isGoldenScore) checkWinner();
+                if (isGoldenScore) {
+                    playSound();
+                    checkWinner();
+                }
             }
             r_flag = false;
             updateControlStage();
@@ -782,6 +809,7 @@ public class StartClass extends Application {
         //hansoku_make02.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make02());
         hansoku_make02.setDisable(false);
         hansoku_make02.setOnAction(actionEvent -> {
+            playSound();
             allFighterPairs.get(kampfIndex).setHansoku_make02(true);
             checkWinner();
         });
@@ -954,12 +982,14 @@ public class StartClass extends Application {
                 mv.updateProgressbar01(progress);
                 if(allFighterPairs.get(kampfIndex).getWaza_ari01() >= 1 && remainingOaseKomi >= OASEI_KOMI_SHORT){
                     stopOaseiKomi01();
+                    playSound();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
                     allFighterPairs.get(kampfIndex).incWaza_ari01();
                     checkWinner();
                 }else if(remainingOaseKomi == OASEI_KOMI){
                     stopOaseiKomi01();
+                    playSound();
                     progressBar01.setProgress(1.0);
                     mv.updateProgressbar01(1.0);
                     allFighterPairs.get(kampfIndex).incIppon01();
@@ -1020,12 +1050,14 @@ public class StartClass extends Application {
                 //remainingOaseKomi >= OASEI_KOMI_SHORT weil wenn man die person wechselt während dem festhalter
                 if(allFighterPairs.get(kampfIndex).getWaza_ari02() >= 1 && remainingOaseKomi >= OASEI_KOMI_SHORT){
                     stopOaseiKomi02();
+                    playSound();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
                     allFighterPairs.get(kampfIndex).incWaza_ari02();
                     checkWinner();
                 }else if(remainingOaseKomi == OASEI_KOMI){
                     stopOaseiKomi02();
+                    playSound();
                     progressBar02.setProgress(1.0);
                     mv.updateProgressbar02(1.0);
                     allFighterPairs.get(kampfIndex).incIppon02();
@@ -1178,10 +1210,11 @@ public class StartClass extends Application {
 
     // checkt wer gewonnen hat, wenn gleichstand ist dann wird golden score button disabled(false)
     private void checkWinner(){
-
+        if(hasCheckWinnerAlreadyBeenCalled) return;
+        hasCheckWinnerAlreadyBeenCalled = true;
         stopTimer();
 
-        playSound();
+        //playSound();
 
         int points01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
         int points02 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
@@ -1527,8 +1560,11 @@ public class StartClass extends Application {
     }
 
     private void playSound(){
-        SoundPlayer sp = new SoundPlayer();
-        sp.playEndFight();
+        if(!soundHasAlreadyBeenPlayed) {
+            SoundPlayer sp = new SoundPlayer();
+            sp.playEndFight();
+        }
+        soundHasAlreadyBeenPlayed = true;
     }
 }
 
