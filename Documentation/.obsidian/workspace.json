@@ -45,7 +45,8 @@
               "title": "Boolean isCurrentlyAFight"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -118,6 +119,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Klassen/StartClass.java/Variablen/boolean soundHasAlreadyBeenPlayed.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -127,7 +129,7 @@
                 "unlinkedCollapsed": false
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for boolean soundHasAlreadyBeenPlayed"
             }
           },
           {
@@ -203,19 +205,20 @@
       "bases:Create new base": false
     }
   },
-  "active": "c61c60bf89699b1d",
+  "active": "c5e98152ba953682",
   "lastOpenFiles": [
+    "Klassen/StartClass.java/Variablen/boolean hasCheckWinnerAlreadyBeenCalled.md",
+    "Klassen/StartClass.java/Methoden/void play().md",
+    "Klassen/StartClass.java/Methoden/void highlightWinner().md",
+    "Klassen/StartClass.java/Methoden/void continueToNextFight().md",
+    "Klassen/StartClass.java/Methoden/void startGoldeScore.md",
     "Klassen/StartClass.java/Variablen/boolean soundHasAlreadyBeenPlayed.md",
     "Klassen/StartClass.java/Methoden/void playSound.md",
-    "Klassen/StartClass.java/Variablen/boolean hasCheckWinnerAlreadyBeenCalled.md",
-    "Klassen/StartClass.java/Methoden/void continueToNextFight().md",
     "Klassen/StartClass.java/Methoden/void checkWinner().md",
     "Klassen/StartClass.java/Variablen/Boolean isCurrentlyAFight.md",
-    "Klassen/StartClass.java/Methoden/void highlightWinner().md",
     "Klassen/StartClass.java/Variablen/Boolean isFight.md",
     "Klassen/StartClass.java/Variablen/ArrayList_FighterPair allFighterPairs.md",
     "Klassen/StartClass.java/Methoden/void setAllFightsDoneWithName(String name).md",
-    "Klassen/StartClass.java/Methoden/void play().md",
     "Documentation.md",
     "Klassen/StartClass.java/Methoden/void setNextFight(int index).md",
     "Klassen/StartClass.java/Variablen/ArrayList_Verein vereine.md",
@@ -230,7 +233,6 @@
     "Klassen/StartClass.java/Variablen/button reset01.md",
     "Klassen/StartClass.java/Variablen/ProgressBar progressBar02.md",
     "Klassen/StartClass.java/Variablen/ProgressBar progressBar01.md",
-    "Klassen/StartClass.java/Variablen/int remainingOaseKomi.md",
     "Klassen/StartClass.java/Variablen/Label timer",
     "Klassen/StartClass.java/Variablen/int",
     "Klassen/StartClass.java/Variablen/Wettkampf",

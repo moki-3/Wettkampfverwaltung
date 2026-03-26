@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ManageView {
     private BorderPane viewRoot;
@@ -46,6 +47,8 @@ public class ManageView {
 
 
         Scene viewScene = new Scene(viewRoot);
+        String css = Objects.requireNonNull(getClass().getResource("/stylesheets/viewStage.css")).toExternalForm();
+        viewScene.getStylesheets().add(css);
         viewStage.setFullScreenExitHint("");
         viewStage.setScene(viewScene);
 

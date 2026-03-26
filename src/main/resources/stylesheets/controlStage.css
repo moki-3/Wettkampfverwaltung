@@ -1,0 +1,78 @@
+.select-file-button{
+    -fx-text-fill: black;
+    -fx-background-color: #a5a5a5;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.continue-file-button{
+    -fx-text-fill: black;
+    -fx-background-color: #f2c261;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.background-ef{
+    -fx-background-color: #efefef;
+}
+
+.mv-fullscreen{
+    -fx-pref-width: 50px;
+    -fx-pref-height: 20px;
+    -fx-font-size: 15px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-background-color: #f2c261;
+}
+
+.mv-fullscreen-label{
+    -fx-font-size: 15px;
+}
+
+.open-mv{
+    -fx-pref-width: 230px;
+    -fx-pref-height: 20px;
+    -fx-font-size: 15px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-background-color: #f2c261;
+}
+
+.background-ddd {
+    -fx-background-color: #dddddd;
+}
+
+.background-ddd .viewport {
+    -fx-background-color: #dddddd;
+}
+
+.background-ddd > .scroll-pane {
+    -fx-background-color: #dddddd;
+}
+
+.font-green{
+    -fx-text-fill: green;
+}
+
+.font-red{
+    -fx-text-fill: red;
+}
+
+.fighter-box{
+    -fx-background-color: #c6c6c6;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-pref-width: 230px;
+}
+
+.fighter-box-border-red{
+    -fx-border-color: red;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+}
+
+.fighter-box-border-green{
+    -fx-border-color: green;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+}

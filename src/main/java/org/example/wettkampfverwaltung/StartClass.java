@@ -36,12 +36,6 @@ public class StartClass extends Application {
     Stage controlStage;
     ArrayList<Verein> vereine = new ArrayList<>();
     ArrayList<FighterPair> allFighterPairs = new ArrayList<>();
-    public ArrayList<Verein> getVereine() {
-        return vereine;
-    }
-    public void setVereine(ArrayList<Verein> vereine) {
-        this.vereine = vereine;
-    }
     private int kampfIndex = 0; //akluteller kampf
     private boolean isFight = false; // wenn gerade hajime ist also wirklich jetzt gekämpft wird
     ManageView mv;
@@ -105,9 +99,11 @@ public class StartClass extends Application {
         resetOaseiKomi01();
         resetOaseiKomi01();
 
-        Label greeting = new Label("Hallo! Bitte wählen sie eine Datei aus");
+        Label greeting = new Label("Wählen Sie eine csv-Datei aus");
         Button select = new Button("Datei auswählen");
+        select.getStyleClass().add("select-file-button");
         Button continueButton = new Button("Select a file to continue");
+        continueButton.getStyleClass().add("continue-file-button");
         continueButton.setDisable(true);
 
 
@@ -127,11 +123,11 @@ public class StartClass extends Application {
                 System.out.println("File selected: " + csv.getAbsolutePath());
                 ReadFromCSV rfc = new ReadFromCSV();
                 fighterPairs.set(rfc.read(csv)); // Hier wird die ArrayList gestzt
-                for (FighterPair pair : fighterPairs.get()) {
-                    //hier gebe ich die inhalte der fighterpairs arraylist aus
-                    System.out.println("\n-------------------------------\n");
-                    System.out.println(pair);
-                }
+//                for (FighterPair pair : fighterPairs.get()) {
+//                    //hier gebe ich die inhalte der fighterpairs arraylist aus
+//                    System.out.println("\n-------------------------------\n");
+//                    System.out.println(pair);
+//                }
 
                 continueButton.setText("Weiter");
                 continueButton.setDisable(false);
@@ -151,11 +147,16 @@ public class StartClass extends Application {
         });
 
         VBox vbox = new VBox(10, greeting, select, continueButton);
+        vbox.setAlignment(Pos.CENTER);
 
         controlRoot = new BorderPane();
         controlRoot.setCenter(vbox);
+        controlRoot.getStyleClass().add("background-ef");
 
         Scene controlScene = new Scene(controlRoot);
+
+        String css = Objects.requireNonNull(getClass().getResource("/stylesheets/controlStage.css")).toExternalForm();
+        controlScene.getStylesheets().add(css);
         stage.setScene(controlScene);
 
 
@@ -165,6 +166,8 @@ public class StartClass extends Application {
 
         stage.setTitle("Neuer Wettkampf");
         controlStage = stage;
+        controlStage.setMinWidth(300);
+        controlStage.setMinHeight(200);
         controlStage.show();
     }
 
@@ -174,6 +177,7 @@ public class StartClass extends Application {
         Button viewStageFullscreen = new Button(mv.isViewStageFullscreen() ? "On" : "Off");
         //css klassen und name
 
+        viewStageFullscreen.getStyleClass().add("mv-fullscreen");
 
         viewStageFullscreen.setOnAction(actionEvent -> {
             int fullScreenViewStage = mv.toggleViewStageFullscreen();
@@ -192,8 +196,22 @@ public class StartClass extends Application {
             viewStageFullscreen.setText(mv.isViewStageFullscreen() ? "On" : "Off");
         });
 
-        HBox fullscreenbox = new HBox(20, new Label("viewStage Vollbildmodus"), viewStageFullscreen);
-        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, createVereinList(), createList());
+        showViewStage.getStyleClass().add("open-mv");
+
+        Label lviewStageFullScreen = new Label("viewStage Vollbildmodus");
+        lviewStageFullScreen.getStyleClass().add("mv-fullscreen-label");
+
+        VBox vereineBox = createVereinList();
+
+        HBox fullscreenbox = new HBox(20, lviewStageFullScreen, viewStageFullscreen);
+        fullscreenbox.setAlignment(Pos.CENTER);
+        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, vereineBox, createList());
+        VBox.setMargin(fullscreenbox, new Insets(10, 10, 0, 20));
+        VBox.setMargin(showViewStage, new Insets(0, 10, 0, 20));
+        VBox.setMargin(vereineBox, new Insets(10, 10, 10, 20));
+
+        leftControls.getStyleClass().add("background-ddd");
+
         controlRoot.setLeft(leftControls);
 
     }
@@ -209,23 +227,32 @@ public class StartClass extends Application {
             Label verein02 = new Label("(" + fp.getVerein02() + ")");
             Label altersklasse = new Label(fp.getAltersKlasse());
             Label gewichtsklasse = new Label(fp.getGewichtsKlasse());
+
             if (!fp.getWinner().equals("nicht gesetzt")) {
                 //wenn es einen gewinner gibt, css klassen setzten
                 if (fp.getWinner().equals(name01.getText())) {
                     /*
                         CSS klassen: schrift bei name01 und verein01 grün, und bei name02 und verein02 rot machen
                      */
+                    name01.getStyleClass().add("font-green");
+                    verein01.getStyleClass().add("font-green");
+                    name02.getStyleClass().add("font-red");
+                    verein02.getStyleClass().add("font-red");
                 } else {
                     /*
                         CSS klassen: schrift bei name02 und verein02 grün, und bei name01 und verein01 rot machen
                      */
+                    name01.getStyleClass().add("font-red");
+                    verein01.getStyleClass().add("font-red");
+                    name02.getStyleClass().add("font-green");
+                    verein02.getStyleClass().add("font-green");
                 }
 
             }
 
-            HBox row01 = new HBox();
-            HBox row02 = new HBox();
-            HBox row03 = new HBox();
+            HBox row01 = new HBox(); // 01
+            HBox row02 = new HBox(); // 02
+            HBox row03 = new HBox(); // altersklasse, gewichtsklasse
             row01.getChildren().addAll(name01, verein01);
             row01.setSpacing(30);
             row02.getChildren().addAll(name02, verein02);
@@ -234,12 +261,31 @@ public class StartClass extends Application {
             row03.setSpacing(50);
 
 
+
             //css klassen für die hboxes
 
 
             VBox tmp = new VBox(10, row01, row02, row03);
+            VBox.setMargin(row01, new Insets(5, 5, 2.5, 15));
+            VBox.setMargin(row02, new Insets(2.5, 5, 2.5, 15));
+            VBox.setMargin(row03, new Insets(2.5, 5, 5, 15));
+
+            tmp.setPadding(new Insets(2.5, 5, 2.5, 5));
 
             //css klassen
+
+            tmp.getStyleClass().add("fighter-box");
+
+            tmp.setAlignment(Pos.CENTER);
+
+            if (!fp.getWinner().equals("nicht gesetzt") || fp.isHansoku_make01() || fp.isHansoku_make02()){
+                tmp.getStyleClass().add("fighter-box-border-red");
+            }else{
+                tmp.getStyleClass().add("fighter-box-border-green");
+            }
+
+
+
 
             tmp.setOnMouseClicked(mouseEvent -> {
                 int index = allFighterPairs.indexOf(fp);
@@ -252,12 +298,15 @@ public class StartClass extends Application {
 
             vbox.getChildren().add(tmp);
 
+            VBox.setMargin(tmp, new Insets(10));
+
 
         }
 
         ScrollPane sp = new ScrollPane(vbox);
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // immer vertikal scrollen
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); //bei bedarf horizonal scrollen
+        sp.getStyleClass().add("background-ddd");
         return sp;
     }
 
@@ -490,7 +539,6 @@ public class StartClass extends Application {
     private void addVereine(){
 
         for(FighterPair f : allFighterPairs){
-            //System.out.println("\n########################\n" + f.toString());
             boolean add01 = true;
             boolean add02 = true;
             for(Verein v : vereine){
@@ -503,16 +551,8 @@ public class StartClass extends Application {
                 if(!add01 && !add02) break;
             }
             if (add01) vereine.add(new Verein(f.getVerein01()));
-            if (add02) vereine.add(new Verein(f.getVerein02()));
+            else if (add02) vereine.add(new Verein(f.getVerein02()));
         }
-
-
-        //Testing purposes
-//        System.out.println("\n\n##########################\n\nEs wurden " + vereine.size() +
-//                " Vereine gefunden:");
-//        for(Verein v : vereine){
-//            System.out.println(v.getName());
-//        }
     }
 
     /*
@@ -1173,6 +1213,9 @@ public class StartClass extends Application {
         goldenRoot.setCenter(center);
         Scene scn = new Scene(goldenRoot);
 
+        String css = Objects.requireNonNull(getClass().getResource("/stylesheets/goldenScoreStage.css")).toExternalForm();
+        scn.getStylesheets().add(css);
+
         scn.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ESCAPE) exit.fire();
         });
@@ -1298,6 +1341,8 @@ public class StartClass extends Application {
             smallRoot.setBottom(buttons);
 
             Scene scn = new Scene(smallRoot);
+            String css = Objects.requireNonNull(getClass().getResource("/stylesheets/checkWinnerStage.css")).toExternalForm();
+            scn.getStylesheets().add(css);
 
             scn.setOnKeyPressed(keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
@@ -1339,6 +1384,8 @@ public class StartClass extends Application {
             smallRoot.setCenter(content);
 
             Scene scn = new Scene(smallRoot);
+            String css = Objects.requireNonNull(getClass().getResource("/stylesheets/checkWinnerStage.css")).toExternalForm();
+            scn.getStylesheets().add(css);
 
             scn.setOnKeyPressed(keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
@@ -1412,6 +1459,8 @@ public class StartClass extends Application {
             smallRoot.setCenter(content);
 
             Scene scn = new Scene(smallRoot);
+            String css = Objects.requireNonNull(getClass().getResource("/stylesheets/checkWinnerStage.css")).toExternalForm();
+            scn.getStylesheets().add(css);
 
             scn.setOnKeyPressed(keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ESCAPE) cancel.fire();
@@ -1556,7 +1605,11 @@ public class StartClass extends Application {
 
     private void setAllFightsDoneWithName(String name){
         for (FighterPair fp : allFighterPairs){
-            if(fp.getName01().equals(name) || fp.getName02().equals(name)) fp.setDone(true);
+            if(fp.getName01().equals(name) || fp.getName02().equals(name)) {
+                fp.setDone(true);
+                if(fp.getName01().equals(name)) fp.setHansoku_make01(true);
+                else fp.setHansoku_make02(true);
+            }
         }
         buildLeftControlPane();
     }
