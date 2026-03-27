@@ -2,6 +2,7 @@ package org.example.wettkampfverwaltung;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -81,10 +82,6 @@ public class StartClass extends Application {
 
     private boolean hasCheckWinnerAlreadyBeenCalled = false; //diesen boolean brauche ich um einen bug zu beheben
     private boolean soundHasAlreadyBeenPlayed = false; //gleiches Konzept wie hasCheckWinnerAlreadyBeenCalled
-
-
-
-
 
 
 
@@ -404,18 +401,33 @@ public class StartClass extends Application {
     public void setNextFight(int index){
         mv.timeFiller(vereine, allFighterPairs.get(index));
         Label frage = new Label("Nächster Kampf:");
+        frage.getStyleClass().add("text-size-15");
+
         Label name01 = new Label(allFighterPairs.get(index).getName01());
         Label verein01 = new Label(allFighterPairs.get(index).getVerein01());
+        name01.getStyleClass().add("text-size-15");
+        verein01.getStyleClass().add("text-size-15");
 
         Label name02 = new Label(allFighterPairs.get(index).getName02());
         Label verein02 = new Label(allFighterPairs.get(index).getVerein02());
+        name02.getStyleClass().add("text-size-15");
+        verein02.getStyleClass().add("text-size-15");
+
 
         Label alter = new Label(allFighterPairs.get(index).getAltersKlasse());
+        alter.getStyleClass().add("next-altersklasse");
 
+        VBox box01 = new VBox(10, name01, verein01);
+        VBox box02 = new VBox(10, name02, verein02);
+        box01.setAlignment(Pos.CENTER);
+        box02.setAlignment(Pos.CENTER);
 
-        VBox box01 = new VBox(name01, verein01);
-        VBox box02 = new VBox(name02, verein02);
-        HBox nextFighters = new HBox(box01, box02);
+        box01.getStyleClass().add("nextfighers-white");
+        box02.getStyleClass().add("nextfighers-blue");
+
+        HBox nextFighters = new HBox(30, box01, box02);
+        nextFighters.setAlignment(Pos.CENTER);
+
 
         Button validate = new Button("Weiter");
         validate.setOnAction(actionEvent -> {
@@ -424,10 +436,25 @@ public class StartClass extends Application {
             kampfIndex = index;
             isCurrentlyAFight = true;
             updateControlStage();
+        });
+        validate.getStyleClass().add("weiter-nextfight");
 
+        validate.setOnMouseEntered(e -> {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), validate);
+            scaleUp.setToX(1.1);
+            scaleUp.setToY(1.1);
+            scaleUp.play();
         });
 
-        VBox box = new VBox(frage, nextFighters, alter, validate);
+        validate.setOnMouseExited(e -> {
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), validate);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.play();
+        });
+
+        VBox box = new VBox(20, frage, nextFighters, alter, validate);
+        box.setAlignment(Pos.CENTER);
         controlRoot.setCenter(box);
     }
 
@@ -442,8 +469,6 @@ public class StartClass extends Application {
     }
 
     public void play(){
-
-
         //Kommentare, weil wenn ich die ProgressBars von anfang an habe, sehe ich sie auch immer, und das will ich nicth
         //progressBar01 = new ProgressBar(0);
         //progressBar02 = new ProgressBar(0);
@@ -465,12 +490,8 @@ public class StartClass extends Application {
         controlStage.setMinWidth(900);
         controlStage.setMinHeight(550);
 
-
         //updateControlStage();
         continueToNextFight();
-
-
-
     }
 
     private String formatTime(int totalTimeInSeconds){
