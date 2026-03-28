@@ -105,3 +105,68 @@
     -fx-font-size: 15px;
     -fx-padding: 10px;
 }
+
+.background-saturated-orange{
+    -fx-background-color: #ffae00;
+}
+
+.kampf-beenden{
+    -fx-background-color: #ff0000;
+    -fx-padding: 5px;
+    -fx-background-radius: 10px;
+    -fx-font-size: 15px;
+}
+
+.kampf-start-stop{
+    -fx-background-radius: 10px;
+    -fx-padding: 5px;
+    -fx-font-size: 15px;
+    -fx-background-color: #f2c261;
+}
+
+.goldenScore-button{
+    -fx-background-radius: 10px;
+    -fx-padding: 5px;
+    -fx-font-size: 15px;
+    -fx-background-color: #e8e811;
+}
+
+.font-15px{
+    -fx-font-size: 15px;
+}
+
+.background-blue{
+    -fx-background-color: #2979b5;
+}
+
+.background-white{
+    -fx-background-color: #fff;
+}
+
+.fighter-boxes{
+    -fx-padding: 15px;
+    -fx-background-radius: 20px;
+}
+
+.fight-controls{
+    -fx-background-color: #f2c261;
+    -fx-background-radius: 10px;
+    -fx-text-fill: black;
+}
+
+.fight-controls-reset-oasei-komi{
+    -fx-background-color: #ea1111;
+    -fx-background-radius: 10px;
+    -fx-text-fill: black;
+}
+
+.timerlabel{
+    -fx-background-color: black;
+    -fx-text-fill: #00ff00;
+    -fx-font-size: 30px;
+    -fx-padding: 10px;
+    -fx-pref-width: 120px;
+    -fx-pref-height: 60px;
+    -fx-font-family: monospace;
+    -fx-font-weight: bold;
+}

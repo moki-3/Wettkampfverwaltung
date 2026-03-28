@@ -101,6 +101,8 @@ public class StartClass extends Application {
         select.getStyleClass().add("select-file-button");
         Button continueButton = new Button("Select a file to continue");
         continueButton.getStyleClass().add("continue-file-button");
+        Label fileName = new Label("Keine Datei Ausgewählt");
+
         continueButton.setDisable(true);
 
 
@@ -118,6 +120,7 @@ public class StartClass extends Application {
 
             if (csv != null) {
                 System.out.println("File selected: " + csv.getAbsolutePath());
+                fileName.setText("Datei: "+csv.getName());
                 ReadFromCSV rfc = new ReadFromCSV();
                 fighterPairs.set(rfc.read(csv)); // Hier wird die ArrayList gestzt
 //                for (FighterPair pair : fighterPairs.get()) {
@@ -143,7 +146,7 @@ public class StartClass extends Application {
             play();
         });
 
-        VBox vbox = new VBox(10, greeting, select, continueButton);
+        VBox vbox = new VBox(10, greeting, select, fileName,continueButton);
         vbox.setAlignment(Pos.CENTER);
 
         controlRoot = new BorderPane();
@@ -225,7 +228,15 @@ public class StartClass extends Application {
             Label altersklasse = new Label(fp.getAltersKlasse());
             Label gewichtsklasse = new Label(fp.getGewichtsKlasse());
 
-            if (!fp.getWinner().equals("nicht gesetzt")) {
+            if(fp.getWinner().equals("untentschieden")){
+                //unetnschieden nach golden score
+
+                name01.getStyleClass().add("font-red");
+                verein01.getStyleClass().add("font-red");
+                name02.getStyleClass().add("font-red");
+                verein02.getStyleClass().add("font-red");
+
+            }else if (!fp.getWinner().equals("nicht gesetzt")) {
                 //wenn es einen gewinner gibt, css klassen setzten
                 if (fp.getWinner().equals(name01.getText())) {
                     /*
@@ -440,17 +451,19 @@ public class StartClass extends Application {
         validate.getStyleClass().add("weiter-nextfight");
 
         validate.setOnMouseEntered(e -> {
-            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), validate);
-            scaleUp.setToX(1.1);
-            scaleUp.setToY(1.1);
-            scaleUp.play();
+//            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), validate);
+//            scaleUp.setToX(1.1);
+//            scaleUp.setToY(1.1);
+//            scaleUp.play();
+            validate.getStyleClass().add("background-saturated-orange");
         });
 
         validate.setOnMouseExited(e -> {
-            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), validate);
-            scaleDown.setToX(1.0);
-            scaleDown.setToY(1.0);
-            scaleDown.play();
+//            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), validate);
+//            scaleDown.setToX(1.0);
+//            scaleDown.setToY(1.0);
+//            scaleDown.play();
+            validate.getStyleClass().remove("background-saturated-orange");
         });
 
         VBox box = new VBox(20, frage, nextFighters, alter, validate);
@@ -462,10 +475,11 @@ public class StartClass extends Application {
     private void updateControlStage(){
         buildLeftControlPane();
         updateFightControlView();
-        controlRoot.setCenter(fightPane);
+        ScrollPane sp = new ScrollPane(fightPane);
+        sp.setFitToWidth(true);
+        sp.setFitToHeight(true);
+        controlRoot.setCenter(sp);
         updateViewStage();
-
-
     }
 
     public void play(){
@@ -474,6 +488,7 @@ public class StartClass extends Application {
         //progressBar02 = new ProgressBar(0);
 
         bStartGoldenScore = new Button("Golden Score starten");
+        bStartGoldenScore.getStyleClass().add("goldenScore-button");
         bStartGoldenScore.setOnAction(actionEvent -> startGoldeScore());
         bStartGoldenScore.setDisable(true);
 
@@ -489,6 +504,7 @@ public class StartClass extends Application {
         drawBottom();
         controlStage.setMinWidth(900);
         controlStage.setMinHeight(550);
+        controlStage.setTitle("Wettkampfverwaltung");
 
         //updateControlStage();
         continueToNextFight();
@@ -507,8 +523,6 @@ public class StartClass extends Application {
                 //Wenn Golden Score, dann wird raufgezählt
                 if(isGoldenScore) remainingtime ++;
                 else remainingtime--;
-
-
 
                 timerLabel.setText(formatTime(remainingtime));
                 mv.updateTimeLabel(formatTime(remainingtime));
@@ -552,7 +566,6 @@ public class StartClass extends Application {
 
     }
 
-
     /*
         Alle fighterPairs werden durchgelaufen, und jeder neue Name wird in
         die Vereine ArrayList gespeichert.
@@ -583,17 +596,13 @@ public class StartClass extends Application {
     Aufräummehtode, die alles nach dem kampf wieder resetet
 
      */
-
     public void updateFightControlView(){
         if(fightPane == null){
             fightPane = new BorderPane();
         }
 
-
-
         //################################################################################################
         // TOP HBOX START
-
 
         Button endFight = new Button("Kampf Beenden");
         endFight.setOnAction(actionEvent -> {
@@ -603,29 +612,20 @@ public class StartClass extends Application {
             checkWinner();
         });
 
-
+        endFight.getStyleClass().add("kampf-beenden");
 
         String text = "Kampf Starten";
         if(fighTime != null) text = fighTime.getStatus() == Animation.Status.STOPPED ? "Hajime" : "Matte";
         Button start_stop = new Button(text);
+        start_stop.getStyleClass().add("kampf-start-stop");
         start_stop.setOnAction(actionEvent -> {
-
-
             //System.out.println("\nSpace Clicked");
-            if(fighTime == null ){
+            if (fighTime == null || fighTime.getStatus() == Animation.Status.STOPPED) {
                 startTimer();
                 start_stop.setText("Matte");
-                //System.out.println("\nTimer started and it is running\n");
-            }
-            else if(fighTime.getStatus() == Animation.Status.STOPPED){
-                startTimer();
-                start_stop.setText("Matte");
-                //System.out.println("\nTimer is running\n");
-            }
-            else {
+            } else {
                 stopTimer();
                 start_stop.setText("Hajime");
-                //System.out.println("Timer Stopped");
             }
             isFight = !isFight;
             System.out.println("\nneues isFight: " + isFight + "\n");
@@ -654,22 +654,39 @@ public class StartClass extends Application {
         });
 
 
-        HBox topBox = new HBox(endFight, start_stop, bStartGoldenScore);
+        HBox topBox = new HBox(30, endFight, start_stop, bStartGoldenScore);
 
         Label rMode = new Label(r_flag ? "R Modus ein" : "R Modus aus");
+        rMode.getStyleClass().add("font-15px");
+        HBox rbox = new HBox(10, rMode);
+        rbox.setAlignment(Pos.CENTER);
 
         Label goldenScore = new Label(isGoldenScore ? "Golden Score: " + formatTime(goldenScoreAbsoluteTime) : "");
+        goldenScore.getStyleClass().add("font-15px");
+        HBox gBox = new HBox(10, goldenScore);
+        gBox.setAlignment(Pos.CENTER);
 
-        VBox top = new VBox(20, rMode, topBox, goldenScore);
+        HBox topButtons = new HBox(20, topBox);
+        topButtons.setAlignment(Pos.CENTER);
+
+        VBox top = new VBox(10, rbox, topButtons, gBox);
+        VBox.setMargin(rbox, new Insets(10, 0, 0, 0));
+        VBox.setMargin(gBox, new Insets(0, 0, 10, 0));
+
+
+        fightPane.setTop(top);
 
         // TOP HBOX END
         //################################################################################################
         // UPPER FIGHTER START
 
-        HBox upperFighter = new HBox();
+        HBox upperFighter = new HBox(20);
+        upperFighter.getStyleClass().addAll("font-15px", "background-white", "fighter-boxes");
 
         Label name01 = new Label(allFighterPairs.get(kampfIndex).getName01());
         Label verein01 = new Label(allFighterPairs.get(kampfIndex).getVerein01());
+        name01.getStyleClass().add("font-15px");
+        verein01.getStyleClass().add("font-15px");
 
         VBox daten01 = new VBox(10, name01, verein01);
 
@@ -688,8 +705,10 @@ public class StartClass extends Application {
 
 
         Label points01l = new Label(points01);
-
+        points01l.getStyleClass().add("font-15px");
+        
         Button editIppon01 = new Button("Ippon [A] : " + allFighterPairs.get(kampfIndex).getIppon01());
+        editIppon01.getStyleClass().addAll("font-15px", "fight-controls");
         editIppon01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon01();
@@ -704,6 +723,7 @@ public class StartClass extends Application {
         // strg + 1
 
         Button editWaza_ari01 = new Button("Waza-ari [S] : " + allFighterPairs.get(kampfIndex).getWaza_ari01());
+        editWaza_ari01.getStyleClass().addAll("font-15px", "fight-controls");
         editWaza_ari01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari01();
@@ -720,6 +740,7 @@ public class StartClass extends Application {
         // strg + 2
 
         Button editYuko01 = new Button("Yuko [D] : " + allFighterPairs.get(kampfIndex).getYuko01());
+        editYuko01.getStyleClass().addAll("font-15px", "fight-controls");
         editYuko01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decYuko01();
@@ -736,6 +757,7 @@ public class StartClass extends Application {
         // strg + 3
 
         Button editShido01 = new Button("Shido [G] : " + allFighterPairs.get(kampfIndex).getShido01());
+        editShido01.getStyleClass().addAll("font-15px", "fight-controls");
         editShido01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido01();
@@ -748,6 +770,7 @@ public class StartClass extends Application {
 
 
         Button hansoku_make01 = new Button("Hansoku-make");
+        hansoku_make01.getStyleClass().addAll("font-15px", "fight-controls");
         //hansoku_make01.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make01());
         hansoku_make01.setDisable(false);
         hansoku_make01.setOnAction(actionEvent -> {
@@ -759,7 +782,7 @@ public class StartClass extends Application {
         VBox controls01 = new VBox(10, editIppon01, editWaza_ari01, editYuko01, editShido01, hansoku_make01);
 
         osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
-
+        osae_komi01.getStyleClass().addAll("font-15px", "fight-controls");
         osae_komi01.setOnAction(actionEvent -> {
             if(r_flag || osae_komi01.getText().equals("Toketa [F]")){
                 stopOaseiKomi01();
@@ -774,6 +797,7 @@ public class StartClass extends Application {
         });
 
         reset01 = new Button("Reset Oasei-Komi");
+        reset01.getStyleClass().addAll("font-15px", "fight-controls-reset-oasei-komi");
         reset01.setOnAction(actionEvent -> {
             resetOaseiKomi01();
             isFesthalter01 = false;
@@ -787,10 +811,14 @@ public class StartClass extends Application {
         // UPPER FIGHTER END
         //################################################################################################
         // LOWER FITHER START
-        HBox lowerFighter = new HBox();
+        HBox lowerFighter = new HBox(20);
+        lowerFighter.getStyleClass().addAll("font-15px", "background-blue", "fighter-boxes");
 
         Label name02 = new Label(allFighterPairs.get(kampfIndex).getName02());
         Label verein02 = new Label(allFighterPairs.get(kampfIndex).getVerein02());
+        name02.getStyleClass().add("font-15px");
+        verein02.getStyleClass().add("font-15px");
+
 
         VBox daten02 = new VBox(10, name02, verein02);
 
@@ -808,8 +836,10 @@ public class StartClass extends Application {
         }
 
         Label points02l = new Label(points02);
+        points02l.getStyleClass().add("font-15px");
 
         Button editIppon02 = new Button("Ippon [Ö] : " + allFighterPairs.get(kampfIndex).getIppon02());
+        editIppon02.getStyleClass().addAll("font-15px", "fight-controls");
         editIppon02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon02();
@@ -824,6 +854,7 @@ public class StartClass extends Application {
 
 
         Button editWaza_ari02 = new Button("Waza-ari [L] : " + allFighterPairs.get(kampfIndex).getWaza_ari02());
+        editWaza_ari02.getStyleClass().addAll("font-15px", "fight-controls");
         editWaza_ari02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari02();
@@ -840,6 +871,7 @@ public class StartClass extends Application {
 
 
         Button editYuko02 = new Button("Yuko [K] : " + allFighterPairs.get(kampfIndex).getYuko02());
+        editYuko02.getStyleClass().addAll("font-15px", "fight-controls");
         editYuko02.setOnAction(actionEvent -> {
             if (r_flag) {
                 allFighterPairs.get(kampfIndex).decYuko02();
@@ -855,6 +887,7 @@ public class StartClass extends Application {
         });
 
         Button editShido02 = new Button("Shido [H] : " + allFighterPairs.get(kampfIndex).getShido02());
+        editShido02.getStyleClass().addAll("font-15px", "fight-controls");
         editShido02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido02();
@@ -868,6 +901,7 @@ public class StartClass extends Application {
 
         Button hansoku_make02 = new Button("Hansoku-make");
         //hansoku_make02.setDisable(!allFighterPairs.get(kampfIndex).isHansoku_make02());
+        hansoku_make02.getStyleClass().addAll("font-15px", "fight-controls");
         hansoku_make02.setDisable(false);
         hansoku_make02.setOnAction(actionEvent -> {
             playSound();
@@ -878,6 +912,7 @@ public class StartClass extends Application {
         VBox controls02 = new VBox(10, editIppon02, editWaza_ari02, editYuko02, editShido02, hansoku_make02);
 
         osae_komi02 = new Button(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
+        osae_komi02.getStyleClass().addAll("font-15px", "fight-controls");
         osae_komi02.setOnAction(actionEvent -> {
             if(r_flag || osae_komi02.getText().equals("Toketa [J]")){
                 stopOaseiKomi02();
@@ -892,6 +927,7 @@ public class StartClass extends Application {
         });
 
         reset02 = new Button("Reset Oasei-Komi");
+        reset02.getStyleClass().addAll("font-15px", "fight-controls-reset-oasei-komi");
         reset02.setOnAction(actionEvent -> {
             resetOaseiKomi02();
             isFesthalter02 = false;
@@ -902,13 +938,14 @@ public class StartClass extends Application {
 
         // LOWER FITHER END
         //################################################################################################
-        // TIMERS START
-        HBox timers = new HBox();
 
-        // TIMERS END
-        //################################################################################################
-        VBox contents = new VBox(top, upperFighter, lowerFighter, timers);
-        fightPane.setCenter(contents);
+
+        VBox contents = new VBox(upperFighter, lowerFighter);
+        VBox.setMargin(lowerFighter, new Insets(20, 0, 0, 0));
+        contents.setAlignment(Pos.CENTER);
+        HBox container = new HBox(contents); //Nur damit ich alles zentrieren kann
+        container.setAlignment(Pos.CENTER);
+        fightPane.setCenter(container);
         fightPane.setFocusTraversable(true);
 
         fightPane.setOnKeyTyped(keyEvent -> {
@@ -1172,7 +1209,10 @@ public class StartClass extends Application {
         if(progressBar01 != null) box01.getChildren().add(progressBar01);
 
         bottomRoot.getChildren().clear();
+        timerLabel.getStyleClass().add("timerlabel");
+        timerLabel.setAlignment(Pos.CENTER);
         bottomRoot.getChildren().addAll(box01, timerLabel, box02);
+        bottomRoot.setAlignment(Pos.CENTER);
         if(fightPane != null)fightPane.setBottom(bottomRoot);
     }
 
@@ -1373,6 +1413,8 @@ public class StartClass extends Application {
         }else if(unentschiedenNachGoldenScore && !allFighterPairs.get(kampfIndex).isHansoku_make01() && !allFighterPairs.get(kampfIndex).isHansoku_make02()){
             //System.out.println("im unentschiedenNachGoldenScore if");
             /*
+            unentschieden nach golden score
+
             Wenn ich hier bin, wird in der Stage, die dem Controler angezeigt wird,
             schon angezeigt, das unentschieden ist.
             Ich muss dann noch hier in Controlstage anzeigen, dass untschieden ist und
