@@ -163,10 +163,39 @@
 .timerlabel{
     -fx-background-color: black;
     -fx-text-fill: #00ff00;
-    -fx-font-size: 30px;
-    -fx-padding: 10px;
-    -fx-pref-width: 120px;
-    -fx-pref-height: 60px;
+    -fx-font-size: 60px;
+    /*-fx-padding: 30px;*/
     -fx-font-family: monospace;
     -fx-font-weight: bold;
 }
+
+.timerlabel-vbox{
+    -fx-background-color: black;
+}
+
+.timerlabel-hBox{
+    -fx-background-color: black;
+}
+
+.progress-bar{
+
+}
+
+.progress-bar .track{
+    -fx-background-color: #7a7a7a;
+}
+
+.progress-bar .bar{
+    -fx-background-color: orange;
+}
+
+.grid-pane{
+    -fx-pref-height: 200px;
+    -fx-min-height: 200px;
+    -fx-background-color: #9f9e9e;
+}
+
+.festhalter-zeit{
+    -fx-font-size: 30px;
+}
+

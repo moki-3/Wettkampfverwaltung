@@ -1,0 +1,1 @@
+Spielt den Sound ab, wenn [[boolean soundHasAlreadyBeenPlayed]] false ist, und setzt diesen Boolean auch gleich auf true

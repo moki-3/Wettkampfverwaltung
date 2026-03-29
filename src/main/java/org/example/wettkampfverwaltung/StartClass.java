@@ -11,14 +11,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.controlsfx.control.spreadsheet.Grid;
 
 import javax.swing.*;
 import java.beans.Expression;
@@ -55,7 +53,10 @@ public class StartClass extends Application {
     private Label timerLabel = new Label("no time yet");
     private int remainingtime = -1;
 
-    private HBox bottomRoot;
+    private GridPane bottomRoot;
+    private ColumnConstraints leftCol;
+    private ColumnConstraints centerCol;
+    private ColumnConstraints rightCol;
     private Label festhalertLabel01 = new Label("");
     private Timeline festhalterzeit01;
     private Label festhalertLabel02 = new Label("");
@@ -784,7 +785,8 @@ public class StartClass extends Application {
         osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
         osae_komi01.getStyleClass().addAll("font-15px", "fight-controls");
         osae_komi01.setOnAction(actionEvent -> {
-            if(r_flag || osae_komi01.getText().equals("Toketa [F]")){
+            if(r_flag) reset01.fire();
+            if(osae_komi01.getText().equals("Toketa [F]")){
                 stopOaseiKomi01();
                 isFesthalter01 = false;
             }else{
@@ -914,7 +916,8 @@ public class StartClass extends Application {
         osae_komi02 = new Button(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         osae_komi02.getStyleClass().addAll("font-15px", "fight-controls");
         osae_komi02.setOnAction(actionEvent -> {
-            if(r_flag || osae_komi02.getText().equals("Toketa [J]")){
+            if(r_flag) reset02.fire();
+            if(osae_komi02.getText().equals("Toketa [J]")){
                 stopOaseiKomi02();
                 isFesthalter02 = false;
             }else{
@@ -1063,6 +1066,7 @@ public class StartClass extends Application {
         if(festhalterzeit01 == null){
             if(progressBar01 == null){
                 progressBar01 = new ProgressBar(0);
+                progressBar01.getStyleClass().add("progress-bar");
                 mv.initProgressbar01();
             }
 
@@ -1133,6 +1137,7 @@ public class StartClass extends Application {
         if(festhalterzeit02 == null){
             if(progressBar02 == null){
                 progressBar02 = new ProgressBar(0);
+                progressBar02.getStyleClass().add("progress-bar");
                 mv.initProgressbar02();
             }
 
@@ -1192,29 +1197,101 @@ public class StartClass extends Application {
 
     public void drawBottom(){
 
-        if(bottomRoot == null){
-            bottomRoot = new HBox();
-            bottomRoot.setSpacing(10);
+        if(bottomRoot == null) {
+            bottomRoot = new GridPane();
+            bottomRoot.getStyleClass().add("grid-pane");
+            leftCol = new ColumnConstraints();
+            leftCol.setPercentWidth(40);
+            leftCol.setHgrow(Priority.ALWAYS);
+
+            rightCol = new ColumnConstraints();
+            rightCol.setPercentWidth(40);
+            rightCol.setHgrow(Priority.ALWAYS);
+
+            centerCol = new ColumnConstraints();
+            centerCol.setPercentWidth(20);
+            centerCol.setHgrow(Priority.ALWAYS);
+
+            bottomRoot.getColumnConstraints().addAll(leftCol, centerCol, rightCol);
+
+            RowConstraints row = new RowConstraints();
+            row.setVgrow(Priority.ALWAYS);
+            row.setFillHeight(true);
+            bottomRoot.getRowConstraints().add(row);
         }
 
 
         //fightPane.setBottom(timerLabel);
-
-
-
-
-        VBox box01 = new VBox(10, festhalertLabel01);
-        VBox box02 = new VBox(10, festhalertLabel02);
-        if(progressBar02 != null) box02.getChildren().add(progressBar02);
-        if(progressBar01 != null) box01.getChildren().add(progressBar01);
-
         bottomRoot.getChildren().clear();
+
+
+
+
+
+
+        festhalertLabel02.getStyleClass().add("festhalter-zeit");
+        VBox box02 = new VBox(10, festhalertLabel02);
+        box02.setAlignment(Pos.CENTER);
+        box02.setMaxHeight(Double.MAX_VALUE);
+        box02.getStyleClass().add("background-blue");
+        if(progressBar02 != null) {
+            progressBar02.setMaxWidth(Double.MAX_VALUE);
+            progressBar02.setScaleX(-1);
+            box02.getChildren().add(progressBar02);
+
+            GridPane.setFillWidth(box02, true);
+            GridPane.setFillHeight(box02, true);
+
+            VBox.setVgrow(festhalertLabel02, Priority.ALWAYS);
+            festhalertLabel02.setMaxHeight(Double.MAX_VALUE);
+
+            VBox.setVgrow(progressBar02, Priority.ALWAYS);
+            progressBar02.setMaxHeight(Double.MAX_VALUE);
+
+            bottomRoot.add(box02, 2, 0);
+        }
+
+
+        festhalertLabel01.getStyleClass().add("festhalter-zeit");
+        VBox box01 = new VBox(10, festhalertLabel01);
+        box01.setAlignment(Pos.CENTER);
+        box01.setMaxHeight(Double.MAX_VALUE);
+        box01.getStyleClass().add("background-white");
+        if(progressBar01 != null) {
+            progressBar01.setMaxWidth(Double.MAX_VALUE);
+            box01.getChildren().add(progressBar01);
+
+            GridPane.setFillWidth(box01, true);
+            GridPane.setFillHeight(box01, true);
+
+            VBox.setVgrow(festhalertLabel01, Priority.ALWAYS);
+            festhalertLabel01.setMaxHeight(Double.MAX_VALUE);
+
+            VBox.setVgrow(progressBar01, Priority.ALWAYS);
+            progressBar01.setMaxHeight(Double.MAX_VALUE);
+
+            bottomRoot.add(box01, 0, 0);
+        }
+
+
         timerLabel.getStyleClass().add("timerlabel");
-        timerLabel.setAlignment(Pos.CENTER);
-        bottomRoot.getChildren().addAll(box01, timerLabel, box02);
-        bottomRoot.setAlignment(Pos.CENTER);
+
+        VBox vTimer = new VBox(timerLabel);
+        vTimer.getStyleClass().add("timerlabel-vbox");
+        vTimer.setAlignment(Pos.CENTER);
+
+        HBox hTimer = new HBox(vTimer);
+        hTimer.getStyleClass().add("timerlabel-hBox");
+        hTimer.setAlignment(Pos.CENTER);
+
+        GridPane.setFillWidth(hTimer, true);
+        bottomRoot.add(hTimer, 1, 0);
+
+        //bottomRoot.getChildren().addAll(box01, timerLabel, box02); als es noch eine HBox war
+        //bottomRoot.setAlignment(Pos.CENTER); als es noch eine HBox war
         if(fightPane != null)fightPane.setBottom(bottomRoot);
     }
+
 
     public void startGoldeScore(){
         Stage goldenScoreStage = new Stage();

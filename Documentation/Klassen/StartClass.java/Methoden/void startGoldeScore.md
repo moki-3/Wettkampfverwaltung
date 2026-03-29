@@ -1,0 +1,1 @@
+startet einen GoldenScore bzw. Man kann einstellen, wie lange es dauern soll

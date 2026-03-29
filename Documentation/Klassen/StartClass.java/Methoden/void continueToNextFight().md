@@ -1,0 +1,1 @@
+resettet alles und macht alles ready für den Nächsten Kampf
