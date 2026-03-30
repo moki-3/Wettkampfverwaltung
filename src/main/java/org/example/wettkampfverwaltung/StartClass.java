@@ -230,7 +230,7 @@ public class StartClass extends Application {
             Label gewichtsklasse = new Label(fp.getGewichtsKlasse());
 
             if(fp.getWinner().equals("untentschieden")){
-                //unetnschieden nach golden score
+                //Unentschieden nach golden score
 
                 name01.getStyleClass().add("font-red");
                 verein01.getStyleClass().add("font-red");
@@ -1220,13 +1220,8 @@ public class StartClass extends Application {
             bottomRoot.getRowConstraints().add(row);
         }
 
-
         //fightPane.setBottom(timerLabel);
         bottomRoot.getChildren().clear();
-
-
-
-
 
 
         festhalertLabel02.getStyleClass().add("festhalter-zeit");
@@ -1430,6 +1425,7 @@ public class StartClass extends Application {
         chechWinnerStage.initModality(Modality.WINDOW_MODAL);
 
         BorderPane smallRoot = new BorderPane();
+        smallRoot.getStyleClass().add("background-df");
 
         Label who01 = new Label(allFighterPairs.get(kampfIndex).getName01());
         Label ippons01 = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon01());
@@ -1437,7 +1433,14 @@ public class StartClass extends Application {
         Label yukos01 = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko01());
         Label shidos01 = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido01());
 
+        who01.getStyleClass().add("text-20");
+        ippons01.getStyleClass().add("text-15");
+        waza_aris01.getStyleClass().add("text-15");
+        yukos01.getStyleClass().add("text-15");
+        shidos01.getStyleClass().add("text-15");
+
         VBox labels01 = new VBox(10, who01, ippons01, waza_aris01, yukos01, shidos01);
+
 
         Label who02 = new Label(allFighterPairs.get(kampfIndex).getName02());
         Label ippons02 = new Label("Ippons: " + allFighterPairs.get(kampfIndex).getIppon02());
@@ -1445,36 +1448,52 @@ public class StartClass extends Application {
         Label yukos02 = new Label("Yukos: " + allFighterPairs.get(kampfIndex).getYuko02());
         Label shidos02 = new Label("shidos: " + allFighterPairs.get(kampfIndex).getShido02());
 
+        who02.getStyleClass().add("text-20");
+        ippons02.getStyleClass().add("text-15");
+        waza_aris02.getStyleClass().add("text-15");
+        yukos02.getStyleClass().add("text-15");
+        shidos02.getStyleClass().add("text-15");
+
         VBox labels02 = new VBox(10, who02, ippons02, waza_aris02, yukos02, shidos02);
 
         HBox allInfo = new HBox(20, labels01, labels02);
+        allInfo.setAlignment(Pos.CENTER);
 
+
+        chechWinnerStage.setMinWidth(300);
+        chechWinnerStage.setMinHeight(400);
 
 
         if(winner == "-1" && !unentschiedenNachGoldenScore && !allFighterPairs.get(kampfIndex).isHansoku_make01() && !allFighterPairs.get(kampfIndex).isHansoku_make02()){
             //wenn untentschieden vor Golden Score
 
-            Label info = new Label(isGoldenScore ? "Untenschieden!\nGoldenScore kann jetzt gestartet werden!" :
-                    "Unentschieden!");
+            Label info = new Label("Unentschieden!");
+            info.getStyleClass().add("text-30");
+            HBox infoContainer = new HBox(info);
+            infoContainer.setAlignment(Pos.CENTER);
 
-            VBox content = new VBox(50, info, allInfo);
+            VBox content = new VBox(50, infoContainer, allInfo);
             smallRoot.setCenter(content);
 
             bStartGoldenScore.setDisable(false);
 
             Button ok = new Button("ok");
+            ok.getStyleClass().add("primaryButton");
 
             ok.setOnAction(actionEvent -> {
                 chechWinnerStage.close();
             });
 
             Button disable = new Button("Ich brauche noch kein Golden Score");
+            disable.getStyleClass().add("secondaryButton");
             disable.setOnAction(actionEvent -> {
                 bStartGoldenScore.setDisable(true);
+                hasCheckWinnerAlreadyBeenCalled = false;
                 ok.fire();
             });
 
-            HBox buttons = new HBox(20, ok, disable);
+            VBox buttons = new VBox(20, ok, disable);
+            buttons.setAlignment(Pos.CENTER);
 
             smallRoot.setBottom(buttons);
 
@@ -1485,6 +1504,8 @@ public class StartClass extends Application {
             scn.setOnKeyPressed(keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
             });
+
+            chechWinnerStage.setOnCloseRequest(event -> ok.fire());
 
             chechWinnerStage.setScene(scn);
         }else if(unentschiedenNachGoldenScore && !allFighterPairs.get(kampfIndex).isHansoku_make01() && !allFighterPairs.get(kampfIndex).isHansoku_make02()){
@@ -1497,11 +1518,16 @@ public class StartClass extends Application {
             Ich muss dann noch hier in Controlstage anzeigen, dass untschieden ist und
             in der viewstage
              */
-            Label info = new Label("Unetnschieden");
+            Label info = new Label("Unentschieden");
+            info.getStyleClass().add("text-30");
+
+            HBox infoContainer = new HBox(info);
+            infoContainer.setAlignment(Pos.CENTER);
 
 
 
             Button ok = new Button("ok");
+            ok.getStyleClass().add("primaryButton");
 
             ok.setOnAction(actionEvent -> {
                 /*
@@ -1520,7 +1546,8 @@ public class StartClass extends Application {
                 highlightWinner();
             });
 
-            VBox content = new VBox(50, info, allInfo, ok);
+            VBox content = new VBox(50, infoContainer, allInfo, ok);
+            content.setAlignment(Pos.CENTER);
             smallRoot.setCenter(content);
 
             Scene scn = new Scene(smallRoot);
@@ -1531,9 +1558,13 @@ public class StartClass extends Application {
                 if (keyEvent.getCode() == KeyCode.ENTER || keyEvent.getCode() == KeyCode.ESCAPE) ok.fire();
             });
 
+            chechWinnerStage.setOnCloseRequest(event -> ok.fire());
+
             chechWinnerStage.setScene(scn);
 
         }else{
+
+            chechWinnerStage.setMinHeight(300);
 
             if(allFighterPairs.get(kampfIndex).isHansoku_make01()){
                 System.out.println("01 hat ein hansoku make");
@@ -1547,9 +1578,17 @@ public class StartClass extends Application {
             }
 
             Button b01 = new Button(allFighterPairs.get(kampfIndex).getName01());
+            b01.getStyleClass().add("white-button");
             Button b02 = new Button(allFighterPairs.get(kampfIndex).getName02());
+            b02.getStyleClass().add("blue-button");
 
             //hier if mit css machen, dass button, wo name gleich winner ist, primary button wird
+            if(winner.equals(b01.getText())){
+                b01.getStyleClass().add("winner-marker");
+            }else{
+                b02.getStyleClass().add("winner-marker");
+            }
+
 
             b01.setOnAction(actionEvent -> {
                 allFighterPairs.get(kampfIndex).setWinner(allFighterPairs.get(kampfIndex).getName01());
@@ -1582,16 +1621,28 @@ public class StartClass extends Application {
 
 
             Button cancel = new Button("Cancel");
-            cancel.setOnAction(actionEvent -> chechWinnerStage.close());
+            cancel.setOnAction(actionEvent -> {
+                chechWinnerStage.close();
+                hasCheckWinnerAlreadyBeenCalled = false;
+            });
+
+            cancel.getStyleClass().add("cancel");
 
 
-            HBox buttons = new HBox(30, b01, b02, cancel);
+
+            HBox fighterButtons = new HBox(20, b01, b02);
+            fighterButtons.setAlignment(Pos.CENTER);
+
+            VBox buttons = new VBox(20, fighterButtons, cancel);
+            buttons.setAlignment(Pos.CENTER);
 
             Label info = new Label(Objects.equals(winner, allFighterPairs.get(kampfIndex).getName01()) ? allFighterPairs.get(kampfIndex).getName01() + " hat gewonnen!" : allFighterPairs.get(kampfIndex).getName02() + " hat gewonnen!");
+            info.getStyleClass().add("text-30");
+            HBox infoContainer = new HBox(info);
+            infoContainer.setAlignment(Pos.CENTER);
 
 
-
-            smallRoot.setTop(info);
+            smallRoot.setTop(infoContainer);
 
 
             VBox content = new VBox(40, allInfo, buttons);
@@ -1611,33 +1662,18 @@ public class StartClass extends Application {
 
         }
 
+
+
         chechWinnerStage.show();
 
     }
 
-    /*
-
-    17.01.25 23:21
-    Ich bin jetzt zu müde um weiter zu machen. Was ich mache: checkWinner checkt wer gewonnen hat und hier kann ich auch dann
-    den / die Gewiner*in setzten. Somit kann ich das bei den Festhalterfunktionen wegmachen und einfach wenn die Zeit aufgebraucht
-    ist checkWinner() aufrufen. checkWinner() rufe ich auch auf, wenn die 2 Minuten Kampfzeit zuende sind. Auch wenn ein ich einen
-    Ippon mache. In der Methode, wo ich die Controls update, berechne ich ja auch die Punkte. Da kann ich auch machen, wenn die
-    Punkte 100 oder mehr sind, wird checkWinner aufgerufen. Und beim Button endfight.
-    In checkWinner wird dann vorgeschlagen wer gewonnen hat, aber es kann auch die andere Person ausgewählt werden. Und hier
-    werden dann die Points für den Verein vergeben und dann wird auch dieser TimeFiller in MV angezeigt
-    Ich brauche in der Methode auch diese kleinen Stages da.
-
-    GoldenScore muss ich auch noch machen. Ich benutze da einfach das normale timelabel aber mache eine andere Timeline, da ich
-    ja raufzählen muss. Und einen Boolean oder getStatus damit ich weiß ob GoldenScore ist, weil bei einem Golden Score ja alles
-    entscheidend ist.
-
-     */
 
     /*
     Diese Methode zeigt nach checkWinner, wenn es einen Winner gibt und man auf diesen Namen bei checkWinner
     geklickt hat, in Controlstage und Viewstagen den Winner an.
     TODO
-    CSS Klassen in den ifs, damit es verschieden Designs gibt, wenn es unetnschieden ist und wenn nicht
+    CSS Klassen in den ifs, damit es verschieden Designs gibt, wenn es Unentschieden ist und wenn nicht
      */
     private void highlightWinner(){
         //wenn ein Kampf fertig ist, kommt man hier her
