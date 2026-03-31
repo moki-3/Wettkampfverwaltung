@@ -1294,15 +1294,18 @@ public class StartClass extends Application {
         goldenScoreStage.initModality(Modality.WINDOW_MODAL);
 
         Label start = new Label("Golden Score starten");
+        start.getStyleClass().add("text-20");
         Label warnung = new Label("");
         TextField timeField = new TextField("02:00");
+        timeField.getStyleClass().add("eingabe");
+        timeField.setMaxWidth(150);
         AtomicInteger timeInSeconds = new AtomicInteger();
 
 
         Button submit = new Button("Fertig");
+        submit.getStyleClass().add("submit");
         submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
-        Button exit = new Button("Cancel");
-        exit.setOnAction(actionEvent -> goldenScoreStage.close());
+
         //submit.setDisable(true);
 
 //        timeField.setOnAction(actionEvent -> {
@@ -1314,11 +1317,11 @@ public class StartClass extends Application {
         timeField.setOnAction(actionEvent -> submit.fire());
 
         Button resetTimeField = new Button("Reset Input");
+        resetTimeField.getStyleClass().add("reset");
         resetTimeField.setOnAction(actionEvent -> {
             timeField.setText("02:00");
             submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
         });
-
         submit.setOnAction(actionEvent -> {
             if(isInputValidAsTimeformat_mm_ss(timeField.getText())){
                 String[] zeichen = timeField.getText().split(":");
@@ -1339,21 +1342,27 @@ public class StartClass extends Application {
 
 
 
-        VBox buttons = new VBox(30, exit, resetTimeField, submit);
+
+        VBox all = new VBox(10, start, warnung, timeField, resetTimeField, submit);
+        all.setAlignment(Pos.CENTER);
+
+
         BorderPane goldenRoot = new BorderPane();
-        HBox center = new HBox(20, start, warnung, timeField);
-        goldenRoot.setBottom(buttons);
-        goldenRoot.setCenter(center);
+
+
+        goldenRoot.setCenter(all);
         Scene scn = new Scene(goldenRoot);
 
         String css = Objects.requireNonNull(getClass().getResource("/stylesheets/goldenScoreStage.css")).toExternalForm();
         scn.getStylesheets().add(css);
 
         scn.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ESCAPE) exit.fire();
+            if (keyEvent.getCode() == KeyCode.ESCAPE) goldenScoreStage.close();
         });
 
         goldenScoreStage.setScene(scn);
+        goldenScoreStage.setMinHeight(250);
+        goldenScoreStage.setMinWidth(250);
         goldenScoreStage.show();
 
 

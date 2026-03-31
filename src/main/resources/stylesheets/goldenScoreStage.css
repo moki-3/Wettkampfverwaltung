@@ -1,0 +1,21 @@
+.eingabe{
+    -fx-background-radius: 15px;
+}
+
+.text-20{
+    -fx-font-size: 20px;
+}
+
+.reset{
+    -fx-background-color: #fdcd75;
+    -fx-background-radius: 10px;
+    -fx-font-size: 15px;
+    -fx-padding: 5px;
+}
+
+.submit{
+    -fx-background-color: orange;
+    -fx-background-radius: 15px;
+    -fx-font-size: 15px;
+    -fx-padding: 10px;
+}
