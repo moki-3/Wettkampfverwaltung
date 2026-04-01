@@ -199,3 +199,23 @@
     -fx-font-size: 30px;
 }
 
+.highlightWinner{
+    -fx-font-size: 20px;
+    -fx-padding: 10px;
+    -fx-background-radius: 15px;
+}
+
+.background-gray{
+    -fx-background-color: #b3b1b1;
+}
+
+.text-20{
+    -fx-font-size: 20px;
+}
+
+.submit{
+    -fx-background-color: orange;
+    -fx-background-radius: 15px;
+    -fx-font-size: 15px;
+    -fx-padding: 10px;
+}

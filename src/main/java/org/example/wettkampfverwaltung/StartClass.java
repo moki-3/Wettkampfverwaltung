@@ -1685,6 +1685,7 @@ public class StartClass extends Application {
     CSS Klassen in den ifs, damit es verschieden Designs gibt, wenn es Unentschieden ist und wenn nicht
      */
     private void highlightWinner(){
+        System.out.println("In highlightWinner");
         //wenn ein Kampf fertig ist, kommt man hier her
         isCurrentlyAFight = false;
         //eigentlich sollte done schon auf true gesetzt sein aber sicher ist sicher
@@ -1702,12 +1703,14 @@ public class StartClass extends Application {
         Label points02 = new Label();
         Label verein02 = new Label();
 
+        Label lunentschieden = new Label("");
+
         boolean unentschieden = false;
 
         if(allFighterPairs.get(kampfIndex).getWinner().toLowerCase().equals("untentschieden")){
             //System.out.println("\nIm unentschieden if in highlightWinner!\n");
             //wenn unentschieden nach Golden Score
-            winner.setText("Unentschieden!");
+            winner.setText(allFighterPairs.get(kampfIndex).getName01());
             //einfach 01 auf gewinner machen, weil weiß ja eh niemand und ich habe die Labels schon
             int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
             if(tmp01 >= 100) tmp01 = 100;
@@ -1724,12 +1727,14 @@ public class StartClass extends Application {
 
 
             unentschieden = true;
+            lunentschieden.setText("Unentschieden");
+            lunentschieden.getStyleClass().add("text-20");
 
 
         }else if(allFighterPairs.get(kampfIndex).getWinner().equals(fighter01)){
-            System.out.println("winner: " + winner.getText());
-            System.out.println("Name01: " + allFighterPairs.get(kampfIndex).getName01());
-            System.out.println("Name02: " + fighter02);
+//            System.out.println("winner: " + winner.getText());
+//            System.out.println("Name01: " + allFighterPairs.get(kampfIndex).getName01());
+//            System.out.println("Name02: " + fighter02);
 
             //wenn 01 Gewinenr*in ist
             int tmp01 = allFighterPairs.get(kampfIndex).getIppon01() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari01() * 10 + allFighterPairs.get(kampfIndex).getYuko01();
@@ -1744,6 +1749,7 @@ public class StartClass extends Application {
             if(tmp02 >= 100) tmp02 = 100;
             points02.setText(""+tmp02);
             verein02.setText(allFighterPairs.get(kampfIndex).getVerein02());
+            lunentschieden.setText("");
 
         }else{
             int tmp01 = allFighterPairs.get(kampfIndex).getIppon02() * 100 + allFighterPairs.get(kampfIndex).getWaza_ari02() * 10 + allFighterPairs.get(kampfIndex).getYuko02();
@@ -1758,34 +1764,54 @@ public class StartClass extends Application {
             if(tmp02 >= 100) tmp02 = 100;
             points02.setText(""+tmp02);
             verein02.setText(allFighterPairs.get(kampfIndex).getVerein01());
+            lunentschieden.setText("");
         }
 
 
-        System.out.println("winner: " + winner.getText());
-        System.out.println("winnerPoints: " + winnerPoints.getText());
-        System.out.println("winnerVerein: " + winnerVerein.getText());
-        System.out.println("name02: " + name02.getText());
-        System.out.println("points02: " + points02.getText());
-        System.out.println("verein02: " + verein02.getText());
+//        System.out.println("winner: " + winner.getText());
+//        System.out.println("winnerPoints: " + winnerPoints.getText());
+//        System.out.println("winnerVerein: " + winnerVerein.getText());
+//        System.out.println("name02: " + name02.getText());
+//        System.out.println("points02: " + points02.getText());
+//        System.out.println("verein02: " + verein02.getText());
 
 
         VBox box01 = new VBox(10, winner, winnerPoints, winnerVerein);
+        box01.getStyleClass().add("highlightWinner");
+
         VBox box02 = new VBox(10, name02, points02, verein02);
-        VBox contents = new VBox(30, box01, box02);
+        box02.getStyleClass().add("highlightWinner");
+
+        HBox contents = new HBox(30, box01, box02);
+
+        if(!unentschieden && winner.getText().contains(allFighterPairs.get(kampfIndex).getName01())){
+            box01.getStyleClass().add("background-white");
+            box02.getStyleClass().add("background-blue");
+        } else if (!unentschieden && winner.getText().contains(allFighterPairs.get(kampfIndex).getName02())) {
+            box02.getStyleClass().add("background-white");
+            box01.getStyleClass().add("background-blue");
+        }else{
+            box02.getStyleClass().add("background-gray");
+            box01.getStyleClass().add("background-gray");
+        }
 
 
-        Button select = new Button("Weiter");
-        select.setOnAction(actionEvent -> continueToNextFight());
+        Button submit = new Button("Weiter");
+        submit.getStyleClass().add("submit");
+        submit.setOnAction(actionEvent -> continueToNextFight());
 
 
 
-        VBox allContents = new VBox(20, contents, select);
+        VBox allContents = new VBox(20, lunentschieden,contents, submit);
+        allContents.setAlignment(Pos.CENTER);        HBox allContentsHorizontl = new HBox(allContents);
+        allContentsHorizontl.setAlignment(Pos.CENTER);
+
         mv.hightlightWinner(winner.getText(), winnerPoints.getText(), winnerVerein.getText(), name02.getText(), points02.getText(), verein02.getText(), unentschieden);
 
 
         //controlRoot.setBottom(null);
 
-        controlRoot.setCenter(allContents);
+        controlRoot.setCenter(allContentsHorizontl);
     }
 
     private void setAllFightsDoneWithName(String name){
