@@ -1685,7 +1685,7 @@ public class StartClass extends Application {
     CSS Klassen in den ifs, damit es verschieden Designs gibt, wenn es Unentschieden ist und wenn nicht
      */
     private void highlightWinner(){
-        System.out.println("In highlightWinner");
+        //System.out.println("In highlightWinner");
         //wenn ein Kampf fertig ist, kommt man hier her
         isCurrentlyAFight = false;
         //eigentlich sollte done schon auf true gesetzt sein aber sicher ist sicher
@@ -1784,12 +1784,15 @@ public class StartClass extends Application {
 
         HBox contents = new HBox(30, box01, box02);
 
+        boolean firstIsBlue = false;
+
         if(!unentschieden && winner.getText().contains(allFighterPairs.get(kampfIndex).getName01())){
             box01.getStyleClass().add("background-white");
             box02.getStyleClass().add("background-blue");
         } else if (!unentschieden && winner.getText().contains(allFighterPairs.get(kampfIndex).getName02())) {
             box02.getStyleClass().add("background-white");
             box01.getStyleClass().add("background-blue");
+            firstIsBlue = true;
         }else{
             box02.getStyleClass().add("background-gray");
             box01.getStyleClass().add("background-gray");
@@ -1806,8 +1809,8 @@ public class StartClass extends Application {
         allContents.setAlignment(Pos.CENTER);        HBox allContentsHorizontl = new HBox(allContents);
         allContentsHorizontl.setAlignment(Pos.CENTER);
 
-        mv.hightlightWinner(winner.getText(), winnerPoints.getText(), winnerVerein.getText(), name02.getText(), points02.getText(), verein02.getText(), unentschieden);
-
+        mv.hightlightWinner(winner.getText(), winnerPoints.getText(), winnerVerein.getText(), name02.getText(), points02.getText(), verein02.getText(), unentschieden, firstIsBlue);
+        System.out.println("winner.getText = " + winner.getText());
 
         //controlRoot.setBottom(null);
 

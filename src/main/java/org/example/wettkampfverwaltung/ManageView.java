@@ -25,10 +25,6 @@ public class ManageView {
         this.fightTime = fightTime;
     }
 
-    //private String altersKlasse;
-
-
-
     private Label timeLabel;
     private Label oaseiKomi01;
     private Label oaseiKomi02;
@@ -40,21 +36,13 @@ public class ManageView {
 
     public ManageView(int fights){
         this.fightsCount = fights;
-
         viewRoot = new BorderPane();
         viewStage = new Stage();
-
-
-
         Scene viewScene = new Scene(viewRoot);
         String css = Objects.requireNonNull(getClass().getResource("/stylesheets/viewStage.css")).toExternalForm();
         viewScene.getStylesheets().add(css);
         viewStage.setFullScreenExitHint("");
         viewStage.setScene(viewScene);
-
-
-
-
     }
 
     public void openViewStage(){
@@ -80,10 +68,11 @@ public class ManageView {
      */
     public void newFight(FighterPair f, int index) {
         viewRoot.setCenter(null);
-        Label count = new Label(index + "/" + fightsCount);
-        HBox tmpTop = new HBox(count);
-        tmpTop.setAlignment(Pos.CENTER);
-        viewRoot.setTop(tmpTop);
+//        Label count = new Label(index + "/" + fightsCount);
+//        count.getStyleClass().add("text-25");
+//        HBox tmpTop = new HBox(count);
+//        tmpTop.setAlignment(Pos.CENTER);
+//        viewRoot.setTop(tmpTop);
 
         updateFight(f); // fügt im Center des BorderPanes den Kampf mit den Daten
 
@@ -132,28 +121,52 @@ public class ManageView {
         Das wird zwischen den Kämpfen angezeigt
      */
     public void timeFiller(ArrayList<Verein> vereine, FighterPair next){
+        viewRoot.setBottom(null);
         VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
         for(Verein v : vereine){
             Label l = new Label(v.getName() + ":\t" + v.getPoints());
+            l.getStyleClass().add("text-100");
             root.getChildren().add(l);
         }
 
         if(next != null){
             Label nextV01 = new Label(next.getVerein01());
+            nextV01.getStyleClass().add("text-75");
             Label nextN01 = new Label(next.getName01());
+            nextN01.getStyleClass().add("text-75");
             Label nextV02 = new Label(next.getVerein02());
+            nextV02.getStyleClass().add("text-75");
             Label nextN02 = new Label(next.getName02());
+            nextN02.getStyleClass().add("text-75");
             Label l = new Label("Nächster Kampf:");
+            l.getStyleClass().add("text-75");
 
             Label alter = new Label(next.getAltersKlasse());
+            alter.getStyleClass().add("text-75");
 
-            VBox box01 = new VBox(nextN01, nextV01);
-            VBox box02 = new VBox(nextN02, nextV02);
-            HBox nextFight = new HBox(box01, box02);
-            VBox box = new VBox(nextFight, alter);
-            root.getChildren().addAll(l, box);
+            VBox box01 = new VBox(20, nextN01, nextV01);
+            box01.setAlignment(Pos.CENTER);
+            box01.getStyleClass().add("hightlight-White-Box");
+            VBox box02 = new VBox(20, nextN02, nextV02);
+            box02.setAlignment(Pos.CENTER);
+            box02.getStyleClass().add("hightlight-Blue-Box");
+            HBox nextFight = new HBox(50, box01, box02);
+            nextFight.setAlignment(Pos.CENTER);
+            VBox box = new VBox(40, nextFight, alter);
+            box.setAlignment(Pos.CENTER);
+
+
+
+            //root.getChildren().addAll(l, box);
+
+            VBox all = new VBox(50, l, box);
+            all.setAlignment(Pos.CENTER);
+
+            viewRoot.setBottom(all);
         }
         viewRoot.setCenter(null);
+
         viewRoot.setCenter(root);
     }
 
@@ -232,38 +245,72 @@ public class ManageView {
     TODO
     CSS Klassen im if, damit es verschieden Designs gibt, wenn unentschieden ist.
      */
-    public void hightlightWinner(String winner, String winnerPoints, String winnerVerein, String name02, String points02, String verein02, boolean isUnentschieden){
+    public void hightlightWinner(String winner, String winnerPoints, String winnerVerein, String name02, String points02, String verein02, boolean isUnentschieden, boolean firstIsBlue){
         if(isUnentschieden){
-            Label info = new Label("Unetnschieden!");
+            Label info = new Label("Unentschieden!");
+            info.getStyleClass().add("text-150");
             Label lwinner = new Label(winner);
+            lwinner.getStyleClass().add("text-100");
             Label lwinnerPoints = new Label(winnerPoints);
+            lwinnerPoints.getStyleClass().add("text-100");
             Label lwinnerVerein = new Label(winnerVerein);
+            lwinnerVerein.getStyleClass().add("text-100");
             Label lname02 = new Label(name02);
+            lname02.getStyleClass().add("text-100");
             Label lpoints02 = new Label(points02);
+            lpoints02.getStyleClass().add("text-100");
             Label lverein02 = new Label(verein02);
+            lverein02.getStyleClass().add("text-100");
 
-            VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
+            VBox box01 = new VBox(10, lwinner,lwinnerPoints, lwinnerVerein);
+            box01.setAlignment(Pos.CENTER);
             VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
-            HBox boxes = new HBox(30, box01, box02);
-            VBox contents = new VBox(info, boxes);
+            box02.setAlignment(Pos.CENTER);
+
+            if(firstIsBlue){
+                box01.getStyleClass().add("hightlight-Blue-Box");
+                box02.getStyleClass().add("hightlight-White-Box");
+            }else{
+                box02.getStyleClass().add("hightlight-Blue-Box");
+                box01.getStyleClass().add("hightlight-White-Box");
+            }
+
+            HBox boxes = new HBox(50, box01, box02);
+            boxes.setAlignment(Pos.CENTER);
+            VBox contents = new VBox(50, info, boxes);
+            contents.setAlignment(Pos.CENTER);
             viewRoot.setCenter(contents);
             viewRoot.setBottom(null);
 
         }else{
             Label lwinner = new Label(winner);
+            lwinner.getStyleClass().add("text-100");
             Label lwinnerPoints = new Label(winnerPoints);
+            lwinnerPoints.getStyleClass().add("text-100");
             Label lwinnerVerein = new Label(winnerVerein);
+            lwinnerVerein.getStyleClass().add("text-100");
             Label lname02 = new Label(name02);
+            lname02.getStyleClass().add("text-100");
             Label lpoints02 = new Label(points02);
+            lpoints02.getStyleClass().add("text-100");
             Label lverein02 = new Label(verein02);
+            lverein02.getStyleClass().add("text-100");
 
             VBox box01 = new VBox(10, lwinner, lwinnerPoints, lwinnerVerein);
+            box01.setAlignment(Pos.CENTER);
             VBox box02 = new VBox(10, lname02, lpoints02, lverein02);
-            VBox contents = new VBox(30, box01, box02);
+            box02.setAlignment(Pos.CENTER);
+            if(firstIsBlue){
+                box01.getStyleClass().add("hightlight-Blue-Box");
+                box02.getStyleClass().add("hightlight-White-Box");
+            }else{
+                box02.getStyleClass().add("hightlight-Blue-Box");
+                box01.getStyleClass().add("hightlight-White-Box");
+            }
+            VBox contents = new VBox(50, box01, box02);
+            contents.setAlignment(Pos.CENTER);
             viewRoot.setCenter(contents);
             viewRoot.setBottom(null);
         }
     }
-
-
 }

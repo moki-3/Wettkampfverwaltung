@@ -1,0 +1,27 @@
+.text-25{
+    -fx-font-size: 25px;
+}
+
+.text-150{
+    -fx-font-size: 150px;
+}
+
+.text-100{
+    -fx-font-size: 100px;
+}
+
+.text-75{
+    -fx-font-size: 75px;
+}
+
+.hightlight-Blue-Box{
+    -fx-background-color: #2979b5;
+    -fx-background-radius: 50px;
+    -fx-padding: 25px;
+}
+
+.hightlight-White-Box{
+    -fx-background-color: #fff;
+    -fx-background-radius: 50px;
+    -fx-padding: 25px;
+}
