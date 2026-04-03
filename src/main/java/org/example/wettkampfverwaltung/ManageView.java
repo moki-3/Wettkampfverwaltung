@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -33,12 +34,14 @@ public class ManageView {
     private ProgressBar progressbar01;
     private ProgressBar progressbar02;
 
+    private Scene viewScene;
+
 
     public ManageView(int fights){
         this.fightsCount = fights;
         viewRoot = new BorderPane();
         viewStage = new Stage();
-        Scene viewScene = new Scene(viewRoot);
+        viewScene = new Scene(viewRoot);
         String css = Objects.requireNonNull(getClass().getResource("/stylesheets/viewStage.css")).toExternalForm();
         viewScene.getStylesheets().add(css);
         viewStage.setFullScreenExitHint("");
@@ -85,7 +88,8 @@ public class ManageView {
      */
     public void updateFight(FighterPair f){
         VBox root = new VBox(); //Die VBox, die dann alles drinnen hat und der content der szene wird.
-
+        VBox.setVgrow(root, Priority.ALWAYS);
+        root.setFillWidth(true);
 
 
         // top fighter Box
@@ -98,7 +102,28 @@ public class ManageView {
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido01 = new Label(f.getShido01() > 0 ? "Shido: " + f.getShido01() : "");
 
-        HBox topBox = new HBox(10, data01, displayPoints01, shido01);
+        displayPoints01.styleProperty().bind(
+                viewScene.heightProperty().divide(5)
+                        .asString("-fx-font-size: %.0fpx; -fx-font-weight: bold;")
+        );
+
+        data01.styleProperty().bind(
+                viewScene.heightProperty().divide(10)
+                        .asString("-fx-font-size: %.0fpx;")
+        );
+
+        shido01.styleProperty().bind(
+                viewScene.heightProperty().divide(20)
+                        .asString("-fx-font-size: %.0fpx;")
+        );
+
+
+        HBox topBox = new HBox(100, data01, displayPoints01, shido01);
+        topBox.getStyleClass().add("hightlight-White-Box");
+        topBox.setAlignment(Pos.CENTER);
+        topBox.setMaxWidth(Double.MAX_VALUE);
+        topBox.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(topBox, Priority.ALWAYS);
 
         // lower fighter Box
 
@@ -110,10 +135,32 @@ public class ManageView {
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido02 = new Label(f.getShido02() > 0 ? "Shido: " + f.getShido02() : "");
 
-        HBox lowerBox = new HBox(10, shido02, displayPoints02, data02);
+        displayPoints02.styleProperty().bind(
+                viewScene.heightProperty().divide(5)
+                        .asString("-fx-font-size: %.0fpx; -fx-font-weight: bold;")
+        );
+
+        data02.styleProperty().bind(
+                viewScene.heightProperty().divide(10)
+                        .asString("-fx-font-size: %.0fpx;")
+        );
+
+        shido02.styleProperty().bind(
+                viewScene.heightProperty().divide(20)
+                        .asString("-fx-font-size: %.0fpx;")
+        );
+
+        HBox lowerBox = new HBox(100, data02, displayPoints02, shido02);
+        lowerBox.getStyleClass().add("hightlight-Blue-Box");
+        lowerBox.setAlignment(Pos.CENTER);
+        lowerBox.setMaxWidth(Double.MAX_VALUE);
+        lowerBox.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(lowerBox, Priority.ALWAYS);
 
         root.getChildren().addAll(topBox, lowerBox);
         viewRoot.setCenter(root);
+        root.setMaxHeight(Double.MAX_VALUE);
+        root.setMaxWidth(Double.MAX_VALUE);
     }
 
 
@@ -236,8 +283,11 @@ public class ManageView {
         if (progressbar02 != null) box02.getChildren().add(progressbar02);
 
         HBox bottombox = new HBox(10, box01, timeLabel, box02);
-            bottombox.setAlignment(Pos.CENTER);
-            viewRoot.setBottom(bottombox);
+        bottombox.setAlignment(Pos.CENTER);
+
+        bottombox.prefHeightProperty().bind(viewRoot.heightProperty().divide(3));
+
+        viewRoot.setBottom(bottombox);
     }
 
     /*
