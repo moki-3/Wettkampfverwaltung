@@ -25,3 +25,54 @@
     -fx-background-radius: 50px;
     -fx-padding: 25px;
 }
+
+.white-box{
+    -fx-background-color: #fff;
+    -fx-padding: 25px;
+}
+
+.blue-box{
+    -fx-background-color: #2979b5;
+    -fx-padding: 25px;
+}
+
+.grid-pane{
+    -fx-background-color: #9f9e9e;
+}
+
+.background-blue{
+    -fx-background-color: #2979b5;
+}
+
+.background-white{
+    -fx-background-color: #fff;
+}
+
+.progress-bar{
+
+}
+
+.progress-bar .track{
+    -fx-background-color: #7a7a7a;
+}
+
+.progress-bar .bar{
+    -fx-background-color: orange;
+}
+
+.timerlabel{
+    -fx-background-color: black;
+    -fx-text-fill: #00ff00;
+    /*-fx-font-size: 60px;*/
+    /*-fx-padding: 30px;*/
+    -fx-font-family: monospace;
+    -fx-font-weight: bold;
+}
+
+.timerlabel-vbox{
+    -fx-background-color: black;
+}
+
+.timerlabel-hBox{
+    -fx-background-color: black;
+}

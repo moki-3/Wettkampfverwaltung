@@ -77,6 +77,12 @@
     -fx-border-style: solid;
 }
 
+.fighter-box-border-orange{
+    -fx-border-color: orange;
+    -fx-border-width: 3px;
+    -fx-border-style: solid;
+}
+
 .text-size-15{
     -fx-font-size: 15px;
 }

@@ -289,6 +289,8 @@ public class StartClass extends Application {
 
             if (!fp.getWinner().equals("nicht gesetzt") || fp.isHansoku_make01() || fp.isHansoku_make02()){
                 tmp.getStyleClass().add("fighter-box-border-red");
+            }else if(kampfIndex == allFighterPairs.indexOf(fp)) {
+                tmp.getStyleClass().add("fighter-box-border-orange");
             }else{
                 tmp.getStyleClass().add("fighter-box-border-green");
             }

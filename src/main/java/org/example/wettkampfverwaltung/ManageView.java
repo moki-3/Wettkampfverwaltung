@@ -7,10 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -35,6 +32,11 @@ public class ManageView {
     private ProgressBar progressbar02;
 
     private Scene viewScene;
+
+    GridPane bottomRoot = null;
+    ColumnConstraints leftCol = null;
+    ColumnConstraints rightCol = null;
+    ColumnConstraints centerCol = null;
 
 
     public ManageView(int fights){
@@ -119,7 +121,7 @@ public class ManageView {
 
 
         HBox topBox = new HBox(100, data01, displayPoints01, shido01);
-        topBox.getStyleClass().add("hightlight-White-Box");
+        topBox.getStyleClass().add("white-box");
         topBox.setAlignment(Pos.CENTER);
         topBox.setMaxWidth(Double.MAX_VALUE);
         topBox.setMaxHeight(Double.MAX_VALUE);
@@ -151,7 +153,7 @@ public class ManageView {
         );
 
         HBox lowerBox = new HBox(100, data02, displayPoints02, shido02);
-        lowerBox.getStyleClass().add("hightlight-Blue-Box");
+        lowerBox.getStyleClass().add("blue-box");
         lowerBox.setAlignment(Pos.CENTER);
         lowerBox.setMaxWidth(Double.MAX_VALUE);
         lowerBox.setMaxHeight(Double.MAX_VALUE);
@@ -251,18 +253,22 @@ public class ManageView {
 
     public void resetProgresbar01(){
         progressbar01 = null;
+        drawBottom();
     }
 
     public void resetProgressbar02(){
         progressbar02 = null;
+        drawBottom();
     }
 
     public void initProgressbar01(){
         progressbar01 = new ProgressBar(0);
+        progressbar01.getStyleClass().add("progress-bar");
     }
 
     public void initProgressbar02(){
-        progressbar02 = new ProgressBar(    0);
+        progressbar02 = new ProgressBar(0);
+        progressbar02.getStyleClass().add("progress-bar");
     }
 
     public void updateProgressbar01(double v){
@@ -274,20 +280,112 @@ public class ManageView {
     }
 
     public void drawBottom(){
+
+        if(bottomRoot == null){
+            bottomRoot = new GridPane();
+            bottomRoot.getStyleClass().add("grid-pane");
+
+            leftCol = new ColumnConstraints();
+            leftCol.setPercentWidth(40);
+            leftCol.setHgrow(Priority.ALWAYS);
+
+            rightCol = new ColumnConstraints();
+            rightCol.setPercentWidth(40);
+            rightCol.setHgrow(Priority.ALWAYS);
+
+            centerCol = new ColumnConstraints();
+            centerCol.setPercentWidth(20);
+            centerCol.setHgrow(Priority.ALWAYS);
+
+            bottomRoot.getColumnConstraints().addAll(leftCol, centerCol, rightCol);
+
+            RowConstraints row = new RowConstraints();
+            row.setPercentHeight(100); // oder aufteilen z.B. 50 für zwei Zeilen
+            row.setVgrow(Priority.ALWAYS);
+            bottomRoot.getRowConstraints().add(row);
+        }
+
+        bottomRoot.getChildren().clear();
+
+
         if (timeLabel == null) timeLabel = new Label();
         if (oaseiKomi01 == null) oaseiKomi01 = new Label();
         if (oaseiKomi02 == null) oaseiKomi02 = new Label();
+
+        oaseiKomi01.styleProperty().bind(
+                bottomRoot.heightProperty().divide(10).asString("-fx-font-size: %.0fpx")
+        );
         VBox box01 = new VBox(10, oaseiKomi01);
+        box01.getStyleClass().add("background-white");
+        box01.setAlignment(Pos.CENTER);
+        box01.setMaxHeight(Double.MAX_VALUE);
+
+        if (progressbar01 != null) {
+            progressbar01.setMaxWidth(Double.MAX_VALUE);
+            box01.getChildren().add(progressbar01);
+
+            GridPane.setFillWidth(box01, true);
+            GridPane.setFillHeight(box01, true);
+
+            VBox.setVgrow(oaseiKomi01, Priority.ALWAYS);
+            oaseiKomi01.setMaxHeight(Double.MAX_VALUE);
+
+            VBox.setVgrow(progressbar01, Priority.ALWAYS);
+            progressbar01.setMaxHeight(Double.MAX_VALUE);
+
+            bottomRoot.add(box01, 0, 0);
+        }
+
+
+        oaseiKomi02.styleProperty().bind(
+                bottomRoot.heightProperty().divide(10).asString("-fx-font-size: %.0fpx")
+        );
         VBox box02 = new VBox(10, oaseiKomi02);
-        if (progressbar01 != null) box01.getChildren().add(progressbar01);
-        if (progressbar02 != null) box02.getChildren().add(progressbar02);
+        box02.getStyleClass().add("background-blue");
+        box02.setAlignment(Pos.CENTER);
+        box02.setMaxHeight(Double.MAX_VALUE);
 
-        HBox bottombox = new HBox(10, box01, timeLabel, box02);
-        bottombox.setAlignment(Pos.CENTER);
+        if (progressbar02 != null) {
+            progressbar02.setMaxWidth(Double.MAX_VALUE);
+            progressbar02.setScaleX(-1);
 
-        bottombox.prefHeightProperty().bind(viewRoot.heightProperty().divide(3));
+            box02.getChildren().add(progressbar02);
 
-        viewRoot.setBottom(bottombox);
+            GridPane.setFillWidth(box02, true);
+            GridPane.setFillHeight(box02, true);
+
+            VBox.setVgrow(oaseiKomi02, Priority.ALWAYS);
+            oaseiKomi02.setMaxHeight(Double.MAX_VALUE);
+
+            VBox.setVgrow(progressbar02, Priority.ALWAYS);
+            progressbar02.setMaxHeight(Double.MAX_VALUE);
+
+            bottomRoot.add(box02, 2, 0);
+        }
+
+        timeLabel.styleProperty().bind(
+                bottomRoot.heightProperty().divide(3).asString("-fx-font-size: %.0fpx")
+        );
+
+        timeLabel.getStyleClass().add("timerlabel");
+
+        VBox vTimer = new VBox(timeLabel);
+        vTimer.getStyleClass().add("timerlabel-vbox");
+        vTimer.setAlignment(Pos.CENTER);
+
+        HBox hTimer = new HBox(vTimer);
+        hTimer.getStyleClass().add("timerlabel-hBox");
+        hTimer.setAlignment(Pos.CENTER);
+
+        GridPane.setFillWidth(hTimer, true);
+        bottomRoot.add(hTimer, 1, 0);
+
+
+        bottomRoot.prefHeightProperty().bind(viewRoot.heightProperty().divide(3));
+        bottomRoot.setMaxHeight(Double.MAX_VALUE);
+        viewRoot.setBottom(bottomRoot);
+
+
     }
 
     /*
