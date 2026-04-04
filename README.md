@@ -6,4 +6,16 @@ and you need Java 21
 ---
 # What does this program do?
 
-My local judo club often manages and organises judo competitions. We used old displays, that rarely did what they were supposed to do. So I decided to write a program that replaces these displays
+My local judo club often manages and organises judo competitions. We used old displays, that rarely did what they were supposed to do. So I decided to write a program that replaces these displays.
+So it is a replacement. And it automates stuff like counting the points for the different clubs. All the ratings can either be
+added by the buttons or the keyboard. The according keys are written on the buttons. 
+By clicking the "R" key you enter R-Mode which lets you subtract a rating. 
+
+The Program consists of two windows: ControlStage and ViewStage. In ControlStage the user can manage the fight. On the left is
+a list of all the fights. Completed fights have a red border, the current one has an orange border and fights yet to come have a green border.
+You can only choose a fight if there is no current fight. Only U10 and U12 are supported as of 4.4.2026.
+
+In ViewStage, the viewers can see all the data. With big fonts. Its for the viewers and the judge. There is also a sound playing
+after the fight is done.
+
+That's it I think, the people most likely to use this program can ask me how it works. For anybody else I left it Open Source so you can learn from my mistakes ;)
