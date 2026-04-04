@@ -1,28 +1,28 @@
 package org.example.wettkampfverwaltung;
-import javafx.scene.media.AudioClip;
 
+import javax.sound.sampled.*;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 
 public class SoundPlayer {
-    public void playEndFight(){
-        AudioClip clip = new AudioClip(getClass().getResource("/sounds/sound.m4a").toExternalForm());
-        clip.play();
-        System.out.println("Sound abgespielt theoretisch");
-    }
+    public void playEndFight() {
+        try {
+            InputStream is = getClass().getResourceAsStream("/sounds/sound.wav");
+            BufferedInputStream bis = new BufferedInputStream(is);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(bis);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+            System.out.println("Sound abgespielt");
 
-//    public void playEndFight(){
-//        try {
-//            var url = getClass().getResource("/sounds/sound.m4a");
-//            System.out.println("URL: " + url);
-//
-//            AudioClip clip = new AudioClip(url.toExternalForm());
-//            System.out.println("Clip erstellt: " + clip);
-//            System.out.println("Clip valid: " + clip.isPlaying());
-//
-//            clip.play();
-//            System.out.println("play() aufgerufen");
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    clip.close();
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Sound konnte nicht abgespielt werden: " + e.getMessage());
+        }
+    }
 }

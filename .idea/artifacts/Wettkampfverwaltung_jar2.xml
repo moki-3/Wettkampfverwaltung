@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Wettkampfverwaltung:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/Wettkampfverwaltung_jar2</output-path>
+    <root id="archive" name="Wettkampfverwaltung.jar">
+      <element id="module-output" name="Wettkampfverwaltung" />
+    </root>
+  </artifact>
+</component>
