@@ -13,6 +13,8 @@ example data:
 
 Sophie Pfaller,JudoWien,Alexander Haas,JudoLinz,U10,38Kg
 
+(i included a example .csv file in the releases page)
+
 Setup video:
 
 https://github.com/moki-3/Wettkampfverwaltung/releases/download/v1.1/Setup.mov
