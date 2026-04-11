@@ -13,6 +13,10 @@ example data:
 
 Sophie Pfaller,JudoWien,Alexander Haas,JudoLinz,U10,38Kg
 
+Setup video:
+
+https://github.com/moki-3/Wettkampfverwaltung/releases/download/v1.1/Setup.mov
+
 
 ---
 # What does this program do?
