@@ -2,18 +2,12 @@ Download the .jar file from the releases page.
 ```shell
 java -jar /path/to/.jar/file
 ```
-and you need Java 21
+Requirenments
+* Java >=21
+* a .csv file with the following data:
+    name01,club01,name02,club02,age class,weight class (U10 or U12)
 
-and a .csv file with the following data:
-name01,club01,name02,club02,age class,weight class
-
-(age class can be either U10 or U12)
-
-example data:
-
-Sophie Pfaller,JudoWien,Alexander Haas,JudoLinz,U10,38Kg
-
-(I included an example .csv file in the releases)
+An example .csv file is provided in the releases
 
 Setup video (~2:20min):
 
