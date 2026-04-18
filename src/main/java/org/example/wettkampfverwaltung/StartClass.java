@@ -16,14 +16,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.controlsfx.control.spreadsheet.Grid;
+import kotlin.coroutines.CombinedContext;
 
 import javax.swing.*;
-import java.beans.Expression;
 import java.io.File;
-import java.sql.Array;
-import java.sql.SQLOutput;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -204,9 +200,19 @@ public class StartClass extends Application {
 
         VBox vereineBox = createVereinList();
 
+
+        Button insert = new Button("Kampf einfügen");
+        insert.setOnAction(event -> {
+            if(chooseFight){
+                controlRoot.setCenter(insertFight());
+            }
+        });
+
+        insert.getStyleClass().add("open-mv");
+
         HBox fullscreenbox = new HBox(20, lviewStageFullScreen, viewStageFullscreen);
         fullscreenbox.setAlignment(Pos.CENTER);
-        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, vereineBox, createList());
+        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, insert, vereineBox, createList());
         VBox.setMargin(fullscreenbox, new Insets(10, 10, 0, 20));
         VBox.setMargin(showViewStage, new Insets(0, 10, 0, 20));
         VBox.setMargin(vereineBox, new Insets(10, 10, 10, 20));
@@ -1837,6 +1843,114 @@ public class StartClass extends Application {
         }
         soundHasAlreadyBeenPlayed = true;
     }
+
+
+    private ArrayList<String> getFullList(){
+        ArrayList<String> list = new ArrayList<>();
+        for(FighterPair fp : allFighterPairs){
+            // | damit ich es splitten kann
+            String combo01 = fp.getName01() + "|" + fp.getVerein01() + "|" + fp.getAltersKlasse() + "|" + fp.getGewichtsKlasse();
+            String combo02 = fp.getName02() + "|" + fp.getVerein02() + "|" + fp.getAltersKlasse() + "|" + fp.getGewichtsKlasse();
+
+            boolean found01 = false;
+            boolean found02 = false;
+
+            for(String s : list){
+                if(s.toLowerCase().equals(combo01)) found01 = true;
+                if(s.toLowerCase().equals(combo02)) found02 = true;
+                if(found02 && found01) break;
+            }
+
+            if(!found01) list.add(combo01);
+            if(!found02) list.add(combo02);
+        }
+
+        return list;
+    }
+
+    private VBox insertFight(){
+        Label verein01 = new Label("Kein name01 ausgewähle");
+        Label verein02 = new Label("Kein name02 ausgewähle");
+        ComboBox<String> alter = new ComboBox<>();
+        ComboBox<String> gewicht = new ComboBox<>();
+
+
+
+
+        ComboBox<String> name01 = new ComboBox<>();
+        ComboBox<String> name02 = new ComboBox<>();
+
+
+        ArrayList<String> all = getFullList();
+        for(String s : all){
+            String[] tmp = s.split("\\|");
+            name01.getItems().add(tmp[0]);
+        }
+
+        for(String s : all){
+            String[] tmp = s.split("\\|");
+            name02.getItems().add(tmp[0]);
+        }
+
+        name01.setOnAction(event -> {
+            String choosen = name01.getValue();
+            String match = "";
+            for(String s : all){
+                if(s.contains(choosen)){
+                    match = s;
+                    break;
+                }
+            }
+
+            String[] matchArray = match.split("\\|");
+
+            verein01.setText(matchArray[1]);
+            alter.getItems().add(matchArray[2]);
+            gewicht.getItems().add(matchArray[3]);
+        });
+
+
+        name02.setOnAction(event -> {
+            String choosen = name02.getValue();
+            String match = "";
+            for(String s : all){
+                if(s.contains(choosen)){
+                    match = s;
+                    break;
+                }
+            }
+
+            String[] matchArray = match.split("\\|");
+
+            verein02.setText(matchArray[1]);
+            alter.getItems().add(matchArray[2]);
+            gewicht.getItems().add(matchArray[3]);
+        });
+
+
+        HBox box01 = new HBox(20, name01, verein01);
+        HBox box02 = new HBox(20, name02, verein02);
+        HBox box03 = new HBox(20, gewicht, alter);
+        box01.setAlignment(Pos.CENTER);
+        box02.setAlignment(Pos.CENTER);
+        box03.setAlignment(Pos.CENTER);
+
+        Button submit = new Button("Übernehmen");
+        submit.setOnAction(event -> {
+            System.out.println("submit geklickt");
+        });
+
+        VBox root = new VBox(20, box01, box02, box03, submit);
+
+
+        root.setAlignment(Pos.CENTER);
+
+
+        return root;
+
+
+    }
+
 }
 
 
