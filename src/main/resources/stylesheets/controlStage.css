@@ -225,3 +225,15 @@
     -fx-font-size: 15px;
     -fx-padding: 10px;
 }
+
+.combo-box{
+    -fx-font-size: 15px;
+    -fx-background-radius: 10px;
+    -fx-background-color: #ddd;
+
+}
+
+.combo-box-popup .list-view {
+    -fx-background-radius: 10px;
+    -fx-background-color: #ddd;
+}

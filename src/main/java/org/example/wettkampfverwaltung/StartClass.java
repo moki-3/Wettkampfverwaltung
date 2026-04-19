@@ -215,6 +215,7 @@ public class StartClass extends Application {
         VBox leftControls = new VBox(20, fullscreenbox, showViewStage, insert, vereineBox, createList());
         VBox.setMargin(fullscreenbox, new Insets(10, 10, 0, 20));
         VBox.setMargin(showViewStage, new Insets(0, 10, 0, 20));
+        VBox.setMargin(insert, new Insets(0, 10, 0, 20));
         VBox.setMargin(vereineBox, new Insets(10, 10, 10, 20));
 
         leftControls.getStyleClass().add("background-ddd");
@@ -460,22 +461,48 @@ public class StartClass extends Application {
         validate.getStyleClass().add("weiter-nextfight");
 
         validate.setOnMouseEntered(e -> {
-//            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), validate);
-//            scaleUp.setToX(1.1);
-//            scaleUp.setToY(1.1);
-//            scaleUp.play();
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), validate);
+            scaleUp.setToX(1.3);
+            scaleUp.setToY(1.3);
+            scaleUp.play();
             validate.getStyleClass().add("background-saturated-orange");
         });
 
         validate.setOnMouseExited(e -> {
-//            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), validate);
-//            scaleDown.setToX(1.0);
-//            scaleDown.setToY(1.0);
-//            scaleDown.play();
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), validate);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.play();
             validate.getStyleClass().remove("background-saturated-orange");
         });
 
-        VBox box = new VBox(20, frage, nextFighters, alter, validate);
+        Button delete = new Button("Löschen");
+        delete.getStyleClass().add("kampf-beenden");
+        delete.setOnAction(event -> {
+            allFighterPairs.remove(index);
+            Label text = new Label("Wähle den nächsten Kampf aus");
+            chooseFight = true;
+            controlRoot.setCenter(text);
+            buildLeftControlPane();
+        });
+
+        delete.setOnMouseEntered(e -> {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(220), delete);
+            scaleUp.setToX(0.7);
+            scaleUp.setToY(0.7);
+            scaleUp.play();
+        });
+
+        delete.setOnMouseExited(e -> {
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(200), delete);
+            scaleDown.setToX(1.0);
+            scaleDown.setToY(1.0);
+            scaleDown.play();
+        });
+
+
+
+        VBox box = new VBox(20, frage, nextFighters, alter, validate, delete);
         box.setAlignment(Pos.CENTER);
         controlRoot.setCenter(box);
     }
@@ -1848,29 +1875,20 @@ public class StartClass extends Application {
     private ArrayList<String> getFullList(){
         ArrayList<String> list = new ArrayList<>();
         for(FighterPair fp : allFighterPairs){
-            // | damit ich es splitten kann
             String combo01 = fp.getName01() + "|" + fp.getVerein01() + "|" + fp.getAltersKlasse() + "|" + fp.getGewichtsKlasse();
             String combo02 = fp.getName02() + "|" + fp.getVerein02() + "|" + fp.getAltersKlasse() + "|" + fp.getGewichtsKlasse();
 
-            boolean found01 = false;
-            boolean found02 = false;
-
-            for(String s : list){
-                if(s.toLowerCase().equals(combo01)) found01 = true;
-                if(s.toLowerCase().equals(combo02)) found02 = true;
-                if(found02 && found01) break;
-            }
-
-            if(!found01) list.add(combo01);
-            if(!found02) list.add(combo02);
+            if(!list.contains(combo01)) list.add(combo01);
+            if(!list.contains(combo02)) list.add(combo02);
         }
-
         return list;
     }
 
     private VBox insertFight(){
-        Label verein01 = new Label("Kein name01 ausgewähle");
-        Label verein02 = new Label("Kein name02 ausgewähle");
+        Label verein01 = new Label("Kein name01 ausgewählt!");
+        Label verein02 = new Label("Kein name02 ausgewählt!");
+        verein02.getStyleClass().add("text-size-15");
+        verein01.getStyleClass().add("text-size-15");
         ComboBox<String> alter = new ComboBox<>();
         ComboBox<String> gewicht = new ComboBox<>();
 
@@ -1935,12 +1953,33 @@ public class StartClass extends Application {
         box02.setAlignment(Pos.CENTER);
         box03.setAlignment(Pos.CENTER);
 
+        Label info = new Label("");
+        info.getStyleClass().add("text-size-15");
+
+
+
         Button submit = new Button("Übernehmen");
+        submit.getStyleClass().add("submit");
         submit.setOnAction(event -> {
-            System.out.println("submit geklickt");
+            if(name01.getValue() != null && !verein01.getText().equals("Kein name01 ausgewählt!") && name02.getValue() != null && !verein02.getText().equals("Kein name02 ausgewählt!") && alter.getValue() != null && gewicht.getValue() != null) {
+                FighterPair tmp = new FighterPair(name01.getValue(), verein01.getText(), name02.getValue(), verein02.getText(), alter.getValue(), gewicht.getValue());
+                info.setText("");
+                allFighterPairs.add(tmp);
+                buildLeftControlPane();
+                info.setText("Erfolgreich übernommen!");
+                info.getStyleClass().remove("font-red");
+            }else{
+                info.setText("Error: bitte alle Werte setzen!");
+                info.getStyleClass().add("font-red");
+            }
         });
 
-        VBox root = new VBox(20, box01, box02, box03, submit);
+
+
+
+
+
+        VBox root = new VBox(20, box01, box02, box03, submit, info);
 
 
         root.setAlignment(Pos.CENTER);
