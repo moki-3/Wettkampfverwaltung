@@ -76,3 +76,7 @@
 .timerlabel-hBox{
     -fx-background-color: black;
 }
+
+.text-white{
+    -fx-text-fill: white;
+}

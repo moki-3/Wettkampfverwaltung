@@ -130,6 +130,7 @@ public class ManageView {
         // lower fighter Box
 
         Label data02 = new Label(f.getName02() + "\n" + f.getVerein02());
+        data02.getStyleClass().add("text-white");
         int points02 = 0;
         points02 = f.getWaza_ari02() * 10 + f.getYuko02();
         if(f.getIppon02() >= 1 || f.getWaza_ari02() == 2) points02 = 100;
@@ -151,6 +152,9 @@ public class ManageView {
                 viewScene.heightProperty().divide(20)
                         .asString("-fx-font-size: %.0fpx;")
         );
+
+        displayPoints02.getStyleClass().add("text-white");
+        shido02.getStyleClass().add("text-white");
 
         HBox lowerBox = new HBox(100, data02, displayPoints02, shido02);
         lowerBox.getStyleClass().add("blue-box");
@@ -417,6 +421,7 @@ public class ManageView {
 
             if(firstIsBlue){
                 box01.getStyleClass().add("hightlight-Blue-Box");
+
                 box02.getStyleClass().add("hightlight-White-Box");
             }else{
                 box02.getStyleClass().add("hightlight-Blue-Box");
