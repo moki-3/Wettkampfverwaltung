@@ -290,15 +290,15 @@ public class ManageView {
             bottomRoot.getStyleClass().add("grid-pane");
 
             leftCol = new ColumnConstraints();
-            leftCol.setPercentWidth(40);
+            leftCol.setPercentWidth(30);
             leftCol.setHgrow(Priority.ALWAYS);
 
             rightCol = new ColumnConstraints();
-            rightCol.setPercentWidth(40);
+            rightCol.setPercentWidth(30);
             rightCol.setHgrow(Priority.ALWAYS);
 
             centerCol = new ColumnConstraints();
-            centerCol.setPercentWidth(20);
+            centerCol.setPercentWidth(40);
             centerCol.setHgrow(Priority.ALWAYS);
 
             bottomRoot.getColumnConstraints().addAll(leftCol, centerCol, rightCol);
@@ -368,7 +368,7 @@ public class ManageView {
         }
 
         timeLabel.styleProperty().bind(
-                bottomRoot.heightProperty().divide(3).asString("-fx-font-size: %.0fpx")
+                bottomRoot.heightProperty().divide(2).asString("-fx-font-size: %.0fpx")
         );
 
         timeLabel.getStyleClass().add("timerlabel");
