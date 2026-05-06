@@ -96,22 +96,36 @@ public class ManageView {
 
         // top fighter Box
 
-        Label data01 = new Label(f.getName01() + "\n" + f.getVerein01());
+
+        Label name01 = new Label(f.getName01());
+        Label verein01 = new Label(f.getVerein01());
+        VBox data01 = new  VBox(10, name01, verein01);
         int points01 = 0;
         points01 = f.getWaza_ari01() * 10 + f.getYuko01();
         if(f.getIppon01() >= 1 || f.getWaza_ari01() == 2) points01 = 100;
-        Label displayPoints01 = new Label(points01 + "");
+        //Label displayPoints01 = new Label(points01 + "");
+        Label wazari01 = new Label("W: " + f.getWaza_ari02() + "");
+        Label yuko01 = new Label("Y: " + f.getYuko02() + "");
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido01 = new Label(f.getShido01() > 0 ? "Shido: " + f.getShido01() : "");
 
-        displayPoints01.styleProperty().bind(
-                viewScene.heightProperty().divide(5)
+        wazari01.styleProperty().bind(
+                viewScene.heightProperty().divide(12)
                         .asString("-fx-font-size: %.0fpx; -fx-font-weight: bold;")
         );
 
-        data01.styleProperty().bind(
-                viewScene.heightProperty().divide(10)
-                        .asString("-fx-font-size: %.0fpx;")
+        yuko01.styleProperty().bind(
+                viewScene.heightProperty().divide(12)
+                        .asString("-fx-font-size: %.0fpx; -fx-font-weight: bold;")
+        );
+
+
+        name01.styleProperty().bind(
+                viewScene.heightProperty().divide(10).asString("-fx-font-size: %.0fpx;")
+        );
+
+        verein01.styleProperty().bind(
+                viewScene.heightProperty().divide(15).asString("-fx-font-size: %.0fpx;")
         );
 
         shido01.styleProperty().bind(
@@ -120,48 +134,110 @@ public class ManageView {
         );
 
 
-        HBox topBox = new HBox(100, data01, displayPoints01, shido01);
+        VBox points01box = new VBox(10, wazari01, yuko01);
+        points01box.setAlignment(Pos.CENTER);
+
+        HBox topBox = new HBox(100, data01, points01box, shido01);
         topBox.getStyleClass().add("white-box");
-        topBox.setAlignment(Pos.CENTER);
+        topBox.setAlignment(Pos.CENTER_LEFT);
+        topBox.setFillHeight(true);
         topBox.setMaxWidth(Double.MAX_VALUE);
         topBox.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(topBox, Priority.ALWAYS);
 
+        HBox.setHgrow(data01, Priority.ALWAYS);
+        HBox.setHgrow(points01box, Priority.ALWAYS);
+        HBox.setHgrow(shido01, Priority.ALWAYS);
+
+        data01.prefWidthProperty()
+                .bind(topBox.widthProperty().multiply(0.50));
+        points01box.prefWidthProperty()
+                .bind(topBox.widthProperty().multiply(0.25));
+        shido01.prefWidthProperty()
+                .bind(topBox.widthProperty().multiply(0.25));
+
+        VBox.setVgrow(data01, Priority.ALWAYS);
+        VBox.setVgrow(points01box, Priority.ALWAYS);
+        VBox.setVgrow(shido01, Priority.ALWAYS);
+
         // lower fighter Box
 
-        Label data02 = new Label(f.getName02() + "\n" + f.getVerein02());
+
+        Label name02 = new Label(f.getName02());
+        name02.getStyleClass().add("text-white");
+        Label verein02 = new Label(f.getVerein02());
+        verein02.getStyleClass().add("text-white");
+        VBox data02 = new VBox(10, name02, verein02);
         data02.getStyleClass().add("text-white");
         int points02 = 0;
         points02 = f.getWaza_ari02() * 10 + f.getYuko02();
         if(f.getIppon02() >= 1 || f.getWaza_ari02() == 2) points02 = 100;
-        Label displayPoints02 = new Label(points02 + "");
+        //Label displayPoints02 = new Label(points02 + "");
+        Label wazari02 = new Label("W: " + f.getWaza_ari02() + "");
+        Label yuko02 = new Label("Y: " + f.getYuko02() + "");
+        wazari02.getStyleClass().add("text-white");
+        yuko02.getStyleClass().add("text-white");
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido02 = new Label(f.getShido02() > 0 ? "Shido: " + f.getShido02() : "");
 
-        displayPoints02.styleProperty().bind(
-                viewScene.heightProperty().divide(5)
+        wazari02.styleProperty().bind(
+                viewScene.heightProperty().divide(12)
                         .asString("-fx-font-size: %.0fpx; -fx-font-weight: bold;")
         );
 
-        data02.styleProperty().bind(
-                viewScene.heightProperty().divide(10)
-                        .asString("-fx-font-size: %.0fpx;")
+        yuko02.styleProperty().bind(
+                viewScene.heightProperty().divide(12)
+                        .asString("-fx-font-size: %.0fpx; -fx-font-weight: bold;")
         );
+
+//        data02.styleProperty().bind(
+//                viewScene.heightProperty().divide(10)
+//                        .asString("-fx-font-size: %.0fpx;")
+//        );
+
+        name02.styleProperty().bind(
+                viewScene.heightProperty().divide(10).asString("-fx-font-size: %.0fpx;")
+        );
+
+        verein02.styleProperty().bind(
+                viewScene.heightProperty().divide(15).asString("-fx-font-size: %.0fpx;")
+        );
+
 
         shido02.styleProperty().bind(
                 viewScene.heightProperty().divide(20)
                         .asString("-fx-font-size: %.0fpx;")
         );
 
-        displayPoints02.getStyleClass().add("text-white");
+
         shido02.getStyleClass().add("text-white");
 
-        HBox lowerBox = new HBox(100, data02, displayPoints02, shido02);
+        VBox points02box = new VBox(10, wazari02, yuko02);
+        points02box.setAlignment(Pos.CENTER);
+
+        HBox lowerBox = new HBox(data02, points02box, shido02);
         lowerBox.getStyleClass().add("blue-box");
-        lowerBox.setAlignment(Pos.CENTER);
+        lowerBox.setAlignment(Pos.CENTER_LEFT);
+        lowerBox.setFillHeight(true);
         lowerBox.setMaxWidth(Double.MAX_VALUE);
         lowerBox.setMaxHeight(Double.MAX_VALUE);
         VBox.setVgrow(lowerBox, Priority.ALWAYS);
+
+        HBox.setHgrow(data02, Priority.ALWAYS);
+        HBox.setHgrow(points02box, Priority.ALWAYS);
+        HBox.setHgrow(shido02, Priority.ALWAYS);
+
+        VBox.setVgrow(data02, Priority.ALWAYS);
+        VBox.setVgrow(points02box, Priority.ALWAYS);
+        VBox.setVgrow(shido02, Priority.ALWAYS);
+
+        data02.prefWidthProperty()
+                .bind(lowerBox.widthProperty().multiply(0.50)); // 50 %
+        points02box.prefWidthProperty()
+                .bind(lowerBox.widthProperty().multiply(0.25)); // 25 %
+        shido02.prefWidthProperty()
+                .bind(lowerBox.widthProperty().multiply(0.25)); // 25 %
+
 
         root.getChildren().addAll(topBox, lowerBox);
         viewRoot.setCenter(root);
@@ -421,10 +497,18 @@ public class ManageView {
 
             if(firstIsBlue){
                 box01.getStyleClass().add("hightlight-Blue-Box");
+                box01.getStyleClass().add("text-white");
 
+                lwinnerPoints.getStyleClass().add("text-white");
+                lwinner.getStyleClass().add("text-white");
+                lwinnerVerein.getStyleClass().add("text-white");
                 box02.getStyleClass().add("hightlight-White-Box");
             }else{
                 box02.getStyleClass().add("hightlight-Blue-Box");
+                lname02.getStyleClass().add("text-white");
+                lpoints02.getStyleClass().add("text-white");
+                lverein02.getStyleClass().add("text-white");
+                box02.getStyleClass().add("text-white");
                 box01.getStyleClass().add("hightlight-White-Box");
             }
 
@@ -455,9 +539,20 @@ public class ManageView {
             box02.setAlignment(Pos.CENTER);
             if(firstIsBlue){
                 box01.getStyleClass().add("hightlight-Blue-Box");
+                box01.getStyleClass().add("text-white");
+                lwinnerPoints.getStyleClass().add("text-white");
+                lwinner.getStyleClass().add("text-white");
+                lwinnerVerein.getStyleClass().add("text-white");
+
                 box02.getStyleClass().add("hightlight-White-Box");
             }else{
                 box02.getStyleClass().add("hightlight-Blue-Box");
+                lname02.getStyleClass().add("text-white");
+                lpoints02.getStyleClass().add("text-white");
+                lverein02.getStyleClass().add("text-white");
+
+
+                box02.getStyleClass().add("text-white");
                 box01.getStyleClass().add("hightlight-White-Box");
             }
             VBox contents = new VBox(50, box01, box02);

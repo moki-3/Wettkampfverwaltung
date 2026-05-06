@@ -986,25 +986,31 @@ public class StartClass extends Application {
         fightPane.setCenter(container);
         fightPane.setFocusTraversable(true);
 
-        fightPane.setOnKeyTyped(keyEvent -> {
-            switch (keyEvent.getCharacter().toLowerCase()){
-                case "a" -> editIppon01.fire();
-                case "ö" -> editIppon02.fire();
-                case "s" -> editWaza_ari01.fire();
-                case "l" -> editWaza_ari02.fire();
-                case "d" -> editYuko01.fire();
-                case "k" -> editYuko02.fire();
-                case "f" -> osae_komi01.fire();
-                case "j" -> osae_komi02.fire();
-                case "g" -> editShido01.fire();
-                case "h" -> editShido02.fire();
-                case " " -> start_stop.fire();
-                case "r" -> {
-                    r_flag = !r_flag;
-                    updateControlStage();
-                }
-
+        controlStage.getScene().setOnKeyTyped(keyEvent -> {
+            switch (keyEvent.getCharacter().toLowerCase()) {
+                case "a" -> { editIppon01.fire(); }
+                case "ö" -> { editIppon02.fire(); }
+                case "s" -> { editWaza_ari01.fire(); }
+                case "l" -> { editWaza_ari02.fire(); }
+                case "d" -> { editYuko01.fire(); }
+                case "k" -> { editYuko02.fire(); }
+                case "f" -> { osae_komi01.fire(); }
+                case "j" -> { osae_komi02.fire(); }
+                case "g" -> { editShido01.fire(); }
+                case "h" -> { editShido02.fire(); }
+                case " " -> { start_stop.fire(); }
+                case "r" -> { r_flag = !r_flag; updateControlStage(); }
             }
+
+            editIppon01.setFocusTraversable(false);
+            editIppon02.setFocusTraversable(false);
+            editWaza_ari01.setFocusTraversable(false);
+            editYuko01.setFocusTraversable(false);
+            editShido01.setFocusTraversable(false);
+            editShido02.setFocusTraversable(false);
+            editYuko02.setFocusTraversable(false);
+            editWaza_ari02.setFocusTraversable(false);
+            start_stop.setFocusTraversable(false);
 
 
             //updateControlStage();
@@ -1614,6 +1620,7 @@ public class StartClass extends Application {
                 System.out.println("01 hat ein hansoku make");
                 chechWinnerStage.setTitle(allFighterPairs.get(kampfIndex).getName01() + " hat ein Hansoku make");
                 setAllFightsDoneWithName(allFighterPairs.get(kampfIndex).getName01());
+
             }
             if(allFighterPairs.get(kampfIndex).isHansoku_make02()){
                 System.out.println("02 hat ein hansoku make");
