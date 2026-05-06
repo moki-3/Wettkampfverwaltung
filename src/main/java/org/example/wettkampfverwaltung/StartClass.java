@@ -797,6 +797,7 @@ public class StartClass extends Application {
         editShido01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido01();
+                allFighterPairs.get(kampfIndex).setHansoku_make01(false);
             }else{
                 allFighterPairs.get(kampfIndex).incShido01();
             }
@@ -928,6 +929,7 @@ public class StartClass extends Application {
         editShido02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido02();
+                allFighterPairs.get(kampfIndex).setHansoku_make02(false);
             }else{
                 allFighterPairs.get(kampfIndex).incShido02();
             }
