@@ -104,8 +104,8 @@ public class ManageView {
         points01 = f.getWaza_ari01() * 10 + f.getYuko01();
         if(f.getIppon01() >= 1 || f.getWaza_ari01() == 2) points01 = 100;
         //Label displayPoints01 = new Label(points01 + "");
-        Label wazari01 = new Label("W: " + f.getWaza_ari02() + "");
-        Label yuko01 = new Label("Y: " + f.getYuko02() + "");
+        Label wazari01 = new Label("W: " + f.getWaza_ari01() + "");
+        Label yuko01 = new Label("Y: " + f.getYuko01() + "");
         //im Shido Label nur etwas anzeigen, wenn es mindestens ein Shido gibt
         Label shido01 = new Label(f.getShido01() > 0 ? "Shido: " + f.getShido01() : "");
 
@@ -137,7 +137,13 @@ public class ManageView {
         VBox points01box = new VBox(10, wazari01, yuko01);
         points01box.setAlignment(Pos.CENTER);
 
-        HBox topBox = new HBox(100, data01, points01box, shido01);
+        VBox shido01box = new VBox(shido01);
+        shido01box.setAlignment(Pos.CENTER_RIGHT);
+        HBox.setHgrow(shido01box, Priority.ALWAYS);
+
+        HBox topBox = new HBox(100, data01, points01box, shido01box);
+        shido01box.prefWidthProperty().bind(topBox.widthProperty().multiply(0.25));
+
         topBox.getStyleClass().add("white-box");
         topBox.setAlignment(Pos.CENTER_LEFT);
         topBox.setFillHeight(true);
@@ -215,7 +221,14 @@ public class ManageView {
         VBox points02box = new VBox(10, wazari02, yuko02);
         points02box.setAlignment(Pos.CENTER);
 
-        HBox lowerBox = new HBox(data02, points02box, shido02);
+        VBox shido02box = new VBox(shido02);
+        shido02box.setAlignment(Pos.CENTER_RIGHT);
+
+        HBox.setHgrow(shido02box, Priority.ALWAYS);
+
+        HBox lowerBox = new HBox(data02, points02box, shido02box);
+        shido02box.prefWidthProperty().bind(lowerBox.widthProperty().multiply(0.25));
+
         lowerBox.getStyleClass().add("blue-box");
         lowerBox.setAlignment(Pos.CENTER_LEFT);
         lowerBox.setFillHeight(true);

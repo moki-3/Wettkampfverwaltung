@@ -625,6 +625,13 @@ public class StartClass extends Application {
         }
     }
 
+    private void pauseOaseiKomi01() {
+        if (festhalterzeit01 != null) festhalterzeit01.stop();
+    }
+    private void pauseOaseiKomi02() {
+        if (festhalterzeit02 != null) festhalterzeit02.stop();
+    }
+
     /*
 
     Ich kann hier dann auch machen, das nur dann das sieht, wenn man es braucht.
@@ -668,14 +675,8 @@ public class StartClass extends Application {
             //start_stop.setText(isFight ? "Matte" : "Hajime");
 
 
-            if(osae_komi02.getText().equals("Toketa [J]")) {
-                stopOaseiKomi02();
-                isFesthalter02 = false;
-            }
-            if(osae_komi01.getText().equals("Toketa [J]")) {
-                stopOaseiKomi01();
-                isFesthalter02 = false;
-            }
+            if(osae_komi01.getText().equals("Toketa [F]")) pauseOaseiKomi01();
+            if(osae_komi02.getText().equals("Toketa [J]")) pauseOaseiKomi02();
 
             r_flag = false;
             osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
@@ -828,6 +829,7 @@ public class StartClass extends Application {
             }else{
                 startOaseiKomi01();
                 isFesthalter01 = true;
+                System.out.println("startOaseiKomi01(); ausgelöst");
             }
             r_flag = false;
             osae_komi01.setText(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
