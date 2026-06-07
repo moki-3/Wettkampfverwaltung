@@ -1351,7 +1351,7 @@ public class StartClass extends Application {
         Label start = new Label("Golden Score starten");
         start.getStyleClass().add("text-20");
         Label warnung = new Label("");
-        TextField timeField = new TextField("02:00");
+        TextField timeField = new TextField("01:00");
         timeField.getStyleClass().add("eingabe");
         timeField.setMaxWidth(150);
         AtomicInteger timeInSeconds = new AtomicInteger();
