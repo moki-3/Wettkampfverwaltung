@@ -695,7 +695,17 @@ public class StartClass extends Application {
 
         Label rMode = new Label(r_flag ? "R Modus ein" : "R Modus aus");
         rMode.getStyleClass().add("font-15px");
-        HBox rbox = new HBox(10, rMode);
+
+        Button toogleRMode = new Button(r_flag ? "R Modus ein" : "R Modus aus");
+
+        toogleRMode.setOnAction(actionEvent -> {
+            r_flag = !r_flag;
+            updateControlStage();
+        });
+
+        toogleRMode.getStyleClass().add("kampf-start-stop");
+
+        HBox rbox = new HBox(10, toogleRMode);
         rbox.setAlignment(Pos.CENTER);
 
         Label goldenScore = new Label(isGoldenScore ? "Golden Score: " + formatTime(goldenScoreAbsoluteTime) : "");
