@@ -37,6 +37,7 @@ public class StartClass extends Application {
     ManageView mv;
 
     private BorderPane controlRoot;
+    private int checkWinnerCounter = 0;
 
 
     private boolean isGoldenScore = false;
@@ -78,7 +79,7 @@ public class StartClass extends Application {
 
     private boolean isCurrentlyAFight = false; // wenn gerade ein Kampf ist. Bleibt auch true, wenn Matte ist.
 
-    private boolean hasCheckWinnerAlreadyBeenCalled = false; //diesen boolean brauche ich um einen bug zu beheben
+
     private boolean soundHasAlreadyBeenPlayed = false; //gleiches Konzept wie hasCheckWinnerAlreadyBeenCalled
 
 
@@ -399,7 +400,7 @@ public class StartClass extends Application {
         buildLeftControlPane();
         System.out.println("in continueToNextFight");
         if(!isCurrentlyAFight) mv.timeFiller(vereine, null);
-        hasCheckWinnerAlreadyBeenCalled = false;
+        checkWinnerCounter = 0;
         soundHasAlreadyBeenPlayed = false;
         Label text = new Label("Wähle den nächsten Kampf aus");
         chooseFight = true;
@@ -1452,7 +1453,7 @@ public class StartClass extends Application {
                 int seconds = Integer.parseInt(timeSeconds.getText());
                 timeInSeconds.set(minutes * 60 + seconds);
                 goldenScoreStage.close();
-                hasCheckWinnerAlreadyBeenCalled = false;
+                checkWinnerCounter = 0;
                 soundHasAlreadyBeenPlayed = false;
                 setGoldenScoreTime(timeInSeconds.get());
 
@@ -1523,8 +1524,8 @@ public class StartClass extends Application {
 
     // checkt wer gewonnen hat, wenn gleichstand ist dann wird golden score button disabled(false)
     private void checkWinner(){
-        if(hasCheckWinnerAlreadyBeenCalled) return;
-        hasCheckWinnerAlreadyBeenCalled = true;
+        if(checkWinnerCounter > 0) return;
+        checkWinnerCounter = 1;
         stopTimer();
 
         //playSound();
@@ -1617,13 +1618,14 @@ public class StartClass extends Application {
 
             ok.setOnAction(actionEvent -> {
                 chechWinnerStage.close();
+                checkWinnerCounter = 0;
+                soundHasAlreadyBeenPlayed = false;
             });
 
             Button disable = new Button("Ich brauche noch kein Golden Score");
             disable.getStyleClass().add("secondaryButton");
             disable.setOnAction(actionEvent -> {
                 bStartGoldenScore.setDisable(true);
-                hasCheckWinnerAlreadyBeenCalled = false;
                 ok.fire();
             });
 
@@ -1759,7 +1761,8 @@ public class StartClass extends Application {
             Button cancel = new Button("Cancel");
             cancel.setOnAction(actionEvent -> {
                 chechWinnerStage.close();
-                hasCheckWinnerAlreadyBeenCalled = false;
+                checkWinnerCounter = 0;
+                soundHasAlreadyBeenPlayed = false;
             });
 
             cancel.getStyleClass().add("cancel");
@@ -1798,7 +1801,10 @@ public class StartClass extends Application {
 
         }
 
-
+        chechWinnerStage.setOnCloseRequest(event -> {
+            checkWinnerCounter = 0;
+            soundHasAlreadyBeenPlayed = false;
+        });
 
         chechWinnerStage.show();
 
