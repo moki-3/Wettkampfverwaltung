@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -756,6 +757,12 @@ public class StartClass extends Application {
         
         Button editIppon01 = new Button("Ippon [A] : " + allFighterPairs.get(kampfIndex).getIppon01());
         editIppon01.getStyleClass().addAll("font-15px", "fight-controls");
+        editIppon01.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editIppon01.fire();
+            }
+        });
         editIppon01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon01();
@@ -771,6 +778,12 @@ public class StartClass extends Application {
 
         Button editWaza_ari01 = new Button("Waza-ari [S] : " + allFighterPairs.get(kampfIndex).getWaza_ari01());
         editWaza_ari01.getStyleClass().addAll("font-15px", "fight-controls");
+        editWaza_ari01.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editWaza_ari01.fire();
+            }
+        });
         editWaza_ari01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari01();
@@ -788,6 +801,12 @@ public class StartClass extends Application {
 
         Button editYuko01 = new Button("Yuko [D] : " + allFighterPairs.get(kampfIndex).getYuko01());
         editYuko01.getStyleClass().addAll("font-15px", "fight-controls");
+        editYuko01.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editYuko01.fire();
+            }
+        });
         editYuko01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decYuko01();
@@ -805,6 +824,12 @@ public class StartClass extends Application {
 
         Button editShido01 = new Button("Shido [G] : " + allFighterPairs.get(kampfIndex).getShido01());
         editShido01.getStyleClass().addAll("font-15px", "fight-controls");
+        editShido01.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editShido01.fire();
+            }
+        });
         editShido01.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido01();
@@ -831,6 +856,12 @@ public class StartClass extends Application {
 
         osae_komi01 = new Button(isFesthalter01 ? "Toketa [F]" : "Osae-komi [F]");
         osae_komi01.getStyleClass().addAll("font-15px", "fight-controls");
+        osae_komi01.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                osae_komi01.fire();
+            }
+        });
         osae_komi01.setOnAction(actionEvent -> {
             if(r_flag) reset01.fire();
             if(osae_komi01.getText().equals("Toketa [F]")){
@@ -890,6 +921,12 @@ public class StartClass extends Application {
 
         Button editIppon02 = new Button("Ippon [Ö] : " + allFighterPairs.get(kampfIndex).getIppon02());
         editIppon02.getStyleClass().addAll("font-15px", "fight-controls");
+        editIppon02.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editIppon02.fire();
+            }
+        });
         editIppon02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decIppon02();
@@ -905,6 +942,12 @@ public class StartClass extends Application {
 
         Button editWaza_ari02 = new Button("Waza-ari [L] : " + allFighterPairs.get(kampfIndex).getWaza_ari02());
         editWaza_ari02.getStyleClass().addAll("font-15px", "fight-controls");
+        editWaza_ari02.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editWaza_ari02.fire();
+            }
+        });
         editWaza_ari02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari02();
@@ -922,6 +965,12 @@ public class StartClass extends Application {
 
         Button editYuko02 = new Button("Yuko [K] : " + allFighterPairs.get(kampfIndex).getYuko02());
         editYuko02.getStyleClass().addAll("font-15px", "fight-controls");
+        editYuko02.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editYuko02.fire();
+            }
+        });
         editYuko02.setOnAction(actionEvent -> {
             if (r_flag) {
                 allFighterPairs.get(kampfIndex).decYuko02();
@@ -938,6 +987,12 @@ public class StartClass extends Application {
 
         Button editShido02 = new Button("Shido [H] : " + allFighterPairs.get(kampfIndex).getShido02());
         editShido02.getStyleClass().addAll("font-15px", "fight-controls");
+        editShido02.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                editShido02.fire();
+            }
+        });
         editShido02.setOnAction(actionEvent -> {
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decShido02();
@@ -964,6 +1019,12 @@ public class StartClass extends Application {
 
         osae_komi02 = new Button(isFesthalter02 ? "Toketa [J]" : "Osae-komi [J]");
         osae_komi02.getStyleClass().addAll("font-15px", "fight-controls");
+        osae_komi02.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY){
+                r_flag = true;
+                osae_komi02.fire();
+            }
+        });
         osae_komi02.setOnAction(actionEvent -> {
             if(r_flag) reset02.fire();
             if(osae_komi02.getText().equals("Toketa [J]")){
@@ -1351,37 +1412,44 @@ public class StartClass extends Application {
         Label start = new Label("Golden Score starten");
         start.getStyleClass().add("text-20");
         Label warnung = new Label("");
-        TextField timeField = new TextField("01:00");
-        timeField.getStyleClass().add("eingabe");
-        timeField.setMaxWidth(150);
+
+        TextField timeMinutes = new TextField("01");
+        TextField timeSeconds = new TextField("00");
+        timeMinutes.getStyleClass().add("eingabe");
+        timeMinutes.setMaxWidth(40);
+        timeSeconds.getStyleClass().add("eingabe");
+        timeSeconds.setMaxWidth(40);
+        Label betweenTimeLabels = new Label(":");
         AtomicInteger timeInSeconds = new AtomicInteger();
 
 
         Button submit = new Button("Fertig");
         submit.getStyleClass().add("submit");
-        submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
+        submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeMinutes.getText() + betweenTimeLabels.getText() +  timeSeconds.getText()));
 
-        //submit.setDisable(true);
 
-//        timeField.setOnAction(actionEvent -> {
-//            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
-//        });
-        timeField.setOnKeyTyped(keyEvent -> {
-            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
+        timeMinutes.setOnKeyTyped(keyEvent -> {
+            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeMinutes.getText() + betweenTimeLabels.getText() +  timeSeconds.getText()));
         });
-        timeField.setOnAction(actionEvent -> submit.fire());
+        timeMinutes.setOnAction(actionEvent -> submit.fire());
+
+        timeSeconds.setOnKeyTyped(keyEvent -> {
+            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeMinutes.getText() + betweenTimeLabels.getText() +  timeSeconds.getText()));
+        });
+        timeSeconds.setOnAction(actionEvent -> submit.fire());
 
         Button resetTimeField = new Button("Reset Input");
         resetTimeField.getStyleClass().add("reset");
         resetTimeField.setOnAction(actionEvent -> {
-            timeField.setText("02:00");
-            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeField.getText()));
+            timeSeconds.setText("00");
+            timeMinutes.setText("01");
+            submit.setDisable(!isInputValidAsTimeformat_mm_ss(timeMinutes.getText() + betweenTimeLabels.getText() +  timeSeconds.getText()));
         });
         submit.setOnAction(actionEvent -> {
-            if(isInputValidAsTimeformat_mm_ss(timeField.getText())){
-                String[] zeichen = timeField.getText().split(":");
-                int minutes = Integer.parseInt(zeichen[0]);
-                int seconds = Integer.parseInt(zeichen[1]);
+            if(isInputValidAsTimeformat_mm_ss(timeMinutes.getText() + betweenTimeLabels.getText() +  timeSeconds.getText())){
+
+                int minutes = Integer.parseInt(timeMinutes.getText());
+                int seconds = Integer.parseInt(timeSeconds.getText());
                 timeInSeconds.set(minutes * 60 + seconds);
                 goldenScoreStage.close();
                 hasCheckWinnerAlreadyBeenCalled = false;
@@ -1398,7 +1466,10 @@ public class StartClass extends Application {
 
 
 
-        VBox all = new VBox(10, start, warnung, timeField, resetTimeField, submit);
+        HBox timeBox = new  HBox(10, timeMinutes, betweenTimeLabels, timeSeconds);
+        timeBox.setAlignment(Pos.CENTER);
+
+        VBox all = new VBox(10, start, warnung, timeBox, resetTimeField, submit);
         all.setAlignment(Pos.CENTER);
 
 
@@ -1424,7 +1495,7 @@ public class StartClass extends Application {
     }
 
     private boolean isInputValidAsTimeformat_mm_ss(String exp){
-        //Wenn die Expression nicht 5 Zeichen (z.B.: 02:00) oder kein ':' an der richtigen Stelle hat
+        //Wenn die Expression nicht 5 Zeichen (z.B.: 01:00) oder kein ':' an der richtigen Stelle hat
         if(exp.length() != 5 || exp.toCharArray()[2] != ':') return false;
         //Testen, ob man die Zeichen in int umwandeln kann
         String[] zeichen = exp.split(":");
