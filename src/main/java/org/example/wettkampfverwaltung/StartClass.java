@@ -372,7 +372,7 @@ public class StartClass extends Application {
         if(isFight || isCurrentlyAFight){
             //mv.updateFight(allFighterPairs.get(kampfIndex));
             //if(allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U10") || allFighterPairs.get(kampfIndex).getAltersKlasse().equals("U12")) mv.updateTimeLabel(formatTime(U10_TIME));
-            mv.updateTimeLabel(formatTime(remainingtime));
+            mv.updateTimeLabel(timerLabel.getText());
             mv.newFight(allFighterPairs.get(kampfIndex), kampfIndex);
         }else{
 //            if(kampfIndex + 1 < allFighterPairs.size()){
@@ -563,14 +563,21 @@ public class StartClass extends Application {
                 else remainingtime--;
 
                 timerLabel.setText(formatTime(remainingtime));
-                mv.updateTimeLabel(formatTime(remainingtime));
+                mv.updateTimeLabel(timerLabel.getText());
                 if(isGoldenScore && remainingtime >= goldenScoreAbsoluteTime){
                     fighTime.stop();
                 }
                 if ((isGoldenScore && remainingtime >= goldenScoreAbsoluteTime) || (!isGoldenScore && remainingtime <= 0)) {
-                    fighTime.stop();
-                    playSound();
-                    checkWinner();
+                    if(isFesthalter02 || isFesthalter01){
+                        timerLabel.setText(isGoldenScore ? formatTime(goldenScoreAbsoluteTime) : formatTime(0));
+                        mv.updateTimeLabel(timerLabel.getText());
+                    }else{
+                        fighTime.stop();
+                        timerLabel.setText(isGoldenScore ? formatTime(goldenScoreAbsoluteTime) : formatTime(0));
+                        mv.updateTimeLabel(timerLabel.getText());
+                        playSound();
+                        checkWinner();
+                    }
                 }
             }));
             fighTime.setCycleCount(Timeline.INDEFINITE);
@@ -600,7 +607,7 @@ public class StartClass extends Application {
         }
 
         timerLabel.setText(formatTime(remainingtime));
-        mv.updateTimeLabel(formatTime(remainingtime)); // nochmal checken ob das stimmt
+        mv.updateTimeLabel(timerLabel.getText());
 
     }
 
