@@ -17,7 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import kotlin.coroutines.CombinedContext;
+
 
 import javax.swing.*;
 import java.io.File;
@@ -98,14 +98,38 @@ public class StartClass extends Application {
         Label greeting = new Label("Wählen Sie eine csv-Datei aus");
         Button select = new Button("Datei auswählen");
         select.getStyleClass().add("select-file-button");
-        Button continueButton = new Button("Select a file to continue");
+        Button continueButton = new Button("Wähle eine CSV-Datei aus");
         continueButton.getStyleClass().add("continue-file-button");
+
+        Button contiunueWithoutCSV = new Button("Ohne CSV-Datei weitermachen");
+        contiunueWithoutCSV.getStyleClass().add("select-file-button");
+
+
         Label fileName = new Label("Keine Datei Ausgewählt");
 
         continueButton.setDisable(true);
 
 
             AtomicReference<ArrayList<FighterPair>> fighterPairs = new AtomicReference<>(new ArrayList<>());
+
+        contiunueWithoutCSV.setOnAction(event -> {
+            FighterPair tmp1 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U10", "Keine Altersklasse");
+            FighterPair tmp2 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U12", "Keine Altersklasse");
+            FighterPair tmp3 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U14", "Keine Altersklasse");
+            FighterPair tmp4 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U16", "Keine Altersklasse");
+            FighterPair tmp5 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U18", "Keine Altersklasse");
+            FighterPair tmp6 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "Allgemeine Klasse", "Keine Altersklasse");
+            ArrayList<FighterPair> tmpList = new ArrayList<>();
+            tmpList.add(tmp1);
+            tmpList.add(tmp2);
+            tmpList.add(tmp3);
+            tmpList.add(tmp4);
+            tmpList.add(tmp5);
+            tmpList.add(tmp6);
+            fighterPairs.set(tmpList);
+            fileName.setText("Ohne CSV-Datei weitermachen");
+            continueButton.setDisable(false);
+        });
 
         select.setOnAction(actionEvent -> {
             continueButton.setText("Überprüfen...");
@@ -145,7 +169,7 @@ public class StartClass extends Application {
             play();
         });
 
-        VBox vbox = new VBox(10, greeting, select, fileName,continueButton);
+        VBox vbox = new VBox(10, greeting, select, contiunueWithoutCSV, fileName,continueButton);
         vbox.setAlignment(Pos.CENTER);
 
         controlRoot = new BorderPane();
@@ -212,12 +236,21 @@ public class StartClass extends Application {
 
         insert.getStyleClass().add("open-mv");
 
+        Button insertNoName = new Button("No-Name Kampf einfügen");
+        insertNoName.getStyleClass().add("open-mv");
+        insertNoName.setOnAction(event -> {
+            FighterPair tmp = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "Keine Altersklasse", "Keine Gewichtsklasse");
+            allFighterPairs.add(tmp);
+            buildLeftControlPane();
+        });
+
         HBox fullscreenbox = new HBox(20, lviewStageFullScreen, viewStageFullscreen);
         fullscreenbox.setAlignment(Pos.CENTER);
-        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, insert, vereineBox, createList());
+        VBox leftControls = new VBox(20, fullscreenbox, showViewStage, insert, insertNoName, vereineBox, createList());
         VBox.setMargin(fullscreenbox, new Insets(10, 10, 0, 20));
         VBox.setMargin(showViewStage, new Insets(0, 10, 0, 20));
         VBox.setMargin(insert, new Insets(0, 10, 0, 20));
+        VBox.setMargin(insertNoName, new Insets(0, 10, 0, 20));
         VBox.setMargin(vereineBox, new Insets(10, 10, 10, 20));
 
         leftControls.getStyleClass().add("background-ddd");
@@ -342,10 +375,12 @@ public class StartClass extends Application {
         VBox vbox = new VBox();
         vbox.setSpacing(20);
         for(Verein v : vereine){
-            Label l1 = new Label(v.getName()+ ":");
-            Label l2 = new Label(v.getPoints() + "");
-            HBox hbox = new HBox(10, l1, l2);
-            vbox.getChildren().add(hbox);
+            if(!v.getName().toLowerCase().equals("kein verein")) {
+                Label l1 = new Label(v.getName() + ":");
+                Label l2 = new Label(v.getPoints() + "");
+                HBox hbox = new HBox(10, l1, l2);
+                vbox.getChildren().add(hbox);
+            }
         }
         return vbox;
     }

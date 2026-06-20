@@ -10,6 +10,19 @@ Hier werden Vereine Verwaltet, sie haben einen Namen und Punkte, die bei 0 begin
 public class Verein {
     private String name;
     private int points = 0;
+    public boolean showPoints = true;
+
+    public void setShowPoints(boolean showPoints) {
+        this.showPoints = showPoints;
+    }
+
+    public boolean getShowPoints() {
+        return showPoints;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
 
     public String getName() {
         return name;
