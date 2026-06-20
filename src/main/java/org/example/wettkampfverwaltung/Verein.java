@@ -11,6 +11,7 @@ public class Verein {
     private String name;
     private int points = 0;
     public boolean showPoints = true;
+    public boolean currentlyEdited = false;
 
     public void setShowPoints(boolean showPoints) {
         this.showPoints = showPoints;
@@ -22,6 +23,14 @@ public class Verein {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public boolean isCurrentlyEdited() {
+        return currentlyEdited;
+    }
+
+    public void setCurrentlyEdited(boolean currentlyEdited) {
+        this.currentlyEdited = currentlyEdited;
     }
 
     public String getName() {

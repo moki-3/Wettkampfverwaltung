@@ -25,6 +25,24 @@
     -fx-background-color: #f2c261;
 }
 
+.edit-verein-buttons{
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-background-color: #f2c261;
+}
+
+.background-green{
+    -fx-background-color: green;
+}
+
+.background-red{
+    -fx-background-color: red;
+}
+
+.background-blue{
+    -fx-background-color: blue;
+}
+
 .mv-fullscreen-label{
     -fx-font-size: 15px;
 }
@@ -56,6 +74,10 @@
 
 .font-red{
     -fx-text-fill: red;
+}
+
+.font-black{
+    -fx-text-fill: black;
 }
 
 .fighter-box{

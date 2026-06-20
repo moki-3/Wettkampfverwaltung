@@ -224,7 +224,70 @@ public class StartClass extends Application {
         Label lviewStageFullScreen = new Label("viewStage Vollbildmodus");
         lviewStageFullScreen.getStyleClass().add("mv-fullscreen-label");
 
-        VBox vereineBox = createVereinList();
+        VBox vereineBox = new VBox();
+        vereineBox.setSpacing(20);
+        for(Verein v : vereine){
+            if(!v.getName().toLowerCase().equals("kein verein")) {
+                Label l1 = new Label(v.getName() + ":");
+                Label l2 = new Label(v.getPoints() + "");
+                if(!v.showPoints){
+                    l1.getStyleClass().remove("font-black");
+                    l2.getStyleClass().remove("font-black");
+                    l1.getStyleClass().add("font-red");
+                    l2.getStyleClass().add("font-red");
+                }else{
+                    l1.getStyleClass().remove("font-red");
+                    l2.getStyleClass().remove("font-red");
+                    l1.getStyleClass().add("font-black");
+                    l2.getStyleClass().add("font-black");
+                }
+
+                Button edit = new  Button("Edit");
+                edit.getStyleClass().add("edit-verein-buttons");
+
+                edit.setOnAction(actionEvent -> {
+                    v.setCurrentlyEdited(!v.isCurrentlyEdited());
+                    buildLeftControlPane();
+                });
+
+
+                HBox hbox = new HBox(10);
+                if(v.isCurrentlyEdited()){
+                    TextField editPoints = new TextField(l2.getText());
+
+                    Button save = new Button("Save");
+                    save.getStyleClass().addAll("edit-verein-buttons", "background-green");
+                    Button cancel = new Button("Abbrechen");
+                    cancel.getStyleClass().addAll("edit-verein-buttons", "background-red");
+                    save.setOnAction(actionEvent -> {
+                        v.setCurrentlyEdited(false);
+                        v.setPoints(Integer.parseInt(editPoints.getText()));
+                        buildLeftControlPane();
+                    });
+                    cancel.setOnAction(actionEvent -> {
+                        v.setCurrentlyEdited(false);
+                        buildLeftControlPane();
+                    });
+
+                    Button toogleViewable = new Button(v.showPoints ? "Sichtbar" : "nicht Sichtbar");
+                    toogleViewable.setOnAction(actionEvent -> {
+                        v.setShowPoints(!v.showPoints);
+                        buildLeftControlPane();
+                    });
+                    toogleViewable.getStyleClass().addAll("edit-verein-buttons", "background-blue");
+
+
+                    HBox hboxLabel = new  HBox(10, l1, editPoints);
+                    HBox lowerBox = new HBox(10, save, cancel, toogleViewable);
+                    hbox.getChildren().add(new VBox(10, hboxLabel, lowerBox));
+                }else{
+                    hbox.getChildren().addAll(l1, l2,  edit);
+                }
+                vereineBox.getChildren().add(hbox);
+            }
+        }
+
+
 
 
         Button insert = new Button("Kampf einfügen");
@@ -361,28 +424,6 @@ public class StartClass extends Application {
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); //bei bedarf horizonal scrollen
         sp.getStyleClass().add("background-ddd");
         return sp;
-    }
-
-
-    /*
-    Macht ein VBox, besthend aus hboxen. In diesen sind der Name und die
-    Punkte der vereine
-
-    TODO: CSS KLASSEN!!!
-
-     */
-    private VBox createVereinList(){
-        VBox vbox = new VBox();
-        vbox.setSpacing(20);
-        for(Verein v : vereine){
-            if(!v.getName().toLowerCase().equals("kein verein")) {
-                Label l1 = new Label(v.getName() + ":");
-                Label l2 = new Label(v.getPoints() + "");
-                HBox hbox = new HBox(10, l1, l2);
-                vbox.getChildren().add(hbox);
-            }
-        }
-        return vbox;
     }
 
     /*

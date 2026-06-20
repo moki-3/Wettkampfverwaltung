@@ -267,7 +267,7 @@ public class ManageView {
         VBox root = new VBox();
         root.setAlignment(Pos.CENTER);
         for(Verein v : vereine){
-            if(!v.getName().toLowerCase().equals("kein verein")) {
+            if(!v.getName().toLowerCase().equals("kein verein") && v.showPoints) {
                 Label l = new Label(v.getName() + ":\t" + v.getPoints());
                 l.getStyleClass().add("text-100");
                 root.getChildren().add(l);
