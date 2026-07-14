@@ -89,6 +89,9 @@ public class StartClass extends Application {
         List aller Fighters erstellt und danach wird die play() methode aufgerufen.
         Dazu wird Wettkampf.java benutzt.
         Hier wird auch mv gesetzt, mit der Länge der allFighterPairs.size() methode.
+
+        AUSLAGERN IN HELPMETHODS oder zumindest Teile, zum Beispiel dass contiunueWithoutCSV.setOnAction
+        in eine HelpMethod
      */
     @Override
     public void start(Stage stage) throws Exception {
@@ -440,6 +443,8 @@ public class StartClass extends Application {
         Diese Methode updatet die ViewStage mit dem Aktuellen Kampf oder mit einem zwischenScreen, der den
         aktuellen Punktestand anzeigt. Hier muss noch angepasst werden, welches FighterPair angezeigt werden
         muss
+
+        AUSLAGERN IN VIEWSTAGEMANAGER
      */
     public void updateViewStage(){
         //System.out.println("In updateViewStage");
@@ -465,6 +470,8 @@ public class StartClass extends Application {
         Diese Methode wird verwendet, um den Nächsten kampf zu setzten und
         sie managed auch alles in der ViewStage
         es steht dann "Bitte nächsten kampf auswählen" und man kann links den nächsten kampf auswählen
+
+        Alles was mit Viewstage zutun hat in VIEWSTAGEMANAGER geben
      */
     public void continueToNextFight(){
         //Kampfindex ändern und nexten kampf für diese Methode zwischenspeichern
@@ -494,7 +501,7 @@ public class StartClass extends Application {
     }
 
     /*
-    Diese Methode wird aufgerufen wenn man links einen Kampf klickt unc chooseFight = true ist.
+    Diese Methode wird aufgerufen wenn man links in der Liste einen Kampf klickt und chooseFight = true ist.
     Dann wird die view in controlstage und in mv upgedated
      */
     public void setNextFight(int index){
@@ -1578,6 +1585,7 @@ public class StartClass extends Application {
 
     }
 
+    //AUSLAGERN in HELPFMETHODS
     private boolean isInputValidAsTimeformat_mm_ss(String exp){
         //Wenn die Expression nicht 5 Zeichen (z.B.: 01:00) oder kein ':' an der richtigen Stelle hat
         if(exp.length() != 5 || exp.toCharArray()[2] != ':') return false;
@@ -2053,6 +2061,7 @@ public class StartClass extends Application {
     }
 
 
+    //AUSLAGERN IN HELPMETHODS mit Parameter, wo ich die allFighterPairs liste übergebe
     private ArrayList<String> getFullList(){
         ArrayList<String> list = new ArrayList<>();
         for(FighterPair fp : allFighterPairs){
