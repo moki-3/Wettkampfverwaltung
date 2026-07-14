@@ -1,7 +1,6 @@
 package org.example.wettkampfverwaltung;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -13,7 +12,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         Button select = new Button("Select file");
         select.setOnAction(actionEvent -> {
-            StartClass sc = new StartClass();
+            WettkampfManager sc = new WettkampfManager();
             try {
                 sc.start(stage);
             } catch (Exception e) {

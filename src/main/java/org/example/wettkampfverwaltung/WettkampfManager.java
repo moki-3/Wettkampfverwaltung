@@ -19,7 +19,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -27,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-public class StartClass extends Application {
+public class WettkampfManager extends Application {
     Wettkampf wf;
     Stage controlStage;
     ArrayList<Verein> vereine = new ArrayList<>();
@@ -82,6 +81,8 @@ public class StartClass extends Application {
 
     private boolean soundHasAlreadyBeenPlayed = false; //gleiches Konzept wie hasCheckWinnerAlreadyBeenCalled
 
+    HelpMethods  helpMethods = new HelpMethods();
+
 
 
     /*
@@ -116,20 +117,7 @@ public class StartClass extends Application {
             AtomicReference<ArrayList<FighterPair>> fighterPairs = new AtomicReference<>(new ArrayList<>());
 
         contiunueWithoutCSV.setOnAction(event -> {
-            FighterPair tmp1 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U10", "Keine Altersklasse");
-            FighterPair tmp2 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U12", "Keine Altersklasse");
-            FighterPair tmp3 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U14", "Keine Altersklasse");
-            FighterPair tmp4 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U16", "Keine Altersklasse");
-            FighterPair tmp5 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "U18", "Keine Altersklasse");
-            FighterPair tmp6 = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "Allgemeine Klasse", "Keine Altersklasse");
-            ArrayList<FighterPair> tmpList = new ArrayList<>();
-            tmpList.add(tmp1);
-            tmpList.add(tmp2);
-            tmpList.add(tmp3);
-            tmpList.add(tmp4);
-            tmpList.add(tmp5);
-            tmpList.add(tmp6);
-            fighterPairs.set(tmpList);
+            fighterPairs.set(helpMethods.getEmptyList());
             fileName.setText("Ohne CSV-Datei weitermachen");
             continueButton.setDisable(false);
         });
@@ -2061,18 +2049,7 @@ public class StartClass extends Application {
     }
 
 
-    //AUSLAGERN IN HELPMETHODS mit Parameter, wo ich die allFighterPairs liste übergebe
-    private ArrayList<String> getFullList(){
-        ArrayList<String> list = new ArrayList<>();
-        for(FighterPair fp : allFighterPairs){
-            String combo01 = fp.getName01() + "|" + fp.getVerein01() + "|" + fp.getAltersKlasse() + "|" + fp.getGewichtsKlasse();
-            String combo02 = fp.getName02() + "|" + fp.getVerein02() + "|" + fp.getAltersKlasse() + "|" + fp.getGewichtsKlasse();
 
-            if(!list.contains(combo01)) list.add(combo01);
-            if(!list.contains(combo02)) list.add(combo02);
-        }
-        return list;
-    }
 
     private VBox insertFight(){
         Label verein01 = new Label("Kein name01 ausgewählt!");
@@ -2089,7 +2066,7 @@ public class StartClass extends Application {
         ComboBox<String> name02 = new ComboBox<>();
 
 
-        ArrayList<String> all = getFullList();
+        ArrayList<String> all = helpMethods.helpGetFullList(allFighterPairs);
         for(String s : all){
             String[] tmp = s.split("\\|");
             name01.getItems().add(tmp[0]);
@@ -2181,75 +2158,3 @@ public class StartClass extends Application {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-    +----+         +----+     +--------+    +---+  +---+   +---+      +----------+  +---+  +---+  +---+  +---+
-    |     \       /     |    /  +----+  \   |   | /   /    |   |      |         /   |    \ |   |  |   | /   /
-    |   +  \     /  +   |   |  /      \  |  |   |/   /     |   |      +---+    /    |     \|   |  |   |/   /
-    |   | \ \   / / |   |   | |        | |  |       |      |   |         /    /     |          |  |       |
-    |   |  \ +-+ /  |   |   |  \      /  |  |   |\   \     |   |        /    +---+  |   |\     |  |   |\   \
-    |   |   +---+   |   |    \  +----+  /   |   | \   \    |   |  /\   /         |  |   | \    |  |   | \   \
-    +---+           +---+     +--------+    +---+  +---+   +---+  \/  +----------+  +---+  +---+  +---+  +---+
-
- */
