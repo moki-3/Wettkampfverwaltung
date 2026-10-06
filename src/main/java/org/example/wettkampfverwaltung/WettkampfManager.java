@@ -82,6 +82,7 @@ public class WettkampfManager extends Application {
     private boolean soundHasAlreadyBeenPlayed = false; //gleiches Konzept wie hasCheckWinnerAlreadyBeenCalled
 
     HelpMethods  helpMethods = new HelpMethods();
+    ElementHelper eh = new ElementHelper();
 
 
 
@@ -188,11 +189,7 @@ public class WettkampfManager extends Application {
 
     private void buildLeftControlPane(){
         //Button für viewstage fullscreen
-        Button viewStageFullscreen = new Button(mv.isViewStageFullscreen() ? "On" : "Off");
-        //css klassen und name
-
-        viewStageFullscreen.getStyleClass().add("mv-fullscreen");
-
+        Button viewStageFullscreen = eh.fullscreenButton(mv.isViewStageFullscreen() ? "On" : "Off");
         viewStageFullscreen.setOnAction(actionEvent -> {
             int fullScreenViewStage = mv.toggleViewStageFullscreen();
             if(fullScreenViewStage == 1){
@@ -201,16 +198,14 @@ public class WettkampfManager extends Application {
                 viewStageFullscreen.setText("ViewStage ist nicht sichtbar");
             }
         });
-        viewStageFullscreen.setFocusTraversable(false);
 
-        Button showViewStage = new Button("ViewStage öffnen");
-        showViewStage.setFocusTraversable(false);
+        Button showViewStage = eh.leftControlButton("ViewStage öffnen");
+
         showViewStage.setOnAction(actionEvent -> {
             openViewStage();
             viewStageFullscreen.setText(mv.isViewStageFullscreen() ? "On" : "Off");
         });
 
-        showViewStage.getStyleClass().add("open-mv");
 
         Label lviewStageFullScreen = new Label("viewStage Vollbildmodus");
         lviewStageFullScreen.getStyleClass().add("mv-fullscreen-label");
@@ -233,8 +228,7 @@ public class WettkampfManager extends Application {
                     l2.getStyleClass().add("font-black");
                 }
 
-                Button edit = new  Button("Edit");
-                edit.getStyleClass().add("edit-verein-buttons");
+                Button edit = eh.hoverButton_small("Edit", "edit-verein-buttons");
 
                 edit.setOnAction(actionEvent -> {
                     v.setCurrentlyEdited(!v.isCurrentlyEdited());
@@ -244,12 +238,13 @@ public class WettkampfManager extends Application {
 
                 HBox hbox = new HBox(10);
                 if(v.isCurrentlyEdited()){
+                    int og_points = v.getPoints();
+                    boolean ogIsVisible = v.showPoints;
+
                     TextField editPoints = new TextField(l2.getText());
 
-                    Button save = new Button("Save");
-                    save.getStyleClass().addAll("edit-verein-buttons", "background-green");
-                    Button cancel = new Button("Abbrechen");
-                    cancel.getStyleClass().addAll("edit-verein-buttons", "background-red");
+                    Button save = eh.hoverButton_small("Save", "edit-verein-buttons,background-green");
+                    Button cancel = eh.hoverButton_small("Cancel", "edit-verein-buttons,background-red");
                     save.setOnAction(actionEvent -> {
                         v.setCurrentlyEdited(false);
                         v.setPoints(Integer.parseInt(editPoints.getText()));
@@ -257,15 +252,17 @@ public class WettkampfManager extends Application {
                     });
                     cancel.setOnAction(actionEvent -> {
                         v.setCurrentlyEdited(false);
+                        v.setPoints(og_points);
+                        v.setShowPoints(ogIsVisible);
                         buildLeftControlPane();
                     });
 
-                    Button toogleViewable = new Button(v.showPoints ? "Sichtbar" : "nicht Sichtbar");
+                    Button toogleViewable = eh.hoverButton_small(v.showPoints ? "Sichtbar" : "nicht Sichtbar", "edit-verein-buttons,background-blue");
                     toogleViewable.setOnAction(actionEvent -> {
                         v.setShowPoints(!v.showPoints);
-                        buildLeftControlPane();
+                        //buildLeftControlPane();
+                        toogleViewable.setText(v.showPoints ? "Sichtbar" : "nicht Sichtbar");
                     });
-                    toogleViewable.getStyleClass().addAll("edit-verein-buttons", "background-blue");
 
 
                     HBox hboxLabel = new  HBox(10, l1, editPoints);
@@ -281,17 +278,17 @@ public class WettkampfManager extends Application {
 
 
 
-        Button insert = new Button("Kampf einfügen");
+        Button insert = eh.leftControlButton("Kampf einfügen");
         insert.setOnAction(event -> {
             if(chooseFight){
                 controlRoot.setCenter(insertFight());
             }
         });
 
-        insert.getStyleClass().add("open-mv");
 
-        Button insertNoName = new Button("No-Name Kampf einfügen");
-        insertNoName.getStyleClass().add("open-mv");
+
+        Button insertNoName = eh.leftControlButton("No-Name Kampf einfügen");
+
         insertNoName.setOnAction(event -> {
             FighterPair tmp = new FighterPair("Weiß", "Kein Verein", "Blau", "Kein Verein", "Keine Altersklasse", "Keine Gewichtsklasse");
             allFighterPairs.add(tmp);
