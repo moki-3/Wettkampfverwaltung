@@ -2,7 +2,7 @@ package org.example.wettkampfverwaltung;
 
 /*
 
-Hier werden Paare von Kämpfern verarbeitet, also jeder einzelne Kampf
+Hier werden Paare von Kämpfern verarbeitet, also jeder einzelne Kampf.
 
  */
 
