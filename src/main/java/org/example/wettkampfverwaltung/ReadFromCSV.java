@@ -1,41 +1,53 @@
 package org.example.wettkampfverwaltung;
 
-/*
-
-Hier werden die einzlenen Zeilen der CSV Datei in FighterPairs umgewandelt und
-in ein Array gespeichert
-
- */
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
-public class ReadFromCSV {
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
-    public ArrayList<FighterPair> read(File csvFile){
+public class ReadFromCSV {
+    public ArrayList<FighterPair> read(File csvFile) {
         ArrayList<FighterPair> fighterPairs = new ArrayList<>();
-        try{
-            String gesamtInhalt = java.nio.file.Files.readString(csvFile.toPath());
-            String[] zeilen = gesamtInhalt.split("\n");
-            for(int i = 0; i < zeilen.length; i++){
-                String[] row = zeilen[i].split(",");
-                if(row.length == 6){
-                    for(int j = 0; j < row.length; j++){
-                        row[j] = row[j].replace("\uFEFF", "").trim();
+
+        CSVFormat format = CSVFormat.DEFAULT.builder()
+                .setDelimiter(',')
+                .setIgnoreEmptyLines(true)
+                .build();
+
+        try (BufferedReader reader = Files.newBufferedReader(csvFile.toPath(), StandardCharsets.UTF_8)) {
+
+            // UTF-8-BOM überspringen, BEVOR der Parser die Datei sieht
+            reader.mark(1);
+            if (reader.read() != '\uFEFF') {
+                reader.reset();
+            }
+
+            try (CSVParser parser = format.parse(reader)) {
+                for (CSVRecord row : parser) {
+                    if (row.size() != 6) {
+                        throw new IllegalArgumentException(
+                                "Zeile " + row.getRecordNumber()
+                                        + " hat " + row.size()
+                                        + " statt 6 Spalten."
+                        );
                     }
-                    FighterPair fp = new FighterPair(row[0], row[1], row[2], row[3],row[4],row[5]);
-                    fighterPairs.add(fp);
-                }else{
-                    throw new Exception("Zu viele Spalten");
+
+                    fighterPairs.add(new FighterPair(
+                            row.get(0).trim(), row.get(1).trim(), row.get(2).trim(),
+                            row.get(3).trim(), row.get(4).trim(), row.get(5).trim()
+                    ));
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException("CSV-Datei konnte nicht gelesen werden.", e);
         }
 
         return fighterPairs;
     }
-
 }

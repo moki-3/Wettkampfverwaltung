@@ -861,6 +861,9 @@ public class WettkampfManager extends Application {
             }
         });
         editWaza_ari01.setOnAction(actionEvent -> {
+            System.out.println("S geklickt, r_flag=" + r_flag
+                    + ", waza_ari01=" + allFighterPairs.get(kampfIndex).getWaza_ari01()
+                    + ", checkWinnerCounter=" + checkWinnerCounter);
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari01();
             }else{
@@ -980,7 +983,7 @@ public class WettkampfManager extends Application {
         VBox daten02 = new VBox(10, name02, verein02);
 
         String points02 = "0";
-        if(allFighterPairs.get(kampfIndex).getIppon02() > 0 || allFighterPairs.get(kampfIndex).getWaza_ari02() == 2){
+        if(allFighterPairs.get(kampfIndex).getIppon02() > 0 || allFighterPairs.get(kampfIndex).getWaza_ari02() >= 2) {
             points02 = "100";
             if(!r_flag) {
                 playSound();
@@ -1025,6 +1028,9 @@ public class WettkampfManager extends Application {
             }
         });
         editWaza_ari02.setOnAction(actionEvent -> {
+            System.out.println("L geklickt, r_flag=" + r_flag
+                    + ", waza_ari02=" + allFighterPairs.get(kampfIndex).getWaza_ari02()
+                    + ", checkWinnerCounter=" + checkWinnerCounter);
             if(r_flag){
                 allFighterPairs.get(kampfIndex).decWaza_ari02();
             }else{
@@ -1615,12 +1621,19 @@ public class WettkampfManager extends Application {
 
         boolean unentschiedenNachGoldenScore = false;
 
-        if(points01 == points02 && !isGoldenScore) {
+        if(allFighterPairs.get(kampfIndex).isHansoku_make01() || allFighterPairs.get(kampfIndex).getShido01() >= 3){
+            //Wenn Fighter 1 Hansokuke make hat -> Fighter 02 ist winner
+            winner = allFighterPairs.get(kampfIndex).getName02();
+        }
+        else if(allFighterPairs.get(kampfIndex).isHansoku_make02() || allFighterPairs.get(kampfIndex).getShido02() >= 3){
+            //Wenn Fighter 2 Hansokuke make hat -> Fighter 01 ist winner
+            winner = allFighterPairs.get(kampfIndex).getName01();
+        }
+        else if(points01 == points02 && !isGoldenScore) {
             bStartGoldenScore.setDisable(false); // wenn gleichstand kann goldenScore gemacht werden
         }else if(points01 == points02 && isGoldenScore){
             unentschiedenNachGoldenScore = true;
-        }
-        else if(points01 > points02){
+        }else if(points01 > points02){
             winner = allFighterPairs.get(kampfIndex).getName01();
         }else{
             winner = allFighterPairs.get(kampfIndex).getName02();
